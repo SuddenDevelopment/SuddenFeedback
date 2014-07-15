@@ -1,0 +1,27 @@
+<div class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" ng-show="title">
+        <button type="button" class="close" ng-click="$hide()">&times;</button>
+      </div>
+      <div class="modal-body" >
+          <div style="height:300px;width:100%;overflow:scroll;">
+            <ul>
+        			<li>id: {{column.id}}</li>
+              <li>priority: {{column.priority}}</li>
+              <li>label: {{column.label}}  <input ng-model="column.label" /></li>
+              <li>source: {{column.source}}</li>
+               <li>sort: {{column.sort}} <select ng-model="column.sort" ng-options="sort.sort as sort.name for sort in sorts"></select></li>
+              <li>analysis: {{column.analysis}}</li>
+              <li>limit: {{column.limit}} <select ng-model="column.limit" ng-options="limit.limit as limit.limit for limit in limits"></select></li>
+              <li>width: {{column.width}} <select ng-model="column.width" ng-options="width.width as width.name for width in widths"></select></li>
+        		</ul>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="saveReport()">Save</button>
+        <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

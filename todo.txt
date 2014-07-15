@@ -1,0 +1,73 @@
+items modal template
+	delete item
+	move item to another column, including its stats
+	add note
+	user defined stats to include, checkboxes.
+
+spelling
+grammar,
+transalte
+
+//////||  BACKOFFICE  ||\\\\\\
+angular tenmplate cache
+load, save and update reports with and without data, 
+full traffic save + accelerated playback, extra $$
+-grunt?, scheduling for automated reporting.
+
+//////||  INTERFACE  ||\\\\\\settings menu 
+setting menu
+http://ngmodules.org/modules/AngularJS-Toaster
+-user options, configurable columns, how many and what’s in them
+-horizontal scroll through columns
+https://docs.angularjs.org/api/ng/service/$anchorScroll
+dont update a column on hover
+http://codepen.io/dmac37/pen/cfArp
+http://css-tricks.com/understanding-border-image/
+
+//////||  ADDING DATA  ||\\\\\\
+http://dev.bitly.com/data_apis.html
+
+//////||  BS FILTER  ||\\\\\\
+filter out excessive tagging and single letter tags
+-translate mesages?
+region filter
+remove all trailing hashtags, remove leading hashtags, optionally
+naive bayse classify messages for use // pull from items with same analyst note!
+NLP distance from messages / message clasifications
+
+//////||  WORDSETS  ||\\\\\\
+Abstract word sets, allow them to be edited, saved, loaded, separate user and system sets.
+Allow wordsets to determine which column they are in.
+-cluster by common meme/theme?
+-word association arithmatic
+-preconfigfured word groups, biz buzzwords, cursing, politics, media, countries, nascar stuff, word lists to compete with each other
+-dynamically find/update word sets
+-boolean word sets, merge, unique, diff
+
+//////||  SOURCES  ||\\\\\\
+reddit -http://reditr.com/?page=home
+rss
+url shorteners http://dev.bitly.com/links.html#v3_expand
+
+//////||  PRICES  ||\\\\\\
+registration, viewing, exploring = free
+$20/report, scheduled or interactive
+$2k/server
+professional services report setup or analysis
+
+//////||  ROADMAP  ||\\\\\\
+Direct sales, corporate installs
+custom workflows / integrations
+increase sources and analytics capabilities
+publicize controversial and intersting reports + examples from several industries and use cases.
+
+//////||  COMPETITORS  ||\\\\\\
+brandwatch
+
+//////||  NOTES  ||\\\\\\
+{"columns":[
+	 {"id":1,"label":"Negative","width":3,"priority":0,"sort":"priority","analysis":"sentiment=negative","exclusive":true,"source":"twitter","limit":100,"items":[],"stats":[]}
+	,{"id":2,"label":"Positive","width":3,"priority":0,"sort":"priority","analysis":"sentiment=positive","exclusive":true,"source":"twitter","limit":100,"items":[],"stats":[]}
+	,{"id":3,"label":"Neutral","width":3,"priority":0,"sort":"priority","analysis":"sentiment=neutral","exclusive":false,"source":"twitter","limit":100,"items":[],"stats":[]}
+	,{"id":4,"label":"Notes","width":3,"priority":0,"sort":"priority","analysis":"notes","exclusive":false,"source":"user","limit":100,"items":[],"stats":[]}
+]}

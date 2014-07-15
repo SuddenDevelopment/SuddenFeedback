@@ -1,0 +1,56 @@
+doctype 5
+html(ng-app="SuddenFeedbackApp")
+    head
+        link(rel='stylesheet', href='/css/font-awesome.min.css')
+        link(rel='stylesheet', href='/css/bootstrap.css')
+        link(rel='stylesheet', href='/css/style.css')
+        script(src='/js/angular.js')
+        script(src='/js/angular-resource.js')
+        script(src='/js/angular-sanitize.js')
+        script(src='/js/socket.io.js')
+        script(src='/js/angular-strap.min.js')
+        script(src='/js/angular-strap.tpl.min.js')
+        script(src='/js/engine.js',type='text/javascript')
+    body(ng-controller='FUI' ng-init="init()")
+        block content
+        a(href='/auth/twitter') login to twitter. 
+        span(bs-modal="wmodal" data-template="wordsModal.html") words 
+        span(bs-modal="rmodal" data-template="reportModal.html") report
+        div(class="content container-fluid")
+            //////||  columns  ||\\\\\
+            div(ng-repeat="(index,column) in report.columns | orderBy:'priority':true" ng-if="column.width>0" id="{{index}}" class="isotope-container col-lg-{{column.width}}")
+                div(class="panel panel-primary" bs-modal="cmodal" data-template="colModal.html") 
+                        div(class="col-lg-12 panel-heading"){{column.label}}
+                            div(style="float:right;") {{column.priority}}
+                div(class="row" ng-class="{'majorheight':column.stats.length}")    
+                    //////||  items  ||\\\\\
+                    div(class='isotope-item well well-sm' ng-repeat="(i,t) in column.items | orderBy:column.sort:true track by t.text" ng-class="{'new':t.status,'updated':t.updated}" bs-modal="imodal" data-template="itemModal.html")
+                        div(class="media" ng-if="t.entities.media")
+                            img(ng-repeat="i in t.entities.media" ng-src="{{i.media_url}}")
+                        div(class='isotope-item-content' )
+                            i(ng-if="t.typ=='User'" class="fa fa-user")
+                            i(ng-if="t.typ=='Link'" class="fa fa-link")
+                            i(ng-if="t.typ=='Tag'" class="fa fa-tag")
+                            i(ng-if="t.typ=='Mention'" class="fa fa-hand-o-right")
+                            i(ng-if="t.typ=='Symbol'" class="fa fa-usd")
+                            &nbsp;{{t.text}}
+                        div(class='isotope-item-priority text-info'){{t.priority}}
+                        div(class='isotope-item-urls')
+                            a(ng-repeat="url in t.entities.urls" href="{{url.expanded_url}}")
+                                i(class="fa fa-link text-warning")
+                //////||  stats  ||\\\\\
+                div(class="row" ng-if="column.stats.length" ng-class="{'minorheight':column.stats.length}")
+                    div(class='isotope-item well well-sm' ng-repeat="(i,t) in column.stats | orderBy:'priority':true track by t.text")
+                        div(class="media" ng-if="t.entities.media")
+                            img(ng-repeat="i in t.entities.media" ng-src="{{i.media_url}}")
+                        div(class='isotope-item-priority text-info text-right'){{t.priority}}
+                        div(class='isotope-item-urls')
+                            a(ng-repeat="url in t.entities.urls" href="{{url.expanded_url}}")
+                                i(class="fa fa-link text-warning")
+                        div(class='isotope-item-content')
+                            i(ng-if="t.typ=='User'" class="fa fa-user")
+                            i(ng-if="t.typ=='Link'" class="fa fa-link")
+                            i(ng-if="t.typ=='Tag'" class="fa fa-tag")
+                            i(ng-if="t.typ=='Mention'" class="fa fa-hand-o-right")
+                            i(ng-if="t.typ=='Symbol'" class="fa fa-usd")
+                            &nbsp;{{t.text}}
