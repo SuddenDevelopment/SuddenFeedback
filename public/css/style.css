@@ -1,0 +1,68 @@
+html,body, div.content {
+  padding: 0; margin:0; height: 100%;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+div.isotope-container{ height:100%; }
+div.media{ text-align:center; float:left; display:inline; max-width:24%;}
+div.isotope-item-content{ float:left; display:inline; max-width:74%; padding:5px;}
+div.isotope-item img{  max-width:95%; max-height:128px; }
+div.isotope-item{ 
+	float: left; 
+	border: 1px solid #111;
+	font: 12px;
+	width: 98%;
+	margin: 2px;
+	padding: 2px;
+	border-radius: 2px;
+  overflow:hidden;
+}
+div.isotope-item.new{ border:1px solid #f89406;}
+div.isotope-item.updated{ border:1px solid #62c462;}
+div.isotope-item-priority, div.isotope-container div.isotope-item-urls{
+	float:right;
+	padding:0 3px 0 3px;
+	border-radius: 3px;
+}
+div.isotope-item-priority{margin-left:3px; bottom:3px;}
+
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; } /* for angular ui */
+
+.ui-match { background: yellow; }
+
+.isotope-item.ng-enter {
+	-webkit-transition: 10s linear all; /* Chrome */
+	transition: 10s linear all;
+	opacity: 0;
+}
+ 
+.isotope-item.ng-enter, .isotope-item.ng-enter-active {
+	opacity: 1;
+}
+.itemMenu{z-index:99;}
+.isotope-item{z-index:1;}
+.row{margin-left: -2px; margin-right: -2px; height:100%; overflow: scroll;}
+.row.majorheight{height:75%; overflow:scroll; margin-bottom:5px;}
+.row.minorheight{height:25%; overflow:scroll; border-top: 3px double #5bc0de;}
+
+/* animation stuff */
+.modal-backdrop.am-fade {
+  opacity: .5;
+  transition: opacity .15s linear;
+  &.ng-enter {
+    opacity: 0;
+    &.ng-enter-active {
+      opacity: .5;
+    }
+  }
+  &.ng-leave {
+    opacity: .5;
+    &.ng-leave-active {
+      opacity: 0;
+    }
+  }
+}
