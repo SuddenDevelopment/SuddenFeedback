@@ -10,9 +10,12 @@ var http = require('http');
 var path = require('path');
 var util = require('util');
 var OAuth = require('oauth').OAuth;
-var mongodb = require('mongodb')
+var mongodb = require('mongodb');
+var fs = require('fs');
 
 var app = express();
+
+var default_report = JSON.parse(fs.readFileSync('default_report.json'));
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -96,8 +99,14 @@ app.post('/fuiapi', function(req, res, next) {
 	  var dbTerms = db.collection('terms');
 	  if(strAction=='init'){ dbReports.findOne({}, function(err, doc){ 
 	  	//console.log(doc); 
-	  	res.send(doc); 
-	  	req.session.report=doc;
+	  	if(doc) {
+	  		res.send(doc); 
+	  		req.session.report=doc;
+	  	} else {
+	  		// Report isn't loaded into mongo so let's load it from disk
+	  		res.send(default_report);
+	  		req.session.report=default_report;
+	  	}
 	  }); }
 	  if(strAction=='saveReport'){ 
 	  	dbReports.update( {_id:d._id},{columns:d.columns},{upsert:true,safe:true},
