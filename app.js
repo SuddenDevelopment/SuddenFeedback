@@ -60,6 +60,23 @@ var oa = new OAuth(
 );
 
 var MongoClient = mongodb.MongoClient
+
+// Placeholders
+var dbUsers, dbOptions, dbReports, dbTerms = {};
+
+MongoClient.connect(MONGO_URL, function(err, db) {
+	  if(err) {
+	  	console.log('Cannot connect to mongo!');
+	  	process.exit(-1);
+	  }
+	  dbUsers = db.collection('users');
+	  dbOptions = db.collection('options');
+	  dbReports = db.collection('reports');
+	  dbTerms = db.collection('terms');
+
+	  console.log('Connected to mongo');
+});
+
 /*
 app.post('/fuiapi', function(req, res){
   var column = req.param('column', null);
@@ -89,15 +106,10 @@ app.get('/auth/twitter', function(req, res) {
 
 app.post('/fuiapi', function(req, res, next) {
 	var strAction = req.param('a', null); //todo: check post var against array of allowed options
-	console.log(strAction);
-	var d = req.param('q',null); console.log(d);
+	var d = req.param('q',null); 
 	//res.send(JSON.stringify([{Label:'good'}]));
-	MongoClient.connect(MONGO_URL, function(err, db) {
-	  var dbUsers = db.collection('users');
-	  var dbOptions = db.collection('options');
-	  var dbReports = db.collection('reports');
-	  var dbTerms = db.collection('terms');
-	  if(strAction=='init'){ dbReports.findOne({}, function(err, doc){ 
+	  
+ 	 if(strAction=='init'){ dbReports.findOne({}, function(err, doc){ 
 	  	//console.log(doc); 
 	  	if(doc) {
 	  		res.send(doc); 
@@ -108,15 +120,20 @@ app.post('/fuiapi', function(req, res, next) {
 	  		req.session.report=default_report;
 	  	}
 	  }); }
-	  if(strAction=='saveReport'){ 
+	  if(strAction=='saveReport'){
 	  	dbReports.update( {_id:d._id},{columns:d.columns},{upsert:true,safe:true},
-		    function(err,data){if (err){console.log(err);}else{console.log(d);}});
+		    function(err,data){if (err){
+		    	res.send('error');
+		    }else{
+		    	res.send('success');
+		    }});
+
 	  }
 	  //collection.remove(function(err, result) { if(err) { return console.error(err); } //truncate
 	  //dbOptions.insert(objhere, function(err,docs) { if(err) { return console.error(err); }
-      
-      //todo: save to session for server side use
-	});
+	  
+	  //todo: save to session for server side use
+	
 });
 
 var twitter = require('ntwitter');
