@@ -1,0 +1,6 @@
+{"columns":[
+	 {"id":1,"label":"Negative","width":3,"priority":0,"sort":"priority","analysis":"sentiment=negative","exclusive":true,"source":"twitter","limit":100,"items":[],"stats":[]}
+	,{"id":2,"label":"Positive","width":3,"priority":0,"sort":"priority","analysis":"sentiment=positive","exclusive":true,"source":"twitter","limit":100,"items":[],"stats":[]}
+	,{"id":3,"label":"Neutral","width":3,"priority":0,"sort":"priority","analysis":"sentiment=neutral","exclusive":false,"source":"twitter","limit":100,"items":[],"stats":[]}
+	,{"id":4,"label":"Notes","width":3,"priority":0,"sort":"priority","analysis":"notes","exclusive":false,"source":"user","limit":100,"items":[],"stats":[]}
+]}
