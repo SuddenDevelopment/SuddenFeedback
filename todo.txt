@@ -1,13 +1,16 @@
 items modal template
 	delete item
 	move item to another column, including its stats
-	add note
 	user defined stats to include, checkboxes.
 
 spelling
 grammar,
 transalte
 
+words:
+  arrSets
+    Edit: Name: CSV list
+  addNew
 //////||  BACKOFFICE  ||\\\\\\
 angular tenmplate cache
 load, save and update reports with and without data, 
@@ -65,7 +68,9 @@ publicize controversial and intersting reports + examples from several industrie
 brandwatch
 
 //////||  NOTES  ||\\\\\\
-{"columns":[
+{ "_id" : "System:ObamaThemes", "name" : "ObamaThemes", "terms" : [ "Illuminati", "Hitler", "worst president", "Thanks Obama" ] }
+
+{"_id":"Anthony:ObamaSentiment","terms":[{"id":"System:ObamaThemes","fn":"Filter"}],"columns":[
 	 {"id":1,"label":"Negative","width":3,"priority":0,"sort":"priority","analysis":"sentiment=negative","exclusive":true,"source":"twitter","limit":100,"items":[],"stats":[]}
 	,{"id":2,"label":"Positive","width":3,"priority":0,"sort":"priority","analysis":"sentiment=positive","exclusive":true,"source":"twitter","limit":100,"items":[],"stats":[]}
 	,{"id":3,"label":"Neutral","width":3,"priority":0,"sort":"priority","analysis":"sentiment=neutral","exclusive":false,"source":"twitter","limit":100,"items":[],"stats":[]}

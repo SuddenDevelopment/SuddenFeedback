@@ -86,7 +86,8 @@ app.get('/auth/twitter', function(req, res) {
 
 app.post('/fuiapi', function(req, res, next) {
 	var strAction = req.param('a', null); //todo: check post var against array of allowed options
-	console.log(strAction);
+	//console.log(strAction);
+	var report = {};
 	var d = req.param('q',null); console.log(d);
 	//res.send(JSON.stringify([{Label:'good'}]));
 	MongoClient.connect(MONGO_URL, function(err, db) {
@@ -94,18 +95,28 @@ app.post('/fuiapi', function(req, res, next) {
 	  var dbOptions = db.collection('options');
 	  var dbReports = db.collection('reports');
 	  var dbTerms = db.collection('terms');
-	  if(strAction=='init'){ dbReports.findOne({}, function(err, doc){ 
-	  	//console.log(doc); 
-	  	res.send(doc); 
-	  	req.session.report=doc;
-	  }); }
+	  
+	  if(strAction=='init'){ 
+	  	//get the report settings
+		 dbReports.findOne({}, function(err, doc){ 
+		 	report=doc;
+		 	for(var i=0;i<report.terms.length;i++){ 
+	 		 dbTerms.findOne({"_id":report.terms[i].id},function(err,term){
+	 		 	//console.log(doc.terms[i-1]);
+	 		 	report.terms[i-1].terms=term.terms;
+	 		 	res.send(report);
+	 		 	req.session.report=report;
+	 		 });
+	 		}
+		 });
+		//get the word sets used
+	  }
 	  if(strAction=='saveReport'){ 
 	  	dbReports.update( {_id:d._id},{columns:d.columns},{upsert:true,safe:true},
 		    function(err,data){if (err){console.log(err);}else{console.log(d);}});
 	  }
 	  //collection.remove(function(err, result) { if(err) { return console.error(err); } //truncate
 	  //dbOptions.insert(objhere, function(err,docs) { if(err) { return console.error(err); }
-      
       //todo: save to session for server side use
 	});
 });
