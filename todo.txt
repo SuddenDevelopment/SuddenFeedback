@@ -11,6 +11,14 @@ words:
   arrSets
     Edit: Name: CSV list
   addNew
+
+//////||  INSPIRATION  ||\\\\\\
+http://prologue.com/media/film/categories/main-titles-special-sequences/projects/iron-man-2/groups/interfaces
+http://architosh.com/wordpress/wp-content/uploads/2013/05/oblivion_3_07.jpg
+http://videohive.net/item/24-hitech-hud-interface-pack/2836699
+http://videohive.net/item/glowing-tech-circle-pack/8194396?ref=bridariam
+http://videohive.net/item/scifi-interface-hud-package/8226307?
+
 //////||  BACKOFFICE  ||\\\\\\
 angular tenmplate cache
 load, save and update reports with and without data, 
@@ -26,6 +34,7 @@ https://docs.angularjs.org/api/ng/service/$anchorScroll
 dont update a column on hover
 http://codepen.io/dmac37/pen/cfArp
 http://css-tricks.com/understanding-border-image/
+http://ngmodules.org/modules/angular-progress-arc
 
 //////||  ADDING DATA  ||\\\\\\
 http://dev.bitly.com/data_apis.html
