@@ -47,7 +47,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         console.log(response); 
     }); }
     $scope.loadReport = function(objReport,withData){ FUIAPI.query({a:'loadReport'},function(response){  }); }
-    $scope.saveReport = function(objReport,withData){ console.log('saved');;FUIAPI.post({a:'saveReport',q:$scope.report},function(response){  }); }
+    $scope.saveReport = function(objReport,withData){ console.log('saved');;FUIAPI.post({a:'saveReport',q:$scope.report},function(response){ console.log(response,'response'); }); }
     //manage already loaded item
     $scope.moveItem = function(objItem,newColumn){}
     $scope.updateNote = function(t){ var objItem = {column:4,text:t.notes,priority:1,typ:'Msg'}; $scope.addItem(objItem);}
@@ -59,7 +59,13 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     //connect to the websocket
     $scope.feed = function(){
         var socket = io.connect('http://localhost:3001'); 
-        socket.on('newItems', function (arrItems){ angular.forEach(arrItems,function(objItem,k){ $scope.addItem(objItem); }); $scope.$apply(); arrItems=null; });
+        socket.on('newItems', function (arrItems){ 
+            angular.forEach(arrItems,function(objItem,k){ 
+                $scope.addItem(objItem); 
+            }); 
+            $scope.$apply(); 
+            arrItems=null; 
+        });
     }
     //start everything
     $scope.init = function(){ 
