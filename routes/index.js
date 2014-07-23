@@ -103,6 +103,12 @@ exports.index = function (req, res) {
 };
 
 /* TO BE PULLED INTO OTHER FILES / MODULES  */
+var fnAllTerms = function(arrNeedles,strHaystack){
+    arrMatches = [];
+    for(var y=0;y<arrNeedles.length;y++){ if(strHaystack.toLowerCase().indexOf(arrNeedles[y].toLowerCase())!= -1){ arrMatches.push(arrNeedles[y]); } }
+    return arrMatches;
+}
+
 var fnFirstTerm = function(arrNeedles,strHaystack){
     //find the first term that matches and return it, return false if none found.
     var strMatch=false;
