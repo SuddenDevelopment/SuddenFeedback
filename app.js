@@ -127,6 +127,11 @@ app.post('/fuiapi', function(req, res, next) {
 	 		 	res.send(report);
 	 		 	req.session.report=report;
 	 		 });
+
+	 		 
+		 		 dbTerms.find({user: "System"}).toArray(function(err, results){
+				    console.log(results); // output all records
+				});
 	 		}
 		 });
 		//get the word sets used

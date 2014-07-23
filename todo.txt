@@ -1,3 +1,5 @@
+create a worset matching function!
+
 items modal template
 	delete item
 	move item to another column, including its stats
