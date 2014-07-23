@@ -40,15 +40,6 @@ exports.index = function (req, res) {
                     var arrItems=[];
                     var torfSend = true;
                     var filtered = false;
-                    //filter
-                    /*
-                    for(var i=0; i<arrFilters.length; i++){
-                        if(torfSend === true){ 
-                            var strMatch='/'+arrFilters[i]+'/i';
-                            if(objItem.text.match(strMatch)){ torfSend = false; }
-                        }
-                    }
-                    */
                     if(torfSend===true){
                         objItem.priority= 1;
                         if(objItem.retweeted_status !== undefined){if(objItem.retweeted_status.retweet_count > 0){ 
@@ -59,14 +50,7 @@ exports.index = function (req, res) {
                      //_________________________________________\\
                     //----====|| NORMALIZE THE MESSAGE ||====----\\
                         objItem.typ='Msg';
-                        //REMOVE THE 1ST RT
-                        if(objItem.text.substr(0,2) == 'RT'){ objItem.text = objItem.text.replace('RT ','');}
-                        //MOVE LINK TEXT TO PROPERTIES http://t.co\S*
-                        var arrURLs = [];
-                        //data.urls = data.text.match(/http[s]?:\S*/g); //should be in the entiites object already
-                        objItem.text = objItem.text.replace(/http[s]?:\S*/g,'');
-                        //REMOVE SOME NAMES
-                        objItem.text = objItem.text.replace(/@\S*\s/,'');
+                        objItem.text=fnCleanText(objItem.text,{})
                         //var objLatest = objItem; objLatest.column=4;arrItems.push(objLatest);//add latest
                         //objItem.column=4; arrItems.push(objItem);
                      //END NORMALIZING\\
@@ -86,15 +70,6 @@ exports.index = function (req, res) {
                                     filtered = true;
                                     objItem.analysis.filtered=strMatch;
                                 };
-                                
-                                /*
-                                for(var y=0;y<req.session.report.terms[i].terms.length;y++){
-                                    if(filtered==false && objItem.text.toLowerCase().indexOf(req.session.report.terms[i].terms[y].toLowerCase())!= -1){
-                                        objItem.analysis.filtered=req.session.report.terms[i].terms[y];
-                                        filtered = true;
-                                    } 
-                                }
-                                */
                             }
                         }
 
@@ -134,3 +109,13 @@ var fnFirstTerm = function(arrNeedles,strHaystack){
     for(var y=0;y<arrNeedles.length;y++){ if(strMatch===false && strHaystack.toLowerCase().indexOf(arrNeedles[y].toLowerCase())!= -1){ strMatch = arrNeedles[y]; } }
     return strMatch;
 };
+
+var fnCleanText = function(strSubject,objOptions){
+    //REMOVE THE 1ST RT
+    if(strSubject.substr(0,2) == 'RT'){ strSubject = strSubject.replace('RT ','');}
+    //data.urls = data.text.match(/http[s]?:\S*/g); //should be in the entiites object already
+    strSubject = strSubject.replace(/http[s]?:\S*/g,'');
+    //REMOVE SOME NAMES
+    strSubject = strSubject.replace(/@\S*\s/,'');
+    return strSubject;
+}
