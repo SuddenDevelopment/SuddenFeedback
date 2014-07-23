@@ -81,12 +81,20 @@ exports.index = function (req, res) {
                     //----====|| SORT INTO COLUMNS ||====----\\
                         for(var i=0;i<req.session.report.terms.length;i++){
                             if(req.session.report.terms[i].fn=='Filter' && filtered==false){
+                                var strMatch= fnFirstTerm(req.session.report.terms[i].terms,objItem.text);
+                                if(strMatch){
+                                    filtered = true;
+                                    objItem.analysis.filtered=strMatch;
+                                };
+                                
+                                /*
                                 for(var y=0;y<req.session.report.terms[i].terms.length;y++){
                                     if(filtered==false && objItem.text.toLowerCase().indexOf(req.session.report.terms[i].terms[y].toLowerCase())!= -1){
                                         objItem.analysis.filtered=req.session.report.terms[i].terms[y];
                                         filtered = true;
                                     } 
                                 }
+                                */
                             }
                         }
 
@@ -117,4 +125,12 @@ exports.index = function (req, res) {
             }
         );
     }
+};
+
+/* TO BE PULLED INTO OTHER FILES / MODULES  */
+var fnFirstTerm = function(arrNeedles,strHaystack){
+    //find the first term that matches and return it, return false if none found.
+    var strMatch=false;
+    for(var y=0;y<arrNeedles.length;y++){ if(strMatch===false && strHaystack.toLowerCase().indexOf(arrNeedles[y].toLowerCase())!= -1){ strMatch = arrNeedles[y]; } }
+    return strMatch;
 };
