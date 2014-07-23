@@ -133,37 +133,35 @@ app.post('/fuiapi', function(req, res, next) {
 	  }
 	  if(strAction=='saveReport'){ 
 
-	var d = req.param('q',null); 
-	//res.send(JSON.stringify([{Label:'good'}]));
-	  
- 	 if(strAction=='init'){ dbReports.findOne({}, function(err, doc){ 
-	  	//console.log(doc); 
-	  	if(doc) {
-	  		res.send(doc); 
-	  		req.session.report=doc;
-	  	} else {
-	  		// Report isn't loaded into mongo so let's load it from disk
-	  		res.send(default_report);
-	  		req.session.report=default_report;
-	  	}
-	  }); }
-	  if(strAction=='saveReport'){
-	  	dbReports.update( {_id:d._id},{columns:d.columns},{upsert:true,safe:true},
-		    function(err,data){if (err){
-		    	res.send('error');
-		    }else{
-		    	res.send('success');
-		    }});
+		var d = req.param('q',null); 
+		//res.send(JSON.stringify([{Label:'good'}]));
+		  
+	 	 if(strAction=='init'){ dbReports.findOne({}, function(err, doc){ 
+		  	//console.log(doc); 
+		  	if(doc) {
+		  		res.send(doc); 
+		  		req.session.report=doc;
+		  	} else {
+		  		// Report isn't loaded into mongo so let's load it from disk
+		  		res.send(default_report);
+		  		req.session.report=default_report;
+		  	}
+		  }); }
+		  if(strAction=='saveReport'){
+		  	dbReports.update( {_id:d._id},{columns:d.columns},{upsert:true,safe:true},
+			    function(err,data){if (err){
+			    	res.send('error');
+			    }else{
+			    	res.send('success');
+			    }});
 
-	  }
+		  }
 	  //collection.remove(function(err, result) { if(err) { return console.error(err); } //truncate
 	  //dbOptions.insert(objhere, function(err,docs) { if(err) { return console.error(err); }
       //todo: save to session for server side use
-	});
-	  
+	};
 	  //todo: save to session for server side use
-	
-});
+}); });
 
 var twitter = require('ntwitter');
 app.get('/auth/twitter/callback', function(req, res, next) {
@@ -195,6 +193,5 @@ app.get('/auth/twitter/callback', function(req, res, next) {
 				}
 			}
 		);
-	} else
-		next(new Error("you're not supposed to be here."))
+	} else{ next(new Error("you're not supposed to be here.")); }
 });

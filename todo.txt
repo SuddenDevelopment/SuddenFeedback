@@ -18,6 +18,8 @@ http://architosh.com/wordpress/wp-content/uploads/2013/05/oblivion_3_07.jpg
 http://videohive.net/item/24-hitech-hud-interface-pack/2836699
 http://videohive.net/item/glowing-tech-circle-pack/8194396?ref=bridariam
 http://videohive.net/item/scifi-interface-hud-package/8226307?
+http://web.ccpgamescdn.com/newssystem/media/3066/3341/market_interface_ui.jpg
+http://www.bing.com/images/search?pq=eve+online+user+interface&sc=1-25&sp=-1&sk=&q=eve+online+user+interface&qft=+filterui:imagesize-wallpaper&FORM=R5IR4#view=detail&id=A2E0B0FD246D01011E9A25F47F2088658DCA8756&selectedIndex=2
 
 //////||  BACKOFFICE  ||\\\\\\
 angular tenmplate cache
