@@ -120,38 +120,18 @@ app.post('/fuiapi', function(req, res, next) {
 	  	//get the report settings
 		 dbReports.findOne({}, function(err, doc){ 
 		 	report=doc;
-		 	for(var i=0;i<report.terms.length;i++){ 
-	 		 dbTerms.findOne({"_id":report.terms[i].id},function(err,term){
-	 		 	//console.log(doc.terms[i-1]);
-	 		 	report.terms[i-1].terms=term.terms;
-	 		 	res.send(report);
-	 		 	req.session.report=report;
-	 		 });
-
-	 		 
+		 	 //get the system and logged in users term sets
 		 		 dbTerms.find({user: "System"}).toArray(function(err, results){
-				    console.log(results); // output all records
+				    //console.log(results); // output all records
+				    report.terms=results;
+				    res.send(report);
+	 		 		req.session.report=report;
 				});
-	 		}
 		 });
 		//get the word sets used
 	  }
 	  if(strAction=='saveReport'){ 
-
 		var d = req.param('q',null); 
-		//res.send(JSON.stringify([{Label:'good'}]));
-		  
-	 	 if(strAction=='init'){ dbReports.findOne({}, function(err, doc){ 
-		  	//console.log(doc); 
-		  	if(doc) {
-		  		res.send(doc); 
-		  		req.session.report=doc;
-		  	} else {
-		  		// Report isn't loaded into mongo so let's load it from disk
-		  		res.send(default_report);
-		  		req.session.report=default_report;
-		  	}
-		  }); }
 		  if(strAction=='saveReport'){
 		  	dbReports.update( {_id:d._id},{columns:d.columns},{upsert:true,safe:true},
 			    function(err,data){if (err){
