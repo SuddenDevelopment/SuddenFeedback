@@ -63,6 +63,7 @@ exports.index = function (req, res) {
                     //#################\\
                      //_____________________________________\\
                     //----====|| SORT INTO COLUMNS ||====----\\
+                        //loop through the root level term groups used
                         for(var i=0;i<req.session.report.terms.length;i++){
                             if(req.session.report.terms[i].fn=='Filter' && filtered==false){
                                 var strMatch= fnFirstTerm(req.session.report.terms[i].terms,objItem.text);
@@ -72,6 +73,8 @@ exports.index = function (req, res) {
                                 };
                             }
                         }
+
+                        //loop through the column level term groups used
 
                         //go through columns in order, col order matters for sorting, some items will pass through and add to multiple aolumns, default is to stop when a col is found
                         for(i=0;i<req.session.report.columns.length;i++){
