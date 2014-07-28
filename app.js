@@ -108,7 +108,7 @@ app.post('/fuiapi', function(req, res, next) {
 	var strAction = req.param('a', null); //todo: check post var against array of allowed options
 	//console.log(strAction);
 	var report = {};
-	var d = req.param('q',null); console.log(d);
+	var d = req.param('q',null); //console.log(d);
 	//res.send(JSON.stringify([{Label:'good'}]));
 	MongoClient.connect(MONGO_URL, function(err, db) {
 	  var dbUsers = db.collection('users');
@@ -138,7 +138,7 @@ app.post('/fuiapi', function(req, res, next) {
 	  };
 	  if(strAction=='saveTerms'){ 
 		var d = req.param('q',null); 
-		  	console.log(d);
+		  	//console.log(d);
 		  	for(var i=0; i<d.length;i++){
 			  	dbTerms.update( {_id:d[i].user+':'+d[i].name},{user:d[i].user,name:d[i].name,terms:d[i].terms},{upsert:true,safe:true},
 				function(err,data){if (err){res.send('error');}else{res.send('success');}});
