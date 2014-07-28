@@ -1,5 +1,6 @@
 //////||  ISSUES  ||\\\\\\
 memory! watches not destroyed after items removed?
+authenticate separately of page reloads to avoid node crashing
 
 //////||  INSPIRATION  ||\\\\\\
 http://prologue.com/media/film/categories/main-titles-special-sequences/projects/iron-man-2/groups/interfaces
@@ -17,6 +18,7 @@ full traffic save + accelerated playback, extra $$
 -grunt?, scheduling for automated reporting.
 
 //////||  INTERFACE  ||\\\\\\settings menu 
+where are the pretty charts that are always moving?
 items modal template
 	delete item
 	move item to another column, including its stats
@@ -64,6 +66,13 @@ registration, viewing, exploring = free
 $20/report, scheduled or interactive
 $2k/server
 professional services report setup or analysis
+
+//////||  DIFFERENTIATORS  ||\\\\\\
+Interactive, change the formulas as the data is flowing instead f neding to define ahead of time.
+Working with language, not just numbers
+dynamic display
+Everything changes according to the data: order, format, display, good analysis adjusts
+unique distributable report format to explore
 
 //////||  ROADMAP  ||\\\\\\
 Direct sales, corporate installs

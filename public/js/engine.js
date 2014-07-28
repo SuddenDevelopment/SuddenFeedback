@@ -34,7 +34,6 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
                 }
                 if(intLength>$scope.report.columns[idxColumn].limit && $scope.report.columns[idxColumn][propArray][i].position>$scope.report.columns[idxColumn].limit){ $scope.report.columns[idxColumn][propArray].splice(i--, 1); intLength--;} //limit reached, start trimming
             } //dedupe and set priority
-            //$scope.report.columns[getIndex($scope.report.columns,'label','Latest')].items.unshift(objItem); $scope.report.columns[getIndex($scope.report.columns,'label','Latest')].priority++;// add latest
             if(propArray=='items'){ $scope.report.columns[idxColumn].priority++;} //column priority
         if(torfRT === false){
             objItem.status=5;
@@ -46,6 +45,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         $scope.report=response; //load any menu options and configs set in the DB that sit outside the report doc, system level
         console.log(response); 
     }); }
+    $scope.clear = function(){ for(var i=0;i<$scope.report.columns.length;i++){ $scope.report.columns[i].items=[]; $scope.report.columns[i].stats=[]; } }
     $scope.loadReport = function(objReport,withData){ FUIAPI.query({a:'loadReport'},function(response){  }); }
     $scope.saveReport = function(objReport,withData){ FUIAPI.post({a:'saveReport',q:$scope.report},function(response){ console.log(response,'response'); }); }
     //manage already loaded item

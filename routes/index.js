@@ -51,6 +51,7 @@ exports.index = function (req, res) {
                     //----====|| NORMALIZE THE MESSAGE ||====----\\
                         objItem.typ='Msg';
                         objItem.text=fnCleanText(objItem.text,{})
+                        objItem.created_at=new Date();
                         //var objLatest = objItem; objLatest.column=4;arrItems.push(objLatest);//add latest
                         //objItem.column=4; arrItems.push(objItem);
                      //END NORMALIZING\\
@@ -59,8 +60,8 @@ exports.index = function (req, res) {
                     //----====|| ADD ANALYSIS TO MESSAGE ||====----\\
                         objItem.analysis={};
                         objItem.analysis.sentiment=sentiment(objItem.text).score;
-                     //END NORMALIZING\\
-                    //#################\\
+                     //END ANALYSIS\\
+                    //##############\\
                      //_____________________________________\\
                     //----====|| SORT INTO COLUMNS ||====----\\
                         //loop through the root level term groups used
