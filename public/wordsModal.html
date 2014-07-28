@@ -6,10 +6,15 @@
       </div>
       <div class="modal-body" >
           <div style="height:300px;width:100%;overflow:scroll;">
-              <tags-input ng-repeat="termSet in report.terms" ng-model="termSet.terms"></tags-input>
+              <div ng-repeat="termSet in report.terms">
+                <input ng-model="termSet.name"></input>
+                <tags-input  ng-model="termSet.terms"></tags-input>
+              </div>
           </div>
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="addSet()">Add Set</button>
+        <button type="button" class="btn btn-default" ng-click="saveSet()">Save</button>
         <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
       </div>
     </div>
