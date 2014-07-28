@@ -47,18 +47,18 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         console.log(response); 
     }); }
     $scope.loadReport = function(objReport,withData){ FUIAPI.query({a:'loadReport'},function(response){  }); }
-    $scope.saveReport = function(objReport,withData){ console.log('saved');;FUIAPI.post({a:'saveReport',q:$scope.report},function(response){ console.log(response,'response'); }); }
+    $scope.saveReport = function(objReport,withData){ FUIAPI.post({a:'saveReport',q:$scope.report},function(response){ console.log(response,'response'); }); }
     //manage already loaded item
     $scope.moveItem = function(objItem,newColumn){}
     $scope.updateNote = function(t){ var objItem = {column:4,text:t.notes,priority:1,typ:'Msg'}; $scope.addItem(objItem);}
     $scope.delItem = function(idItem,idColumn){ $scope.report.columns[getIndex($scope.report.columns,'id',idColumn)].items.splice(getIndex($scope.report.columns.items,'id',idItem), 1);}
     //manage wordsets
     $scope.addSet = function(){ 
-        var newSet = {_id:"",user:"System",name:"New",terms:[]};
+        var newSet = {_id:"",user:"System",name:"New",terms:[]}; //TODO: replace System with Users name
         $scope.report.terms.push(newSet);
         //FUIAPI.query({},function(response){  }); 
     }
-    $scope.saveSet = function(){ FUIAPI.query({},function(response){  }); }
+    $scope.saveSet = function(){ FUIAPI.post({a:'saveTerms',q:$scope.report.terms},function(response){ console.log(response,'response'); }); }
     $scope.loadSet = function(){ FUIAPI.query({},function(response){  }); }
     $scope.delSet = function(){ FUIAPI.query({},function(response){  }); }
     //connect to the websocket
