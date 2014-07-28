@@ -53,6 +53,11 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.updateNote = function(t){ var objItem = {column:4,text:t.notes,priority:1,typ:'Msg'}; $scope.addItem(objItem);}
     $scope.delItem = function(idItem,idColumn){ $scope.report.columns[getIndex($scope.report.columns,'id',idColumn)].items.splice(getIndex($scope.report.columns.items,'id',idItem), 1);}
     //manage wordsets
+    $scope.addSet = function(){ 
+        var newSet = {_id:"",user:"System",name:"New",terms:[]};
+        $scope.report.terms.push(newSet);
+        //FUIAPI.query({},function(response){  }); 
+    }
     $scope.saveSet = function(){ FUIAPI.query({},function(response){  }); }
     $scope.loadSet = function(){ FUIAPI.query({},function(response){  }); }
     $scope.delSet = function(){ FUIAPI.query({},function(response){  }); }
