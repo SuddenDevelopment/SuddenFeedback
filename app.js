@@ -132,19 +132,18 @@ app.post('/fuiapi', function(req, res, next) {
 	  }
 	  if(strAction=='saveReport'){ 
 		var d = req.param('q',null); 
-		  if(strAction=='saveReport'){
 		  	dbReports.update( {_id:d._id},{columns:d.columns},{upsert:true,safe:true},
-			    function(err,data){if (err){
-			    	res.send('error');
-			    }else{
-			    	res.send('success');
-			    }});
-
-		  }
-	  //collection.remove(function(err, result) { if(err) { return console.error(err); } //truncate
-	  //dbOptions.insert(objhere, function(err,docs) { if(err) { return console.error(err); }
+			function(err,data){if (err){res.send('error');}else{res.send('success');}});
       //todo: save to session for server side use
-	};
+	  };
+	  if(strAction=='saveTerms'){ 
+		var d = req.param('q',null); 
+		  	console.log(d);
+		  	for(var i=0; i<d.length;i++){
+			  	dbTerms.update( {_id:d[i].user+':'+d[i].name},{user:d[i].user,name:d[i].name,terms:d[i].terms},{upsert:true,safe:true},
+				function(err,data){if (err){res.send('error');}else{res.send('success');}});
+		  	}
+	  };
 	  //todo: save to session for server side use
 }); });
 
