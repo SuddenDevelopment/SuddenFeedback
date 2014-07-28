@@ -1,1 +1,2 @@
-{ "_id" : "System:ObamaThemes", "user":"System","name" : "ObamaThemes", "terms" : [ "Illuminati", "Hitler", "worst president", "Thanks Obama" ] }
+{ "_id" : "System:ObamaThemes", "user":"System","name" : "ObamaThemes", "terms" : 
+[ {"text":"Illuminati"}, {"text":"Hitler"}, {"text":"worst president"}, {"text":"Thanks Obama"} ] }

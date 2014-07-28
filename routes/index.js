@@ -64,8 +64,10 @@ exports.index = function (req, res) {
                      //_____________________________________\\
                     //----====|| SORT INTO COLUMNS ||====----\\
                         //loop through the root level term groups used
+                        //console.log(req.session.report);
                         for(var i=0;i<req.session.report.terms.length;i++){
-                            if(req.session.report.terms[i].fn=='Filter' && filtered==false){
+                            //if(req.session.report.terms[i].fn=='Filter' && filtered==false){
+                            if(filtered==false){
                                 var strMatch= fnFirstTerm(req.session.report.terms[i].terms,objItem.text);
                                 if(strMatch){
                                     filtered = true;
@@ -108,14 +110,22 @@ exports.index = function (req, res) {
 /* TO BE PULLED INTO OTHER FILES / MODULES  */
 var fnAllTerms = function(arrNeedles,strHaystack){
     arrMatches = [];
-    for(var y=0;y<arrNeedles.length;y++){ if(strHaystack.toLowerCase().indexOf(arrNeedles[y].toLowerCase())!= -1){ arrMatches.push(arrNeedles[y]); } }
+    for(var y=0;y<arrNeedles.length;y++){ 
+        if(arrNeedles[y].hasOwnProperty('text')){strNeedle=arrNeedles[y].text.toLowerCase();}else{strNeedle=arrNeedles[y].toLowerCase();}
+        if(strHaystack.toLowerCase().indexOf(strNeedle)!= -1){ arrMatches.push(strNeedle); } 
+    }
     return arrMatches;
 }
 
 var fnFirstTerm = function(arrNeedles,strHaystack){
+    //console.log(arrNeedles);
     //find the first term that matches and return it, return false if none found.
     var strMatch=false;
-    for(var y=0;y<arrNeedles.length;y++){ if(strMatch===false && strHaystack.toLowerCase().indexOf(arrNeedles[y].toLowerCase())!= -1){ strMatch = arrNeedles[y]; } }
+    for(var y=0;y<arrNeedles.length;y++){ 
+        //console.log(arrNeedles[y]);
+        if(arrNeedles[y].hasOwnProperty('text')){strNeedle=arrNeedles[y].text.toLowerCase();}else{strNeedle=arrNeedles[y].toLowerCase();}
+        if(strMatch===false && strHaystack.toLowerCase().indexOf(strNeedle)!= -1){ strMatch = strNeedle; } 
+    }
     return strMatch;
 };
 
