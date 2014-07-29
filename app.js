@@ -110,42 +110,37 @@ app.post('/fuiapi', function(req, res, next) {
 	var report = {};
 	var d = req.param('q',null); //console.log(d);
 	//res.send(JSON.stringify([{Label:'good'}]));
-	MongoClient.connect(MONGO_URL, function(err, db) {
-	  var dbUsers = db.collection('users');
-	  var dbOptions = db.collection('options');
-	  var dbReports = db.collection('reports');
-	  var dbTerms = db.collection('terms');
 	  
-	  if(strAction=='init'){ 
-	  	//get the report settings
-		 dbReports.findOne({}, function(err, doc){ 
-		 	report=doc;
-		 	 //get the system and logged in users term sets
-		 		 dbTerms.find({user: "System"}).toArray(function(err, results){
-				    //console.log(results); // output all records
-				    report.terms=results;
-				    res.send(report);
-	 		 		req.session.report=report;
-				});
-		 });
-		//get the word sets used
-	  }
-	  if(strAction=='saveReport'){ 
-		var d = req.param('q',null); 
-		  	dbReports.update( {_id:d._id},{columns:d.columns},{upsert:true,safe:true},
+	if(strAction=='init'){ 
+		//get the report settings
+	 dbReports.findOne({}, function(err, doc){ 
+	 	report=doc;
+	 	 //get the system and logged in users term sets
+	 		 dbTerms.find({user: "System"}).toArray(function(err, results){
+			    //console.log(results); // output all records
+			    report.terms=results;
+			    res.send(report);
+			 		req.session.report=report;
+			});
+	 });
+	//get the word sets used
+	}
+	if(strAction=='saveReport'){ 
+	var d = req.param('q',null); 
+	  	dbReports.update( {_id:d._id},{columns:d.columns},{upsert:true,safe:true},
+		function(err,data){if (err){res.send('error');}else{res.send('success');}});
+	//todo: save to session for server side use
+	};
+	if(strAction=='saveTerms'){ 
+	var d = req.param('q',null); 
+	  	//console.log(d);
+	  	for(var i=0; i<d.length;i++){
+		  	dbTerms.update( {_id:d[i].user+':'+d[i].name},{user:d[i].user,name:d[i].name,terms:d[i].terms},{upsert:true,safe:true},
 			function(err,data){if (err){res.send('error');}else{res.send('success');}});
-      //todo: save to session for server side use
-	  };
-	  if(strAction=='saveTerms'){ 
-		var d = req.param('q',null); 
-		  	//console.log(d);
-		  	for(var i=0; i<d.length;i++){
-			  	dbTerms.update( {_id:d[i].user+':'+d[i].name},{user:d[i].user,name:d[i].name,terms:d[i].terms},{upsert:true,safe:true},
-				function(err,data){if (err){res.send('error');}else{res.send('success');}});
-		  	}
-	  };
-	  //todo: save to session for server side use
-}); });
+	  	}
+	};
+	//todo: save to session for server side use
+});
 
 var twitter = require('ntwitter');
 app.get('/auth/twitter/callback', function(req, res, next) {

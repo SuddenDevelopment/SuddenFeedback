@@ -46,6 +46,7 @@ html(ng-app="SuddenFeedbackApp")
                         div(class='isotope-item-urls')
                             a(ng-repeat="url in t.entities.urls" href="{{url.expanded_url}}")
                                 i(class="fa fa-link text-warning")
+                        i(ng-if="t.geo" class="fa fa-map-marker")
                 //////||  stats  ||\\\\\
                 div(class="row" ng-if="column.stats.length" once-class="{'minorheight':column.stats.length}")
                     div(class='isotope-item well well-sm' ng-repeat="(i,t) in column.stats | orderBy:'priority':true track by t.text")
