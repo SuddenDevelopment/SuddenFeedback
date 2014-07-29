@@ -35,7 +35,7 @@ exports.index = function (req, res) {
         twit.verifyCredentials(function (err, data) { /*console.log(err, data); */ });
         
             //twit.stream('statuses/filter', {track: req.session.arrTerms}, function (stream) {
-            twit.stream('statuses/filter', {track: ['obama']}, function (stream) {
+            twit.stream('statuses/filter', {track: ['miley','beiber','kanye','Taylor Swift','Katy Perry','Beyonce']}, function (stream) {
                 stream.on('data', function (objItem) {
                     var arrItems=[];
                     var torfSend = true;

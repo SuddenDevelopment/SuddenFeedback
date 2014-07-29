@@ -18,17 +18,17 @@ full traffic save + accelerated playback, extra $$
 -grunt?, scheduling for automated reporting.
 
 //////||  INTERFACE  ||\\\\\\settings menu 
-https://github.com/tadeuszwojcik/angular-once
+add a report browser, change between reports
 where are the pretty charts that are always moving?
 items modal template
 	delete item
 	move item to another column, including its stats
 	user defined stats to include, checkboxes.
 http://ngmodules.org/modules/AngularJS-Toaster
-dyanmic item backgrounds
+dyanmic item backgrounds, column backgrounds with transparent items
 -horizontal scroll through columns
 https://docs.angularjs.org/api/ng/service/$anchorScroll
-dont update a column on hover
+pause, buffer
 http://codepen.io/dmac37/pen/cfArp
 http://css-tricks.com/understanding-border-image/
 http://ngmodules.org/modules/angular-progress-arc
