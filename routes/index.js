@@ -85,6 +85,7 @@ exports.index = function (req, res) {
                             else if(req.session.report.columns[i].analysis=='sentiment=positive' && !objItem.analysis.filtered && objItem.analysis.sentiment > 0){ objItem.column=req.session.report.columns[i].id; }
                             else if(req.session.report.columns[i].analysis=='sentiment=negative' && !objItem.analysis.filtered && objItem.analysis.sentiment < 0){ objItem.column=req.session.report.columns[i].id; }
                             else if(req.session.report.columns[i].analysis=='sentiment=neutral' && !objItem.analysis.filtered && objItem.analysis.sentiment == 0){ objItem.column=req.session.report.columns[i].id; }
+                            else if(req.session.report.columns[i].show=='ColumnTitle' && objItem.text.toLowerCase().indexOf(req.session.report.columns[i].label.toLowerCase())!= -1){ objItem.column=req.session.report.columns[i].id; }
                         }
                      //END COLUMN SORTING\\
                     //####################\\
