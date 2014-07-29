@@ -24,7 +24,7 @@ items modal template
 	move item to another column, including its stats
 	user defined stats to include, checkboxes.
 http://ngmodules.org/modules/AngularJS-Toaster
--user options, configurable columns, how many and what’s in them
+dyanmic item backgrounds
 -horizontal scroll through columns
 https://docs.angularjs.org/api/ng/service/$anchorScroll
 dont update a column on hover

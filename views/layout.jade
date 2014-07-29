@@ -17,13 +17,16 @@ html(ng-app="SuddenFeedbackApp")
         block content
         a(href='/auth/twitter') login to twitter. 
         span(bs-modal="wmodal" data-template="wordsModal.html") words 
-        span(bs-modal="rmodal" data-template="reportModal.html") report
+        span(bs-modal="rmodal" data-template="reportModal.html") report 
+        i(class="fa fa-pause" ng-click="pause()")
         div(class="content container-fluid")
             //////||  columns  ||\\\\\
             div(ng-repeat="(index,column) in report.columns | orderBy:'priority':true" ng-if="column.width>0" id="{{index}}" class="isotope-container col-lg-{{column.width}}")
-                div(class="panel panel-primary" bs-modal="cmodal" data-template="colModal.html") 
-                        div(class="col-lg-12 panel-heading"){{column.label}}
-                            div(style="float:right;") {{column.priority}}
+                div(class="panel panel-primary" bs-modal="cmodal" data-template="colModal.html" style="margin-bottom:0;") 
+                        div(class="row panel-heading")
+                            div(class="col-lg-4 text-left") {{column.label}}
+                            div(class="col-lg-4 text-center")
+                            div(class="col-lg-4 text-right text-info") {{column.priority}}
                 div(class="row" ng-class="{'majorheight':column.stats.length}")    
                     //////||  items  ||\\\\\
                     div(class='isotope-item well well-sm' ng-repeat="(i,t) in column.items | orderBy:column.sort:true track by t.text" ng-class="{'new':t.status,'updated':t.updated}" bs-modal="imodal" data-template="itemModal.html")
