@@ -18,6 +18,7 @@ full traffic save + accelerated playback, extra $$
 -grunt?, scheduling for automated reporting.
 
 //////||  INTERFACE  ||\\\\\\settings menu 
+https://github.com/tadeuszwojcik/angular-once
 where are the pretty charts that are always moving?
 items modal template
 	delete item

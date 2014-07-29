@@ -12,6 +12,7 @@ html(ng-app="SuddenFeedbackApp")
         script(src='/js/angular-strap.min.js')
         script(src='/js/angular-strap.tpl.min.js')
         script(src='/js/ng-tags-input.min.js')
+        script(src='/js/once.js')
         script(src='/js/engine.js',type='text/javascript')
     body(ng-controller='FUI' ng-init="init()")
         block content
@@ -21,7 +22,7 @@ html(ng-app="SuddenFeedbackApp")
         i(class="fa fa-pause" ng-click="pause()")
         div(class="content container-fluid")
             //////||  columns  ||\\\\\
-            div(ng-repeat="(index,column) in report.columns | orderBy:'priority':true" ng-if="column.width>0" id="{{index}}" class="isotope-container col-lg-{{column.width}}")
+            div(ng-repeat="(index,column) in report.columns | orderBy:'priority':true" once-if="column.width>0" id="{{index}}" class="isotope-container col-lg-{{column.width}}")
                 div(class="panel panel-primary" bs-modal="cmodal" data-template="colModal.html" style="margin-bottom:0;") 
                         div(class="row panel-heading")
                             div(class="col-lg-4 text-left") {{column.label}}
@@ -30,32 +31,31 @@ html(ng-app="SuddenFeedbackApp")
                 div(class="row" ng-class="{'majorheight':column.stats.length}")    
                     //////||  items  ||\\\\\
                     div(class='isotope-item well well-sm' ng-repeat="(i,t) in column.items | orderBy:column.sort:true track by t.text" ng-class="{'new':t.status,'updated':t.updated}" bs-modal="imodal" data-template="itemModal.html")
-                        div(class="media" ng-if="t.entities.media")
-                            img(ng-repeat="i in t.entities.media" ng-src="{{i.media_url}}")
+                        div(class="media" once-if="t.entities.media")
+                            img(ng-repeat="i in t.entities.media" once-src="i.media_url")
                         div(class='isotope-item-content' )
-                            i(ng-if="t.typ=='User'" class="fa fa-user")
-                            i(ng-if="t.typ=='Link'" class="fa fa-link")
-                            i(ng-if="t.typ=='Tag'" class="fa fa-tag")
-                            i(ng-if="t.typ=='Mention'" class="fa fa-hand-o-right")
-                            i(ng-if="t.typ=='Symbol'" class="fa fa-usd")
-                            &nbsp;{{t.text}}
+                            //todo: convert to a ingle ng-class
+                            i(once-if="t.typ=='User'" class="fa fa-user")
+                            i(once-if="t.typ=='Link'" class="fa fa-link")
+                            i(once-if="t.typ=='Tag'" class="fa fa-tag")
+                            i(once-if="t.typ=='Mention'" class="fa fa-hand-o-right")
+                            i(once-if="t.typ=='Symbol'" class="fa fa-usd")
+                            &nbsp;
+                            span(once-text="t.text")
                         div(class='isotope-item-priority text-info'){{t.priority}}
                         div(class='isotope-item-urls')
                             a(ng-repeat="url in t.entities.urls" href="{{url.expanded_url}}")
                                 i(class="fa fa-link text-warning")
                 //////||  stats  ||\\\\\
-                div(class="row" ng-if="column.stats.length" ng-class="{'minorheight':column.stats.length}")
+                div(class="row" ng-if="column.stats.length" once-class="{'minorheight':column.stats.length}")
                     div(class='isotope-item well well-sm' ng-repeat="(i,t) in column.stats | orderBy:'priority':true track by t.text")
-                        div(class="media" ng-if="t.entities.media")
-                            img(ng-repeat="i in t.entities.media" ng-src="{{i.media_url}}")
                         div(class='isotope-item-priority text-info text-right'){{t.priority}}
-                        div(class='isotope-item-urls')
-                            a(ng-repeat="url in t.entities.urls" href="{{url.expanded_url}}")
-                                i(class="fa fa-link text-warning")
                         div(class='isotope-item-content')
-                            i(ng-if="t.typ=='User'" class="fa fa-user")
-                            i(ng-if="t.typ=='Link'" class="fa fa-link")
-                            i(ng-if="t.typ=='Tag'" class="fa fa-tag")
-                            i(ng-if="t.typ=='Mention'" class="fa fa-hand-o-right")
-                            i(ng-if="t.typ=='Symbol'" class="fa fa-usd")
-                            &nbsp;{{t.text}}
+                            //todo: convert to a ingle ng-class
+                            i(once-if="t.typ=='User'" class="fa fa-user")
+                            i(once-if="t.typ=='Link'" class="fa fa-link")
+                            i(once-if="t.typ=='Tag'" class="fa fa-tag")
+                            i(once-if="t.typ=='Mention'" class="fa fa-hand-o-right")
+                            i(once-if="t.typ=='Symbol'" class="fa fa-usd")
+                            &nbsp;
+                            span(once-text="t.text")
