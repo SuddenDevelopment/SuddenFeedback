@@ -44,6 +44,7 @@ NLP distance from messages / message clasifications
 spelling
 grammar,
 transalte
+n-gram
 
 //////||  WORDSETS  ||\\\\\\
 When a wordset is saved, apply it to the existing data to re-sort.

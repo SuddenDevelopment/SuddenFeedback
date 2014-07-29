@@ -51,7 +51,7 @@ exports.index = function (req, res) {
                     //----====|| NORMALIZE THE MESSAGE ||====----\\
                         objItem.typ='Msg';
                         objItem.text=fnCleanText(objItem.text,{})
-                        objItem.created_at=new Date();
+                        objItem.created_at=(new Date).getTime();
                         //var objLatest = objItem; objLatest.column=4;arrItems.push(objLatest);//add latest
                         //objItem.column=4; arrItems.push(objItem);
                      //END NORMALIZING\\
