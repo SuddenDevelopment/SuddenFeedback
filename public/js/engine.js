@@ -59,6 +59,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         //FUIAPI.query({},function(response){  }); 
     }
     $scope.addCol = function(){ $scope.report.columns.push({label:'new',limit:100,sort:'priority',width:1,items:[],stats:[]}); }
+    $scope.delCol = function(){  }
     $scope.saveSet = function(){ FUIAPI.post({a:'saveTerms',q:$scope.report.terms},function(response){ console.log(response,'response'); }); }
     $scope.loadSet = function(){ FUIAPI.query({},function(response){  }); }
     $scope.delSet = function(){ FUIAPI.query({},function(response){  }); }
