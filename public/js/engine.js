@@ -21,19 +21,20 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         var intLength=$scope.report.columns[idxColumn][propArray].length;
         var arrDelete=[];
         //||||  COLUMN+ARRAY LOOP  ||||\\
+        //this is a one time loop through a collection when touched, do everything possible in the 1 loop.
         if(!objItem.priority){objItem.priority=1;} var torfRT=false; //set default priority, much of the system requires priority for realtime sorting
-            for(i=0;i<intLength;i++){
-                //this will be perfect as an optional way to keep a rolling relevent window
-                //if($scope.report.columns[idxColumn][propArray][i].text!=objItem.text){ $scope.report.columns[idxColumn][propArray][i].priority--; } //decrease the priority on non matching items without a separate loop.
-                if($scope.report.columns[idxColumn][propArray][i].status > 0){$scope.report.columns[idxColumn][propArray][i].status--;}else{$scope.report.columns[idxColumn][propArray][i].status=false;}   
-                if($scope.report.columns[idxColumn][propArray][i].updated > 0){$scope.report.columns[idxColumn][propArray][i].updated--;}else{$scope.report.columns[idxColumn][propArray][i].updated=false;}          
-                if(torfRT===false && $scope.report.columns[idxColumn][propArray][i].text==objItem.text){
-                    if(objItem.priority < 2 || objItem.priority <= $scope.report.columns[idxColumn][propArray][i].priority){ $scope.report.columns[idxColumn][propArray][i].priority++; torfRT = true; } //cumulative priority
-                    else{$scope.report.columns[idxColumn][propArray][i].priority = objItem.priority; torfRT = true;} //replacing priority
-                    if($scope.report.columns[idxColumn][propArray][i].status==false){$scope.report.columns[idxColumn][propArray][i].updated=10;}
+
+            _.forEach($scope.report.columns[idxColumn][propArray],function(objI){
+                if(objI.status > 0){objI.status--;}else{objI.status=false;} //status decay, connected to border colors
+                if(objI.updated > 0){objI.updated--;}else{objI.updated=false;} //status decay, connected to border colors   
+                if(torfRT===false && objI.text==objItem.text){
+                    if(objItem.priority < 2 || objItem.priority <= objI.priority){ objI.priority++; torfRT = true; } //cumulative priority
+                    else{objI.priority = objItem.priority; torfRT = true;} //replacing priority
+                    if(objI.status==false){objI.updated=10;}
                 }
-                if(intLength>$scope.report.columns[idxColumn].limit && $scope.report.columns[idxColumn][propArray][i].position>$scope.report.columns[idxColumn].limit){ $scope.report.columns[idxColumn][propArray].splice(i--, 1); intLength--;} //limit reached, start trimming
-            } //dedupe and set priority
+                if(intLength>$scope.report.columns[idxColumn].limit && objI.position>$scope.report.columns[idxColumn].limit){ $scope.report.columns[idxColumn][propArray].splice(i--, 1); intLength--;} //limit reached, start trimming            
+            });
+
             if(propArray=='items'){ $scope.report.columns[idxColumn].priority++;} //column priority
         if(torfRT === false){
             objItem.status=5;
