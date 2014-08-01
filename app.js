@@ -117,18 +117,19 @@ app.post('/fuiapi', function(req, res, next) {
 	 dbReports.findOne({}, function(err, doc){ 
 	 	report=doc;
 	 	 //get the system and logged in users term sets
-	 		 dbTerms.find({user: "System"}).toArray(function(err, results){
+	 		 //dbTerms.find({user: "System"}).toArray(function(err, results){
 			    //console.log(results); // output all records
-			    report.terms=results;
+			    //report.terms=results;
+			    
 			    res.send(report);
 			 	req.session.report=report;
-			});
+			//});
 	 });
 	//get the word sets used
 	}
 	if(strAction=='saveReport'){ 
 	var d = req.param('q',null); 
-	  	dbReports.update( {_id:d._id},{columns:d.columns},{upsert:true,safe:true},
+	  	dbReports.update( {_id:d._id},{columns:d.columns,terms:d.terms},{upsert:true,safe:true},
 		function(err,data){if (err){res.send('error');}else{res.send('success');}});
 	//todo: save to session for server side use
 	};

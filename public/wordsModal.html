@@ -8,6 +8,7 @@
           <div style="height:300px;width:100%;overflow:scroll;">
               <div ng-repeat="termSet in report.terms">
                 <input ng-model="termSet.name"></input>
+                <select ng-model="column.fn" ng-options="wordFns.fn for f in wordFns"></select></li>
                 <tags-input  ng-model="termSet.terms"></tags-input>
               </div>
           </div>
