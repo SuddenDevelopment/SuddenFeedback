@@ -32,7 +32,7 @@ html(ng-app="SuddenFeedbackApp")
                             div(class="col-lg-4 text-right text-info") {{column.priority}}
                 div(class="row" ng-class="{'majorheight':column.stats.length}")    
                     //////||  items  ||\\\\\
-                    div(class='isotope-item well well-sm' ng-repeat="(i,t) in column.items | orderBy:column.sort:true | limitTo:50 track by t.text" ng-class="{'new':t.status<0,'updated':t.status>0}" bs-modal="imodal" data-template="itemModal.html")
+                    div(class='isotope-item well well-sm' ng-repeat="(i,t) in column.items | orderBy:column.sort:true | limitTo:column.limit track by t.text" ng-class="{'new':t.status<0,'updated':t.status>0}" bs-modal="imodal" data-template="itemModal.html")
                         div(class="media" once-if="t.entities.media")
                             img(ng-repeat="i in t.entities.media" once-src="i.media_url")
                         div(class='isotope-item-content' )
@@ -51,7 +51,7 @@ html(ng-app="SuddenFeedbackApp")
                         i(ng-if="t.geo" class="fa fa-map-marker")
                 //////||  stats  ||\\\\\
                 div(class="row" ng-if="column.stats.length" once-class="{'minorheight':column.stats.length}")
-                    div(class='isotope-item well well-sm' ng-repeat="(i,t) in column.stats | orderBy:'priority':true | limitTo:25 track by t.text")
+                    div(class='isotope-item well well-sm' ng-repeat="(i,t) in column.stats | orderBy:'priority':true | limitTo:column.limit/4 track by t.text")
                         div(class='isotope-item-priority text-info text-right'){{t.priority}}
                         div(class='isotope-item-content')
                             //todo: convert to a ingle ng-class

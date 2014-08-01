@@ -34,7 +34,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
                 if(intLength>$scope.report.columns[idxColumn].limit && objI.position>$scope.report.columns[idxColumn].limit){ $scope.report.columns[idxColumn][propArray].splice(i--, 1); intLength--;} //limit reached, start trimming            
             });
 
-            if(propArray=='items'){ $scope.report.columns[idxColumn].priority++;} //column priority
+            if(propArray=='items'){ $scope.report.columns[idxColumn].priority++; $scope.report.priority++; } //column priority, report priority used for column %
         if(torfRT === false){
             objItem.status= -5; //new item status count
             $scope.report.columns[idxColumn][propArray].unshift(objItem); 
@@ -43,6 +43,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     //menu options, initial setup, either loaded from a previous setup, or defaults
     $scope.loadOptions = function(){ FUIAPI.post({a:'init'},function(response){ 
             $scope.report=response; //load any menu options and configs set in the DB that sit outside the report doc, system level
+            if(!$scope.report.priority){$scope.report.priority=0;}
             console.log(response); 
         }); 
     }
