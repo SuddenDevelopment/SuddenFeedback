@@ -2,7 +2,7 @@
 /**
  * Module dependencies.
  */
-
+var _ = require('lodash');
 var express = require('express');
 var routes = require('./routes');
 var user = require('./routes/user');
@@ -15,7 +15,8 @@ var fs = require('fs');
 
 var app = express();
 
-var default_report = JSON.parse(fs.readFileSync('default_report.json'));
+//this is a good ides, allowing mongodb to be optional -ant
+//var default_report = JSON.parse(fs.readFileSync('default_report.json'));
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -120,7 +121,7 @@ app.post('/fuiapi', function(req, res, next) {
 			    //console.log(results); // output all records
 			    report.terms=results;
 			    res.send(report);
-			 		req.session.report=report;
+			 	req.session.report=report;
 			});
 	 });
 	//get the word sets used
@@ -165,10 +166,9 @@ app.get('/auth/twitter/callback', function(req, res, next) {
 						access_token_secret: req.session.oauth.access_token_secret
 					});
 					twit.verifyCredentials(function(err, data) {
-							console.log(err, data);
-							res.redirect('/');
-						});
-
+						console.log(err, data);
+						res.redirect('/');
+					});
 				}
 			}
 		);

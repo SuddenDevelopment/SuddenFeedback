@@ -5,6 +5,7 @@ html(ng-app="SuddenFeedbackApp")
         link(rel='stylesheet', href='/css/bootstrap.css')
         link(rel='stylesheet', href='/css/ng-tags-input.min.css')
         link(rel='stylesheet', href='/css/style.css')
+        script(src='/js/lodash.min.js')
         script(src='/js/angular.js')
         script(src='/js/angular-resource.js')
         script(src='/js/angular-sanitize.js')
@@ -19,7 +20,7 @@ html(ng-app="SuddenFeedbackApp")
         a(href='/auth/twitter') login to twitter. 
         span(bs-modal="wmodal" data-template="wordsModal.html") words 
         span(bs-modal="rmodal" data-template="reportModal.html") report 
-        span(bs-modal="bmodal" data-template="browseModal.html") browse 
+        span(bs-modal="bmodal" data-template="buildModal.html") build 
         i(class="fa fa-pause" ng-click="pause()")
         div(class="content container-fluid")
             //////||  columns  ||\\\\\
