@@ -19,6 +19,8 @@ full traffic save + accelerated playback, extra $$
 
 //////||  INTERFACE  ||\\\\\\settings menu 
 add a report browser, change between reports
+click on stats to make them terms in sets?
+auto branch, or update columns based on content in others columns
 where are the pretty charts that are always moving?
 items modal template
 	delete item
