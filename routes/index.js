@@ -11,6 +11,7 @@ var arrWordSets=[
 /*
  * GET home page.
  */
+var _ = require('lodash');
 var twitter = require('ntwitter');
 var io = require('socket.io').listen(3001, {log: false});
 var express = require('express');
@@ -23,17 +24,17 @@ exports.index = function (req, res) {
 
     //console.log(req.session.term);
     res.render('index', { title: 'SuddenFeedback' });
-    if (req.session.oauth) {
-        var twit = new twitter({
-            consumer_key: "9kFmLFgQw25ls1lvY4VLHCpDN",
-            consumer_secret: "qyw9KEhgqMBSXvEZJhwLXvUyMiFtRKbArPSxxW1b97V0A6qUT3",
-            access_token_key: req.session.oauth.access_token,
-            access_token_secret: req.session.oauth.access_token_secret
-        });
-
-
-        twit.verifyCredentials(function (err, data) { /*console.log(err, data); */ });
-        
+    if (req.session.oauth){
+        console.log(req.session.twitData);
+        if(!req.session.twitData){
+            var twit = new twitter({
+                consumer_key: "9kFmLFgQw25ls1lvY4VLHCpDN",
+                consumer_secret: "qyw9KEhgqMBSXvEZJhwLXvUyMiFtRKbArPSxxW1b97V0A6qUT3",
+                access_token_key: req.session.oauth.access_token,
+                access_token_secret: req.session.oauth.access_token_secret
+            });
+            twit.verifyCredentials(function (err, data) { req.session.twitData=data.id; });
+        }
             //twit.stream('statuses/filter', {track: req.session.arrTerms}, function (stream) {
             twit.stream('statuses/filter', {track: ['miley','beiber','kanye','Taylor Swift','Katy Perry','Beyonce']}, function (stream) {
                 stream.on('data', function (objItem) {
