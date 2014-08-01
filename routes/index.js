@@ -40,7 +40,7 @@ exports.index = function (req, res) {
                     var arrItems=[];
                     var torfSend = true;
                     var filtered = false;
-                    if(torfSend===true){
+                    if(req.session.report && torfSend===true){
                         objItem.priority= 1;
                         if(objItem.retweeted_status !== undefined){if(objItem.retweeted_status.retweet_count > 0){ 
                             objItem.priority += objItem.retweeted_status.retweet_count;
@@ -66,6 +66,7 @@ exports.index = function (req, res) {
                     //----====|| SORT INTO COLUMNS ||====----\\
                         //loop through the root level term groups used
                         //console.log(req.session.report);
+                        
                         for(var i=0;i<req.session.report.terms.length;i++){
                             //if(req.session.report.terms[i].fn=='Filter' && filtered==false){
                             if(filtered==false){
