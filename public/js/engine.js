@@ -43,7 +43,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     //menu options, initial setup, either loaded from a previous setup, or defaults
     $scope.loadOptions = function(){ FUIAPI.post({a:'init'},function(response){ 
             $scope.report=response; //load any menu options and configs set in the DB that sit outside the report doc, system level
-            if(!$scope.report.priority){$scope.report.priority=0;}
+            if(!$scope.report.priority){$scope.report.priority=0; _.forEach($scope.report.columns,function(objC){$scope.report.priority+=objC.priority;});}
             console.log(response); 
         }); 
     }
