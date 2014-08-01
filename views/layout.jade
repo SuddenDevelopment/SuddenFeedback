@@ -32,7 +32,7 @@ html(ng-app="SuddenFeedbackApp")
                             div(class="col-lg-4 text-right text-info") {{column.priority}}
                 div(class="row" ng-class="{'majorheight':column.stats.length}")    
                     //////||  items  ||\\\\\
-                    div(class='isotope-item well well-sm' ng-repeat="(i,t) in column.items | orderBy:column.sort:true track by t.text" ng-class="{'new':t.status,'updated':t.updated}" bs-modal="imodal" data-template="itemModal.html")
+                    div(class='isotope-item well well-sm' ng-repeat="(i,t) in column.items | orderBy:column.sort:true track by t.text" ng-class="{'new':t.status<0,'updated':t.status>0}" bs-modal="imodal" data-template="itemModal.html")
                         div(class="media" once-if="t.entities.media")
                             img(ng-repeat="i in t.entities.media" once-src="i.media_url")
                         div(class='isotope-item-content' )

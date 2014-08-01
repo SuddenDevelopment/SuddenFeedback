@@ -25,19 +25,18 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         if(!objItem.priority){objItem.priority=1;} var torfRT=false; //set default priority, much of the system requires priority for realtime sorting
 
             _.forEach($scope.report.columns[idxColumn][propArray],function(objI){
-                if(objI.status > 0){objI.status--;}else{objI.status=false;} //status decay, connected to border colors
-                if(objI.updated > 0){objI.updated--;}else{objI.updated=false;} //status decay, connected to border colors   
+                if(objI.status > 0){objI.status--;}else if(objI.status < 0){objI.status++;}else{objI.status=0;} //status decay, connected to border colors  
                 if(torfRT===false && objI.text==objItem.text){
                     if(objItem.priority < 2 || objItem.priority <= objI.priority){ objI.priority++; torfRT = true; } //cumulative priority
                     else{objI.priority = objItem.priority; torfRT = true;} //replacing priority
-                    if(objI.status==false){objI.updated=10;}
+                    if(objI.status===0){objI.status=10;} // it exists and has decayed to 0 already, so it's an update
                 }
                 if(intLength>$scope.report.columns[idxColumn].limit && objI.position>$scope.report.columns[idxColumn].limit){ $scope.report.columns[idxColumn][propArray].splice(i--, 1); intLength--;} //limit reached, start trimming            
             });
 
             if(propArray=='items'){ $scope.report.columns[idxColumn].priority++;} //column priority
         if(torfRT === false){
-            objItem.status=5;
+            objItem.status= -5; //new item status count
             $scope.report.columns[idxColumn][propArray].unshift(objItem); 
         } //add
     }
