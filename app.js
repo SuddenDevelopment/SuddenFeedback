@@ -99,17 +99,6 @@ MongoClient.connect(MONGO_URL, function(err, db) {
 	  }
 });
 
-/*
-app.post('/fuiapi', function(req, res){
-  var column = req.param('column', null);
-  var terms = req.param('colTerms', null);  // second parameter is default
-
-  //console.log(terms);
-if(req.session.arrTerms == undefined){req.session.arrTerms=[terms];}else{req.session.arrTerms.push(terms);}
-  res.redirect('back');
-  //console.log(email);
-});
-*/
 app.get('/auth/twitter', function(req, res) {
 	oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results) {
 		if (error) {
@@ -134,19 +123,19 @@ app.post('/fuiapi', function(req, res, next) {
 	//res.send(JSON.stringify([{Label:'good'}]));
 	  
 	if(strAction=='init'){ 
-		//get the report settings
-	 dbReports.findOne({}, function(err, doc){ 
-	 	var report=doc;
-	 	share.set(report,'reports',req.session.uuid);
+		//get the report settings, if multiple grab the users most recent
+	 dbReports.findOne({}, function(err, report){ 
+	 	//var report=doc;
+	 	share.set(report,'report',req.session.uuid);
 	 	 //get the system and logged in users term sets
 	 		 // I THINK THIS DELAY IS JUST ALLOWING ENOUGH TIME FOR THE SESSION TO B SET, IT'S NOT WORKING WITHOUT IT.
-	 		 dbTerms.find({user: "System"}).toArray(function(err, results){
+	 		 //dbTerms.find({user: "System"}).toArray(function(err, results){
 			    //console.log('terms',results); // output all records
 			    //report.terms=results;
-			    share.set(results,'terms',req.session.uuid);
+			    //share.set(results,'terms',req.session.uuid);
 			    res.send(report);
-			 	req.session.report=report;
-			});
+			 	//req.session.report=report;
+			//});
 	 });
 	//get the word sets used
 	}
