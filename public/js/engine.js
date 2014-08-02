@@ -11,7 +11,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.widths=[{name:'skinny',width:1},{name:'1/6 width',width:2} ,{name:'1/4 width',width:3} ,{name:'1/3 width',width:4} ,{name:'5/12 width',width:5} ,{name:'1/2 width',width:6} ,{name:'7/12 width',width:7} ,{name:'2/3 width',width:8} ,{name:'3/4 width',width:9} ,{name:'5/6 width',width:10} ,{name:'11/12 width',width:11} ,{name:'full width',width:12} ];
     $scope.sorts=[{name:'priority',sort:'priority'},{name:'age',sort:'id'},{name:'username',sort:'user.screen_name'}];
     $scope.limits=[{limit:25},{limit:50},{limit:100},{limit:250},{limit:500},{limit:1000},{limit:10000}];
-    $scope.wordFors=[{fn:'Find'},{fn:'Filter'},{fn:'Track'}];
+    $scope.wordFns=[{fn:'Find'},{fn:'Filter'},{fn:'Track'}];
     //create the master object
     //manage individual items from the websocket
     $scope.addItem = function(objItem){ 

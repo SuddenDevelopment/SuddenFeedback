@@ -117,13 +117,13 @@ app.post('/fuiapi', function(req, res, next) {
 	 dbReports.findOne({}, function(err, doc){ 
 	 	report=doc;
 	 	 //get the system and logged in users term sets
-	 		 //dbTerms.find({user: "System"}).toArray(function(err, results){
+	 		 // I THINK THIS DELAY IS JUST ALLOWING ENOUGH TIME FOR THE SESSION TO B SET, IT'S NOT WORKING WITHOUT IT.
+	 		 dbTerms.find({user: "System"}).toArray(function(err, results){
 			    //console.log(results); // output all records
 			    //report.terms=results;
-			    
 			    res.send(report);
 			 	req.session.report=report;
-			//});
+			});
 	 });
 	//get the word sets used
 	}
