@@ -15,9 +15,7 @@ var torfSentiment = false;
 var share = null;
 var uuid = require('node-uuid');
 
-exports.setShare = function(obj) {
-    share = obj;
-}
+exports.setShare = function(obj) { share = obj; }
 
 exports.index = function (req, res) {
 
@@ -53,13 +51,14 @@ exports.index = function (req, res) {
         }
             //get the terms from the report used to track. Set in the report, will concat all terms that havf Fn==Find
             var terms2Track = [];
-            var userTerms = share.get('terms',req.session.uuid);
-            _.forEach(req.session.report.terms,function(objSet){
+            //var userTerms = share.get('terms',req.session.uuid);
+            var objReport = share.get('report',req.session.uuid);
+            _.forEach(objReport.terms,function(objSet){
                 if(objSet.fn=='Find'){ _.forEach(objSet.terms,function(objTerm){ terms2Track.push(objTerm.text.replace('-',' ')); }); }
             });
             
             //determine if sentiment analysis is needed, probably will be an array of analysis to run instead f individual torfs
-            _.forEach(req.session.report.columns,function(objCol){ if(!torfSentiment && objCol.analysis && objCol.analysis.toLowerCase().indexOf('sentiment')!= -1){ torfSentiment=true; }});
+            _.forEach(objReport.columns,function(objCol){ if(!torfSentiment && objCol.analysis && objCol.analysis.toLowerCase().indexOf('sentiment')!= -1){ torfSentiment=true; }});
 
             // console.log(terms2Track);
             twit.stream('statuses/filter', {track: terms2Track}, function (stream) {
@@ -73,7 +72,7 @@ exports.index = function (req, res) {
                     var torfSend = true;
                     var filtered = false;
                     //console.log(req.session.report);
-                    if(req.session.report && torfSend===true){
+                    if(objReport && torfSend===true){
                         objItem.priority= 1;
                         if(objItem.retweeted_status !== undefined){if(objItem.retweeted_status.retweet_count > 0){ 
                             objItem.priority += objItem.retweeted_status.retweet_count;
@@ -101,7 +100,7 @@ exports.index = function (req, res) {
                         //console.log(req.session.report.terms);
 
                         //Global Filter
-                        _.forEach(req.session.report.terms,function(objSet){ if(filtered==false && objSet.fn=='Filter'){ 
+                        _.forEach(objReport.terms,function(objSet){ if(filtered==false && objSet.fn=='Filter'){ 
                             var strMatch= fnFirstTerm(objSet.terms,objItem.text);
                             if(strMatch){ filtered = true; objItem.analysis.filtered=strMatch; };
                          } });
@@ -109,13 +108,13 @@ exports.index = function (req, res) {
                         //loop through the column level term groups used
 
                         //go through columns in order, col order matters for sorting, some items will pass through and add to multiple aolumns, default is to stop when a col is found
-                        for(i=0;i<req.session.report.columns.length;i++){
-                            if(req.session.report.columns[i].show.toLowerCase()=='notes' && objItem.analysis.filtered){ arrItems.push({column:req.session.report.columns[i].id,typ:'Msg',text:'filtered: '+objItem.analysis.filtered }); }
-                            else if(req.session.report.columns[i].analysis=='sentiment=positive' && !objItem.analysis.filtered && objItem.analysis.sentiment > 0){ objItem.column=req.session.report.columns[i].id; }
-                            else if(req.session.report.columns[i].analysis=='sentiment=negative' && !objItem.analysis.filtered && objItem.analysis.sentiment < 0){ objItem.column=req.session.report.columns[i].id; }
-                            else if(req.session.report.columns[i].analysis=='sentiment=neutral' && !objItem.analysis.filtered && objItem.analysis.sentiment == 0){ objItem.column=req.session.report.columns[i].id; }
-                            else if(req.session.report.columns[i].show=='ColumnTitle' && objItem.text.toLowerCase().indexOf(req.session.report.columns[i].label.toLowerCase())!= -1){ 
-                                if(objItem.analysis.filtered){ arrItems.push({column:req.session.report.columns[i].id,typ:'Tag',text:'filtered: '+objItem.analysis.filtered }); }else{objItem.column=req.session.report.columns[i].id;}
+                        for(i=0;i<objReport.columns.length;i++){
+                            if(objReport.columns[i].show.toLowerCase()=='notes' && objItem.analysis.filtered){ arrItems.push({column:objReport.columns[i].id,typ:'Msg',text:'filtered: '+objItem.analysis.filtered }); }
+                            else if(objReport.columns[i].analysis=='sentiment=positive' && !objItem.analysis.filtered && objItem.analysis.sentiment > 0){ objItem.column=objReport.columns[i].id; }
+                            else if(objReport.columns[i].analysis=='sentiment=negative' && !objItem.analysis.filtered && objItem.analysis.sentiment < 0){ objItem.column=objReport.columns[i].id; }
+                            else if(objReport.columns[i].analysis=='sentiment=neutral' && !objItem.analysis.filtered && objItem.analysis.sentiment == 0){ objItem.column=objReport.columns[i].id; }
+                            else if(objReport.columns[i].show=='ColumnTitle' && objItem.text.toLowerCase().indexOf(objReport.columns[i].label.toLowerCase())!= -1){ 
+                                if(objItem.analysis.filtered){ arrItems.push({column:objReport.columns[i].id,typ:'Tag',text:'filtered: '+objItem.analysis.filtered }); }else{objItem.column=objReport.columns[i].id;}
                             }
                         }
                      //END COLUMN SORTING\\
