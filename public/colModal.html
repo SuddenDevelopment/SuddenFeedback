@@ -11,6 +11,7 @@
               <li>priority: {{column.priority}}</li>
               <li>label: {{column.label}}  <input ng-model="column.label" /></li>
               <li>source: {{column.source}}</li>
+              <li>show: {{column.show}} <select ng-model="column.show" ng-options="show.name as show.name for show in shows"></select></li>
                <li>sort: {{column.sort}} <select ng-model="column.sort" ng-options="sort.sort as sort.name for sort in sorts"></select></li>
               <li>analysis: {{column.analysis}}</li>
               <li>limit: {{column.limit}} <select ng-model="column.limit" ng-options="limit.limit as limit.limit for limit in limits"></select></li>
@@ -19,6 +20,7 @@
           </div>
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="delCol(column.id)">Remove</button>
         <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
       </div>
     </div>
