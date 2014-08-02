@@ -12,19 +12,42 @@ app.use(express.cookieParser('this is just SALT in a wound'));
 app.use(express.session({secret: "this is just SALT in a wound"}));
 var sentiment = require('sentiment');
 var torfSentiment = false;
+var share = null;
+var uuid = require('node-uuid');
+
+exports.setShare = function(obj) {
+    share = obj;
+}
+
 exports.index = function (req, res) {
     //console.log(req.session.term);
+    // The first time a user visits we give them a unique ID to track them with
+    if(!req.session.uuid) {
+        req.session.uuid = uuid.v4();
+    }
+
     res.render('index', { title: 'SuddenFeedback' });
-    if (req.session.oauth){
+    
+    var oauth = share.get('oauth', req.session.uuid);
+    if (oauth){
+        var twitData = share.get('twitData', req.session.uuid);
         //console.log(req.session.twitData);
-        if(!req.session.twitData){
+        if(!twitData){
+            console.log('no twitData, getting it',oauth);
             var twit = new twitter({
-                consumer_key: "9kFmLFgQw25ls1lvY4VLHCpDN",
-                consumer_secret: "qyw9KEhgqMBSXvEZJhwLXvUyMiFtRKbArPSxxW1b97V0A6qUT3",
-                access_token_key: req.session.oauth.access_token,
-                access_token_secret: req.session.oauth.access_token_secret
+                consumer_key: "A6x1nzmmmerCCmVN8zTgew",
+                consumer_secret: "oOMuBkeqXLqoJkSklhpTrsvuZXo9VowyABS8EkAUw",
+                access_token_key: oauth.access_token,
+                access_token_secret: oauth.access_token_secret
             });
-            twit.verifyCredentials(function (err, data) { req.session.twitData=data.id; });
+            twit.verifyCredentials(function (err, data) {
+                if(err) {
+                    console.log('getting twitData failed!',err);
+                } else {
+                    twitData=data.id; 
+                    share.set(twitData,'twitData', req.session.uuid);
+                }
+            });
         }
             //get the terms from the report used to track. Set in the report, will concat all terms that havf Fn==Find
             var terms2Track = [];
@@ -108,7 +131,7 @@ exports.index = function (req, res) {
             }
         );
     }
-};
+}
 
 /* TO BE PULLED INTO OTHER FILES / MODULES  */
 var fnAllTerms = function(arrNeedles,strHaystack){
