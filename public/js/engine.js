@@ -8,6 +8,7 @@ app.factory('FUIAPI', function($resource){ return $resource('/fuiapi', '',{
     }) });
 
 app.controller('FUI',function($scope,$modal,FUIAPI){
+    $scope.play=true;
     $scope.widths=[{name:'skinny',width:1},{name:'1/6 width',width:2} ,{name:'1/4 width',width:3} ,{name:'1/3 width',width:4} ,{name:'5/12 width',width:5} ,{name:'1/2 width',width:6} ,{name:'7/12 width',width:7} ,{name:'2/3 width',width:8} ,{name:'3/4 width',width:9} ,{name:'5/6 width',width:10} ,{name:'11/12 width',width:11} ,{name:'full width',width:12} ];
     $scope.sorts=[{name:'priority',sort:'priority'},{name:'age',sort:'id'},{name:'username',sort:'user.screen_name'}];
     $scope.limits=[{limit:25},{limit:50},{limit:100},{limit:250},{limit:500},{limit:1000},{limit:10000}];
@@ -56,7 +57,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.updateNote = function(t){
         var intColumn = false;
         _.forEach($scope.report.columns,function(objCol){ if(objCol.show=='Notes'){ intColumn=objCol.id; } });
-        if(intColumn){ var objItem = {column:intColumn,text:t.notes,priority:1,typ:'Msg'}; $scope.addItem(objItem); }
+        if(intColumn){ var objItem = {column:intColumn,text:'item note: '+t.notes,priority:1,typ:'Msg'}; $scope.addItem(objItem); }
     }
     $scope.delItem = function(idItem,idColumn){ $scope.report.columns[getIndex($scope.report.columns,'id',idColumn)].items.splice(getIndex($scope.report.columns.items,'id',idItem), 1);}
     //manage wordsets
@@ -71,14 +72,15 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.loadSet = function(){ FUIAPI.query({},function(response){  }); }
     $scope.delSet = function(){ FUIAPI.query({},function(response){  }); }
     //connect to the websocket
+    $scope.pause = function(){ if($scope.play){$scope.play=false;}else{$scope.play=true;} };
     $scope.feed = function(){
         var socket = io.connect('http://localhost:3001'); 
         socket.on('newItems', function (arrItems){ 
-            angular.forEach(arrItems,function(objItem,k){ 
-                $scope.addItem(objItem); 
-            }); 
-            $scope.$apply(); 
-            arrItems=null; 
+            if($scope.play){
+                _.forEach(arrItems,function(objItem){ $scope.addItem(objItem); }); 
+                $scope.$apply(); 
+                arrItems=null;
+            }
         });
     }
     //start everything
