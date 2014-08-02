@@ -59,7 +59,10 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         _.forEach($scope.report.columns,function(objCol){ if(objCol.show=='Notes'){ intColumn=objCol.id; } });
         if(intColumn){ var objItem = {column:intColumn,text:'item note: '+t.notes,priority:1,typ:'Msg'}; $scope.addItem(objItem); }
     }
-    $scope.delItem = function(idItem,idColumn){ $scope.report.columns[getIndex($scope.report.columns,'id',idColumn)].items.splice(getIndex($scope.report.columns.items,'id',idItem), 1);}
+    $scope.delItem = function(idItem,idColumn){ 
+        var intColumn = false;
+        intColumn = getIndex($scope.report.columns,'id',idColumn);
+        $scope.report.columns[intColumn].items.splice(getIndex($scope.report.columns[intColumn].items,'id',idItem), 1);}
     //manage wordsets
     $scope.addSet = function(){ 
         var newSet = {_id:"",user:"System",name:"New",terms:[]}; //TODO: replace System with Users name

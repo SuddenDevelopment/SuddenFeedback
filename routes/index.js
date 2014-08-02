@@ -77,7 +77,7 @@ exports.index = function (req, res) {
 
                         //go through columns in order, col order matters for sorting, some items will pass through and add to multiple aolumns, default is to stop when a col is found
                         for(i=0;i<req.session.report.columns.length;i++){
-                            if(req.session.report.columns[i].analysis=='notes' && objItem.analysis.filtered){ arrItems.push({column:req.session.report.columns[i].id,typ:'Msg',text:'filtered: '+objItem.analysis.filtered }); }
+                            if(req.session.report.columns[i].show.toLowerCase()=='notes' && objItem.analysis.filtered){ arrItems.push({column:req.session.report.columns[i].id,typ:'Msg',text:'filtered: '+objItem.analysis.filtered }); }
                             else if(req.session.report.columns[i].analysis=='sentiment=positive' && !objItem.analysis.filtered && objItem.analysis.sentiment > 0){ objItem.column=req.session.report.columns[i].id; }
                             else if(req.session.report.columns[i].analysis=='sentiment=negative' && !objItem.analysis.filtered && objItem.analysis.sentiment < 0){ objItem.column=req.session.report.columns[i].id; }
                             else if(req.session.report.columns[i].analysis=='sentiment=neutral' && !objItem.analysis.filtered && objItem.analysis.sentiment == 0){ objItem.column=req.session.report.columns[i].id; }
