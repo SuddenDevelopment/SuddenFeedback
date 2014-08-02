@@ -52,6 +52,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.clear = function(){ for(var i=0;i<$scope.report.columns.length;i++){ $scope.report.columns[i].items=[]; $scope.report.columns[i].stats=[]; $scope.report.columns[i].priority=1; } }
     $scope.loadReport = function(objReport,withData){ FUIAPI.query({a:'loadReport'},function(response){  }); }
     $scope.saveReport = function(objReport,withData){ FUIAPI.post({a:'saveReport',q:$scope.report},function(response){ console.log(response,'response'); }); }
+    $scope.addReport = function(){ $scope.report.columns=[{ "id" : 1, "label" : "New", "width" : 2, "priority" : 1, "sort" : "priority", "analysis" : "none", "show" : "ColumnTitle", "exclusive" : true, "source" : "twitter", "limit" : 100, "items" : [ ], "stats" : [ ] }] }
     //manage already loaded item
     $scope.moveItem = function(objItem,newColumn){}
     $scope.updateNote = function(t){
