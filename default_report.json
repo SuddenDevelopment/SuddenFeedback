@@ -1,1 +1,154 @@
-{ "_id" : "Anthony:Celebs", "columns" : [ { "id" : 1, "label" : "Miley", "width" : 2, "priority" : 0, "sort" : "priority", "analysis" : "intelligence", "show" : "ColumnTitle", "exclusive" : true, "source" : "twitter", "limit" : 100, "items" : [ ], "stats" : [ ] }, { "id" : 2, "label" : "Beiber", "width" : 2, "priority" : 0, "sort" : "priority", "analysis" : "intelligence", "show" : "ColumnTitle", "exclusive" : true, "source" : "twitter", "limit" : 100, "items" : [ ], "stats" : [ ] }, { "id" : 3, "label" : "Kanye West", "width" : 2, "priority" : 0, "sort" : "priority", "analysis" : "intelligence", "show" : "ColumnTitle", "exclusive" : true, "source" : "twitter", "limit" : 100, "items" : [ ], "stats" : [ ] }, { "id" : 4, "label" : "Taylor Swift", "width" : 2, "priority" : 0, "sort" : "priority", "analysis" : "intelligence", "show" : "ColumnTitle", "exclusive" : true, "source" : "user", "limit" : 100, "items" : [ ], "stats" : [ ] }, { "id" : 5, "label" : "Katy Perry", "width" : 2, "priority" : 0, "sort" : "priority", "analysis" : "intelligence", "show" : "ColumnTitle", "exclusive" : true, "source" : "user", "limit" : 100, "items" : [ ], "stats" : [ ] }, { "id" : 6, "label" : "Beyonce", "width" : 2, "priority" : 0, "sort" : "priority", "analysis" : "intelligence", "show" : "ColumnTitle", "exclusive" : true, "source" : "user", "limit" : 100, "items" : [ ], "stats" : [ ] } ] }
+{
+	"_id" : "Anthony:Celebs",
+	"columns" : [
+		{
+			"id" : 1,
+			"label" : "Miley",
+			"width" : 2,
+			"priority" : 1,
+			"sort" : "priority",
+			"analysis" : "Sentiment",
+			"show" : "ColumnTitle",
+			"exclusive" : true,
+			"source" : "twitter",
+			"limit" : 100,
+			"items" : [ ],
+			"stats" : [ ],
+			"score" : 2
+		},
+		{
+			"id" : 3,
+			"label" : "GAGA",
+			"width" : 2,
+			"priority" : 1,
+			"sort" : "priority",
+			"analysis" : "Sentiment",
+			"show" : "ColumnTitle",
+			"exclusive" : true,
+			"source" : "twitter",
+			"limit" : 100,
+			"items" : [ ],
+			"stats" : [ ],
+			"score" : 38
+		},
+		{
+			"id" : 4,
+			"label" : "Taylor Swift",
+			"width" : 2,
+			"priority" : 1,
+			"sort" : "priority",
+			"analysis" : "Sentiment",
+			"show" : "ColumnTitle",
+			"exclusive" : true,
+			"source" : "user",
+			"limit" : 100,
+			"items" : [ ],
+			"stats" : [ ],
+			"score" : 17
+		},
+		{
+			"id" : 5,
+			"label" : "Katy Perry",
+			"width" : 2,
+			"priority" : 1,
+			"sort" : "priority",
+			"analysis" : "Sentiment",
+			"show" : "ColumnTitle",
+			"exclusive" : true,
+			"source" : "user",
+			"limit" : 100,
+			"items" : [ ],
+			"stats" : [ ],
+			"score" : 6
+		},
+		{
+			"id" : 6,
+			"label" : "Beyonce",
+			"width" : 2,
+			"priority" : 1,
+			"sort" : "priority",
+			"analysis" : "Sentiment",
+			"show" : "ColumnTitle",
+			"exclusive" : true,
+			"source" : "user",
+			"limit" : 100,
+			"items" : [ ],
+			"stats" : [ ],
+			"score" : -5
+		},
+		{
+			"label" : "notes",
+			"limit" : 100,
+			"sort" : "priority",
+			"width" : 2,
+			"items" : [ ],
+			"stats" : [ ],
+			"priority" : 1,
+			"id" : 49,
+			"show" : "Notes",
+			"score" : 0
+		}
+	],
+	"terms" : [
+		{
+			"_id" : "System:ObamaThemes",
+			"user" : "System",
+			"name" : "Celebrities",
+			"terms" : [
+				{
+					"text" : "Miley"
+				},
+				{
+					"text" : "Beiber"
+				},
+				{
+					"text" : "Katy-Perry"
+				},
+				{
+					"text" : "Taylor-Swift"
+				},
+				{
+					"text" : "Beyonce"
+				},
+				{
+					"text" : "GAGA"
+				}
+			],
+			"fn" : "Find"
+		},
+		{
+			"_id" : "System:Comparisons",
+			"user" : "System",
+			"name" : "Rubbish",
+			"terms" : [
+				{
+					"text" : "Dick"
+				},
+				{
+					"text" : "Fuck"
+				},
+				{
+					"text" : "Asshole"
+				},
+				{
+					"text" : "Shit"
+				},
+				{
+					"text" : "Cunt"
+				}
+			],
+			"fn" : "Filter"
+		},
+		{
+			"_id" : "",
+			"user" : "System",
+			"name" : "Trends",
+			"terms" : [
+				{
+					"text" : "Music"
+				}
+			],
+			"fn" : "Track"
+		}
+	]
+}
