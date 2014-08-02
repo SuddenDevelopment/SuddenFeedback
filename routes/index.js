@@ -11,7 +11,7 @@ var app = express();
 app.use(express.cookieParser('this is just SALT in a wound'));
 app.use(express.session({secret: "this is just SALT in a wound"}));
 var sentiment = require('sentiment');
-
+var torfSentiment = false;
 exports.index = function (req, res) {
     //console.log(req.session.term);
     res.render('index', { title: 'SuddenFeedback' });
@@ -32,6 +32,9 @@ exports.index = function (req, res) {
                 if(objSet.fn=='Find'){ _.forEach(objSet.terms,function(objTerm){ terms2Track.push(objTerm.text.replace('-',' ')); }); }
             });
             
+            //determine if sentiment analysis is needed, probably will be an array of analysis to run instead f individual torfs
+            _.forEach(req.session.report.columns,function(objCol){ if(!torfSentiment && objCol.analysis && objCol.analysis.toLowerCase().indexOf('sentiment')!= -1){ torfSentiment=true; }});
+
             //console.log(terms2Track);
             twit.stream('statuses/filter', {track: terms2Track}, function (stream) {
                 stream.on('data', function (objItem) {
@@ -59,7 +62,7 @@ exports.index = function (req, res) {
                      //_________________________________________\\
                     //----====|| ADD ANALYSIS TO MESSAGE ||====----\\
                         objItem.analysis={};
-                        objItem.analysis.sentiment=sentiment(objItem.text).score;
+                        if(torfSentiment){objItem.analysis.sentiment=sentiment(objItem.text).score;}
                      //END ANALYSIS\\
                     //##############\\
                      //_____________________________________\\
