@@ -16,14 +16,15 @@ var share = require('./modules/share')
 var program = require('commander');
 var uuid = require('node-uuid');
 
+routes.setShare(share);
+
 program
   .version('0.0.1')
+  .option('-s, --seed','Initialize mongo with seed data')
   .option('-t, --twitter [user]', 'Whose access credentials to use for accessing Twitter')
   .parse(process.argv);
-  
+
 var app = express();
-//not sure how I want to implement this, maybe in a mongoless mode?
-//var default_report = JSON.parse(fs.readFileSync('default_report.json'));
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -46,17 +47,13 @@ app.get('/', routes.index);
 
 http.createServer(app).listen(app.get('port'), function() { console.log('Express server listening on port ' + app.get('port')); });
 
-
-
 /*
  * GET home page.
-  consumer_key: '9kFmLFgQw25ls1lvY4VLHCpDN',
+  	consumer_key: '9kFmLFgQw25ls1lvY4VLHCpDN',
     consumer_secret: 'qyw9KEhgqMBSXvEZJhwLXvUyMiFtRKbArPSxxW1b97V0A6qUT3',
     access_token: '961522914-MYbXA2PLITQplMieKLje0zP0L3ddad1FN8xFKMUY',
     access_token_secret: '2N3WH09m2la6q7xMKzKc34ZWq9ySgypqbxreGnYPGTJ5J'
  */
-//var MONGO_URL="mongodb://suddenfeedback:d34thRAY!B00m!@kahana.mongohq.com:10090/feedback"
-var MONGO_URL="mongodb://127.0.0.1:27017/suddenfeedback"
 var oa = new OAuth(
 	"https://api.twitter.com/oauth/request_token",
 	"https://api.twitter.com/oauth/access_token",
@@ -67,6 +64,8 @@ var oa = new OAuth(
 	"HMAC-SHA1"
 );
 
+//var MONGO_URL="mongodb://suddenfeedback:d34thRAY!B00m!@kahana.mongohq.com:10090/feedback"
+var MONGO_URL="mongodb://127.0.0.1:27017/suddenfeedback"
 var MongoClient = mongodb.MongoClient
 
 // Placeholders
@@ -83,6 +82,14 @@ MongoClient.connect(MONGO_URL, function(err, db) {
 	  dbTerms = db.collection('terms');
 
 	  console.log('Connected to mongo');
+
+	  if(program.seed) {
+	  	console.log('Seeding mongo');
+		var default_report = JSON.parse(fs.readFileSync('default_report.json'));
+		var default_terms = JSON.parse(fs.readFileSync('default_terms.json'));
+		dbReports.insert(default_report, function(){});
+		dbTerms.insert(default_terms, function(){});
+	  }
 });
 
 /*
@@ -102,11 +109,11 @@ app.get('/auth/twitter', function(req, res) {
 			console.log(error);
 			res.send("yeah no. didn't work.")
 		} else {
-			req.session.oauth = {};
-			req.session.oauth.token = oauth_token;
-			//console.log('oauth.token: ' + req.session.oauth.token);
-			req.session.oauth.token_secret = oauth_token_secret;
-			//console.log('oauth.token_secret: ' + req.session.oauth.token_secret);
+			share.set({
+				"oauth_token": oauth_token,
+				"oauth_token_secret": oauth_token_secret
+			},'oauth', req.session.uuid);
+
 			res.redirect('https://twitter.com/oauth/authenticate?oauth_token=' + oauth_token)
 		}
 	});
@@ -153,29 +160,37 @@ app.post('/fuiapi', function(req, res, next) {
 
 var twitter = require('ntwitter');
 app.get('/auth/twitter/callback', function(req, res, next) {
-	if (req.session.oauth) {
-		req.session.oauth.verifier = req.query.oauth_verifier;
-		var oauth = req.session.oauth;
+	var oauth = share.get('oauth',req.session.uuid);
 
-		oa.getOAuthAccessToken(oauth.token, oauth.token_secret, oauth.verifier,
+	if (oauth) {
+		oauth.oauth_verifier = req.query.oauth_verifier;
+		
+		oa.getOAuthAccessToken(oauth.oauth_token, oauth.oauth_token_secret, oauth.oauth_verifier,
 			function(error, oauth_access_token, oauth_access_token_secret, results) {
+				console.log(results);
+
 				if (error) {
 					console.log(error);
 					res.send("yeah something broke.");
 				} else {
-					req.session.oauth.access_token = oauth_access_token;
-					req.session.oauth.access_token_secret = oauth_access_token_secret;
-					//console.log(results);
+					oauth.access_token = oauth_access_token;
+					oauth.access_token_secret = oauth_access_token_secret;
+					share.set(oauth,'oauth', req.session.uuid);
+
 					//console.log(req);
 					var twit = new twitter({
 						consumer_key: "A6x1nzmmmerCCmVN8zTgew",
 						consumer_secret: "oOMuBkeqXLqoJkSklhpTrsvuZXo9VowyABS8EkAUw",
-						access_token_key: req.session.oauth.access_token,
-						access_token_secret: req.session.oauth.access_token_secret
+						access_token_key: oauth.access_token,
+						access_token_secret: oauth.access_token_secret
 					});
 					twit.verifyCredentials(function(err, data) {
-						console.log(err, data);
-						res.redirect('/');
+						if(err) {
+							console.log('error verifying twit credentials',err);
+						} else {
+							console.log('success verifying twit credentials ', data);
+							res.redirect('/');
+						}
 					});
 				}
 			}
