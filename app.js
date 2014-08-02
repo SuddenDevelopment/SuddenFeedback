@@ -125,17 +125,12 @@ app.post('/fuiapi', function(req, res, next) {
 	if(strAction=='init'){ 
 		//get the report settings, if multiple grab the users most recent
 	 dbReports.findOne({}, function(err, report){ 
-	 	//var report=doc;
+	 	//do a little report cleanup if needed
+	 	_.forEach(report.columns,function(objCol,i){ 
+	 		if(!objCol.score){ report.columns[i].score=0; } //set an initial analysis score if it doesnt exist
+	 	});
 	 	share.set(report,'report',req.session.uuid);
-	 	 //get the system and logged in users term sets
-	 		 // I THINK THIS DELAY IS JUST ALLOWING ENOUGH TIME FOR THE SESSION TO B SET, IT'S NOT WORKING WITHOUT IT.
-	 		 //dbTerms.find({user: "System"}).toArray(function(err, results){
-			    //console.log('terms',results); // output all records
-			    //report.terms=results;
-			    //share.set(results,'terms',req.session.uuid);
-			    res.send(report);
-			 	//req.session.report=report;
-			//});
+		res.send(report);
 	 });
 	//get the word sets used
 	}

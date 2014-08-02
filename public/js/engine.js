@@ -14,10 +14,11 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.limits=[{limit:25},{limit:50},{limit:100},{limit:250},{limit:500},{limit:1000},{limit:10000}];
     $scope.wordFns=[{fn:'Find'},{fn:'Filter'},{fn:'Track'}];
     $scope.shows=[{name:'ColumnTitle'},{name:'Notes'},{name:'TermSet'},{name:'AnalysisScore'}];
+    $scope.analysis=[{name:'Sentiment'},{name:'Simiarity'},{name:'IntellectualDepth'},{name:'Vulgarity'}];
     //create the master object
     //manage individual items from the websocket
     $scope.addItem = function(objItem){ 
-        //console.log(objItem.column);
+        //console.log(objItem.analysis);
         var idxColumn = getIndex($scope.report.columns,'id',objItem.column); //get the column
         var propArray='items'; if(objItem.typ!='Msg'){propArray='stats';} //decide which collection within a column to work on
         var intLength=$scope.report.columns[idxColumn][propArray].length;
@@ -37,6 +38,9 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
             });
 
             if(propArray=='items'){ $scope.report.columns[idxColumn].priority++; $scope.report.priority++; } //column priority, report priority used for column %
+            var strAnalysis = $scope.report.columns[idxColumn].analysis.toLowerCase();
+            //console.log(objItem.analysis[strAnalysis]);
+            if(propArray=='items' && objItem.analysis[strAnalysis]){ $scope.report.columns[idxColumn].score += objItem.analysis[strAnalysis]; }
         if(torfRT === false){
             objItem.status= -5; //new item status count
             $scope.report.columns[idxColumn][propArray].unshift(objItem); 
