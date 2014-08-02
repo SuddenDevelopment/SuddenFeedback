@@ -24,6 +24,13 @@ program
   .option('-t, --twitter [user]', 'Whose access credentials to use for accessing Twitter')
   .parse(process.argv);
 
+var twitter_credentials_to_use = 'anthony';
+if(program.twitter) twitter_credentials_to_use = program.twitter
+
+var twitter_credentials = JSON.parse(fs.readFileSync('./config/twitter.json'))[twitter_credentials_to_use];
+
+share.set(twitter_credentials, 'twitter_credentials');
+
 var app = express();
 
 // all environments
@@ -57,8 +64,8 @@ http.createServer(app).listen(app.get('port'), function() { console.log('Express
 var oa = new OAuth(
 	"https://api.twitter.com/oauth/request_token",
 	"https://api.twitter.com/oauth/access_token",
-	"9kFmLFgQw25ls1lvY4VLHCpDN",
-	"qyw9KEhgqMBSXvEZJhwLXvUyMiFtRKbArPSxxW1b97V0A6qUT3",
+	twitter_credentials.api_key,
+	twitter_credentials.api_secret,
 	"1.0",
 	"http://localhost:3000/auth/twitter/callback",
 	"HMAC-SHA1"
@@ -129,12 +136,14 @@ app.post('/fuiapi', function(req, res, next) {
 	if(strAction=='init'){ 
 		//get the report settings
 	 dbReports.findOne({}, function(err, doc){ 
-	 	report=doc;
+	 	var report=doc;
+	 	share.set(report,'reports',req.session.uuid);
 	 	 //get the system and logged in users term sets
 	 		 // I THINK THIS DELAY IS JUST ALLOWING ENOUGH TIME FOR THE SESSION TO B SET, IT'S NOT WORKING WITHOUT IT.
 	 		 dbTerms.find({user: "System"}).toArray(function(err, results){
-			    //console.log(results); // output all records
+			    //console.log('terms',results); // output all records
 			    //report.terms=results;
+			    share.set(results,'terms',req.session.uuid);
 			    res.send(report);
 			 	req.session.report=report;
 			});
@@ -161,7 +170,7 @@ app.post('/fuiapi', function(req, res, next) {
 var twitter = require('ntwitter');
 app.get('/auth/twitter/callback', function(req, res, next) {
 	var oauth = share.get('oauth',req.session.uuid);
-
+	
 	if (oauth) {
 		oauth.oauth_verifier = req.query.oauth_verifier;
 		
@@ -179,8 +188,8 @@ app.get('/auth/twitter/callback', function(req, res, next) {
 
 					//console.log(req);
 					var twit = new twitter({
-						consumer_key: "A6x1nzmmmerCCmVN8zTgew",
-						consumer_secret: "oOMuBkeqXLqoJkSklhpTrsvuZXo9VowyABS8EkAUw",
+						consumer_key: twitter_credentials.api_key,
+						consumer_secret: twitter_credentials.api_secret,
 						access_token_key: oauth.access_token,
 						access_token_secret: oauth.access_token_secret
 					});
@@ -188,7 +197,7 @@ app.get('/auth/twitter/callback', function(req, res, next) {
 						if(err) {
 							console.log('error verifying twit credentials',err);
 						} else {
-							console.log('success verifying twit credentials ', data);
+							//console.log('success verifying twit credentials ', data);
 							res.redirect('/');
 						}
 					});
