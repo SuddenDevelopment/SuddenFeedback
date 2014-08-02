@@ -12,7 +12,15 @@ var util = require('util');
 var OAuth = require('oauth').OAuth;
 var mongodb = require('mongodb');
 var fs = require('fs');
+var share = require('./modules/share')
+var program = require('commander');
+var uuid = require('node-uuid');
 
+program
+  .version('0.0.1')
+  .option('-t, --twitter [user]', 'Whose access credentials to use for accessing Twitter')
+  .parse(process.argv);
+  
 var app = express();
 //not sure how I want to implement this, maybe in a mongoless mode?
 //var default_report = JSON.parse(fs.readFileSync('default_report.json'));
