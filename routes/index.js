@@ -20,6 +20,7 @@ exports.setShare = function(obj) {
 }
 
 exports.index = function (req, res) {
+
     //console.log(req.session.term);
     // The first time a user visits we give them a unique ID to track them with
     if(!req.session.uuid) {
@@ -34,9 +35,10 @@ exports.index = function (req, res) {
         //console.log(req.session.twitData);
         if(!twitData){
             console.log('no twitData, getting it',oauth);
+            var twitter_credentials = share.get('twitter_credentials');
             var twit = new twitter({
-                consumer_key: "A6x1nzmmmerCCmVN8zTgew",
-                consumer_secret: "oOMuBkeqXLqoJkSklhpTrsvuZXo9VowyABS8EkAUw",
+                consumer_key: twitter_credentials.api_key,
+                consumer_secret: twitter_credentials.api_secret,
                 access_token_key: oauth.access_token,
                 access_token_secret: oauth.access_token_secret
             });
@@ -51,6 +53,7 @@ exports.index = function (req, res) {
         }
             //get the terms from the report used to track. Set in the report, will concat all terms that havf Fn==Find
             var terms2Track = [];
+            var userTerms = share.get('terms',req.session.uuid);
             _.forEach(req.session.report.terms,function(objSet){
                 if(objSet.fn=='Find'){ _.forEach(objSet.terms,function(objTerm){ terms2Track.push(objTerm.text.replace('-',' ')); }); }
             });
@@ -58,10 +61,14 @@ exports.index = function (req, res) {
             //determine if sentiment analysis is needed, probably will be an array of analysis to run instead f individual torfs
             _.forEach(req.session.report.columns,function(objCol){ if(!torfSentiment && objCol.analysis && objCol.analysis.toLowerCase().indexOf('sentiment')!= -1){ torfSentiment=true; }});
 
-            //console.log(terms2Track);
+            // console.log(terms2Track);
             twit.stream('statuses/filter', {track: terms2Track}, function (stream) {
+                stream.on('error', function(error, code) {
+                    console.log("Stream error: " + error + ": " + code);
+                });
+
                 stream.on('data', function (objItem) {
-                    //console.log(objItem);
+                    //console.log('stream on data',objItem);
                     var arrItems=[];
                     var torfSend = true;
                     var filtered = false;

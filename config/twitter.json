@@ -1,12 +1,10 @@
 {
 	"anthony":{
-		"key":"9kFmLFgQw25ls1lvY4VLHCpDN",
-		"secret":"qyw9KEhgqMBSXvEZJhwLXvUyMiFtRKbArPSxxW1b97V0A6qUT3"
+		"api_key":"9kFmLFgQw25ls1lvY4VLHCpDN",
+		"api_secret":"qyw9KEhgqMBSXvEZJhwLXvUyMiFtRKbArPSxxW1b97V0A6qUT3"
 	},
 	"wes":{
 		"api_key":"QSMRGsx2lFuznQ4gwXK95LaO3",
-		"api_secret":"QPJO5Nx9vS4Xk3kt2TBt4TklZOHai91YRFUfplw71fd8hqMVUd",
-		"access_token":"16512903-kIvkDxit6GPfM99r4k1xfKWUlVWNila0rjozT8R2y",
-		"access_token_secret":"oEaLIWpOiLiQAPiCD39CDB66R4ytgXY4HG2DtoEncEmnM"
+		"api_secret":"QPJO5Nx9vS4Xk3kt2TBt4TklZOHai91YRFUfplw71fd8hqMVUd"
 	}
 }
