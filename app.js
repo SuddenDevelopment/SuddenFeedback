@@ -14,8 +14,7 @@ var mongodb = require('mongodb');
 var fs = require('fs');
 
 var app = express();
-
-//this is a good ides, allowing mongodb to be optional -ant
+//not sure how I want to implement this, maybe in a mongoless mode?
 //var default_report = JSON.parse(fs.readFileSync('default_report.json'));
 
 // all environments
