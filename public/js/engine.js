@@ -15,6 +15,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.wordFns=[{fn:'Find'},{fn:'Filter'},{fn:'Track'}];
     $scope.shows=[{name:'ColumnTitle'},{name:'Notes'},{name:'TermSet'},{name:'AnalysisScore'}];
     $scope.analysis=[{name:'Sentiment'},{name:'Simiarity'},{name:'IntellectualDepth'},{name:'Vulgarity'}];
+    $scope.colSorts=[{name:'Analysis',prop:'score'},{name:'Priority',prop:'priority'},{name:'ID',prop:'id'}];
     //create the master object
     //manage individual items from the websocket
     $scope.addItem = function(objItem){ 

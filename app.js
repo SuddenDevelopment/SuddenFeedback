@@ -126,7 +126,8 @@ app.post('/fuiapi', function(req, res, next) {
 		//get the report settings, if multiple grab the users most recent
 	 dbReports.findOne({}, function(err, report){ 
 	 	//do a little report cleanup if needed
-	 	_.forEach(report.columns,function(objCol,i){ 
+	 	if(!report.colSort){ report.colSort='priority'; }
+	 	_.forEach(report.columns,function(objCol,i){
 	 		if(!objCol.score){ report.columns[i].score=0; } //set an initial analysis score if it doesnt exist
 	 	});
 	 	share.set(report,'report',req.session.uuid);
