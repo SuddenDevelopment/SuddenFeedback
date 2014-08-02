@@ -29,7 +29,7 @@ html(ng-app="SuddenFeedbackApp")
                         div(class="row panel-heading")
                             div(class="col-lg-4 text-left") {{column.label}}
                             div(class="col-lg-1 text-center")
-                            div(class="col-lg-7 text-right text-info") {{((column.priority/report.priority)*100).toFixed(2)}}%
+                            div(class="col-lg-7 text-right text-info") {{((column.priority/report.priority)*100).toFixed(0)}}%
                 div(class="row" ng-class="{'majorheight':column.stats.length}")    
                     //////||  items  ||\\\\\
                     div(class='isotope-item well well-sm' ng-repeat="(i,t) in column.items | orderBy:column.sort:true | limitTo:column.limit track by t.text" ng-class="{'new':t.status<0,'updated':t.status>0}" bs-modal="imodal" data-template="itemModal.html")
