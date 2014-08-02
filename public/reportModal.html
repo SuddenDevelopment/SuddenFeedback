@@ -9,7 +9,7 @@
             <input style="width:100%;" />
             <ul>
         		<li>Theme</li>
-        		<li>Column Order</li>
+        		<li>Column Order{{report.colSort}} <select ng-model="report.colSort" ng-options="sort.prop as sort.name for sort in colSorts"></select></li>
         		<li>Name</li>
         		<li>Description</li>
         		<li>Started</li>

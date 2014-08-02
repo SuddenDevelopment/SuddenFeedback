@@ -24,7 +24,7 @@ html(ng-app="SuddenFeedbackApp")
         i(class="fa fa-pause" ng-click="pause()")
         div(class="content container-fluid")
             //////||  columns  ||\\\\\
-            div(ng-repeat="(index,column) in report.columns | orderBy:'priority':true" once-if="column.width>0" id="{{index}}" class="isotope-container col-lg-{{column.width}}")
+            div(ng-repeat="(index,column) in report.columns | orderBy:report.colSort:true" once-if="column.width>0" id="{{index}}" class="isotope-container col-lg-{{column.width}}")
                 div(class="panel panel-primary" bs-modal="cmodal" data-template="colModal.html" style="margin-bottom:0;") 
                         div(class="row panel-heading")
                             div(class="col-lg-8 text-left") {{column.label}}
