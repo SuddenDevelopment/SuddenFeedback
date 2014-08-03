@@ -55,7 +55,8 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         }); 
     }
     $scope.clear = function(){ for(var i=0;i<$scope.report.columns.length;i++){ $scope.report.columns[i].items=[]; $scope.report.columns[i].stats=[]; $scope.report.columns[i].priority=1; } }
-    $scope.loadReport = function(objReport,withData){ FUIAPI.query({a:'loadReport'},function(response){  }); }
+    $scope.listReports = function(objReport,withData){ FUIAPI.post({a:'listReports'},function(response){ $scope.reportList=response.reportList; }); }
+    $scope.loadReport = function(intReport,withData){ FUIAPI.post({a:'loadReport',q:intReport},function(response){ $scope.report=response; }); }
     $scope.saveReport = function(objReport,withData){ FUIAPI.post({a:'saveReport',q:$scope.report},function(response){ console.log(response,'response'); }); }
     $scope.addReport = function(){ $scope.report.columns=[{ "id" : 1, "label" : "New", "width" : 2, "priority" : 1, "sort" : "priority", "analysis" : "none", "show" : "ColumnTitle", "exclusive" : true, "source" : "twitter", "limit" : 100, "items" : [ ], "stats" : [ ] }] }
     //manage already loaded item
@@ -78,8 +79,8 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.addCol = function(){ $scope.report.columns.push({label:'new',limit:100,sort:'priority',width:1,items:[],stats:[],priority:1,id:Math.floor((Math.random()*100)+1)}); }
     $scope.delCol = function(idCol){ $scope.report.columns.splice(getIndex($scope.report.columns,'id',idCol),1); }
     $scope.saveSet = function(){ FUIAPI.post({a:'saveTerms',q:$scope.report.terms},function(response){ console.log(response,'response'); }); }
-    $scope.loadSet = function(){ FUIAPI.query({},function(response){  }); }
-    $scope.delSet = function(){ FUIAPI.query({},function(response){  }); }
+    $scope.loadSet = function(){ FUIAPI.post({},function(response){  }); }
+    $scope.delSet = function(){ FUIAPI.post({},function(response){  }); }
     //connect to the websocket
     $scope.pause = function(){ if($scope.play){$scope.play=false;}else{$scope.play=true;} };
     $scope.feed = function(){

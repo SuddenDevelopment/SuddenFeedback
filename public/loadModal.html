@@ -5,8 +5,10 @@
         <button type="button" class="close" ng-click="$hide()">&times;</button>
       </div>
       <div class="modal-body" >
-          <div style="height:300px;width:100%;overflow:scroll;">
-              
+          <div style="height:300px;width:100%;overflow:scroll;" ng-init="listReports()">
+               <div ng-repeat="report in reportList">
+                <div ng-click="loadReport(report._id)">{{report._id}}</div>
+              </div>
           </div>
       </div>
       <div class="modal-footer">
