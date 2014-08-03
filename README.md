@@ -3,14 +3,15 @@ SuddenFeedback
 
 Requirements
 ============
-Node
-MongoDB
+1. Node
+2. MongoDB
 
 Getting Started
 ===============
-/usr/local/mongodb/bin/mongod
-insert record from the bottom of the todo file into suddenfeedback.reports
-node start app.js
-http://localhost:3000
+1. start mongo /usr/local/mongodb/bin/mongod
+2. insert record from default_report.json into suddenfeedback.reports
+3. start app ./node app.js
+4. point to the app from a browser http://localhost:3000
+5. login to twitter from the app
 
 Idea and task list in todo file.
