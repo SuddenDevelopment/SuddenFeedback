@@ -57,8 +57,14 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.clear = function(){ for(var i=0;i<$scope.report.columns.length;i++){ $scope.report.columns[i].items=[]; $scope.report.columns[i].stats=[]; $scope.report.columns[i].priority=1; } }
     $scope.listReports = function(objReport,withData){ FUIAPI.post({a:'listReports'},function(response){ $scope.reportList=response.reportList; }); }
     $scope.loadReport = function(intReport,withData){ FUIAPI.post({a:'loadReport',q:intReport},function(response){ $scope.report=response; }); }
-    $scope.saveReport = function(objReport,withData){ FUIAPI.post({a:'saveReport',q:$scope.report},function(response){ console.log(response,'response'); }); }
-    $scope.addReport = function(){ $scope.report.columns=[{ "id" : 1, "label" : "New", "width" : 2, "priority" : 1, "sort" : "priority", "analysis" : "none", "show" : "ColumnTitle", "exclusive" : true, "source" : "twitter", "limit" : 100, "items" : [ ], "stats" : [ ] }] }
+    $scope.saveReport = function(withData){ 
+        if(!$scope.report._id||$scope.report._id!=$scope.report.name){$scope.report._id=$scope.report.name;} //the id will eventually be more complex than the name, for now this will do.
+        FUIAPI.post({a:'saveReport',q:$scope.report},function(response){ }); 
+    }
+    $scope.addReport = function(){ 
+        $scope.report={_id:"blank",name:"blank"};
+        $scope.report.terms=[{name:"Template",fn:"Find",terms:[{"text":"WTF"}]}];
+        $scope.report.columns=[{ "id" : 1, "label" : "New", "width" : 2, "priority" : 1, "sort" : "priority", "analysis" : "none", "show" : "ColumnTitle", "exclusive" : true, "source" : "twitter", "limit" : 100, "items" : [ ], "stats" : [ ] }] }
     //manage already loaded item
     $scope.moveItem = function(objItem,newColumn){}
     $scope.updateNote = function(t){

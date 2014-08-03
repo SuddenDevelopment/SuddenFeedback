@@ -6,14 +6,14 @@
       </div>
       <div class="modal-body" >
           <div style="width:100%;overflow:scroll;">
-            <input style="width:100%;" />
             <ul>
         		<li>Theme</li>
         		<li>Column Order{{report.colSort}} <select ng-model="report.colSort" ng-options="sort.prop as sort.name for sort in colSorts"></select></li>
-        		<li>Name</li>
-        		<li>Description</li>
+        		<li>Name <input ng-model="report.name" /></li>
+        		<li>Description <input ng-model="report.Description" /></li></li>
         		<li>Started</li>
         		<li>Updated</li>
+            <li>Item Count</li>
             <li>Include by terms</li>
             <li>Filter out terms</li>
             <li>Count &amp; Highlight terms</li>
