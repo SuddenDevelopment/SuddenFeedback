@@ -121,15 +121,20 @@ app.post('/fuiapi', function(req, res, next) {
 	var report = {};
 	var d = req.param('q',null); //console.log(d);
 	//res.send(JSON.stringify([{Label:'good'}]));
-	  
+	if(strAction=='listReports'){ 
+		dbReports.find({},{columns:0,terms:0}).toArray(function(err, results){
+			res.send({reportList:results});
+		});
+	}
+	if(strAction=='loadReport'){ dbReports.findOne({_id:d}, function(err, report){ 
+		report=fnNormalizeReport(report);
+	 	share.set(report,'report',req.session.uuid);
+		res.send(report);
+	});}
 	if(strAction=='init'){ 
 		//get the report settings, if multiple grab the users most recent
 	 dbReports.findOne({}, function(err, report){ 
-	 	//do a little report cleanup if needed
-	 	if(!report.colSort){ report.colSort='priority'; }
-	 	_.forEach(report.columns,function(objCol,i){
-	 		if(!objCol.score){ report.columns[i].score=0; } //set an initial analysis score if it doesnt exist
-	 	});
+	 	report=fnNormalizeReport(report);
 	 	share.set(report,'report',req.session.uuid);
 		res.send(report);
 	 });
@@ -191,3 +196,14 @@ app.get('/auth/twitter/callback', function(req, res, next) {
 		);
 	} else{ next(new Error("you're not supposed to be here.")); }
 });
+
+var fnNormalizeReport = function(objReport){
+	//do a little report cleanup if needed
+	 	if(!objReport.colSort){ objReport.colSort='priority'; }
+	 	if(!objReport.priority || objReport.priority < objReport.columns.length){ objReport.priority=objReport.columns.length; }
+	 	_.forEach(objReport.columns,function(objCol,i){
+	 		if(!objCol.score){ objReport.columns[i].score=0; } //set an initial analysis score if it doesnt exist
+	 		if(!objCol.priority || objCol.priority < 1){ objReport.columns[i].priority=1; }
+	 	});
+	return objReport;
+}
