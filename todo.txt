@@ -1,6 +1,6 @@
 //////||  ISSUES  ||\\\\\\
-memory! watches not destroyed after items removed?
-authenticate separately of page reloads to avoid node crashing
+If running a report, and you reload the page, node crashes, should just restart the report.
+If you load a report and login to twitter it reloads the page and messes up report settings.
 
 //////||  INSPIRATION  ||\\\\\\
 http://prologue.com/media/film/categories/main-titles-special-sequences/projects/iron-man-2/groups/interfaces
@@ -12,18 +12,21 @@ http://web.ccpgamescdn.com/newssystem/media/3066/3341/market_interface_ui.jpg
 http://www.bing.com/images/search?pq=eve+online+user+interface&sc=1-25&sp=-1&sk=&q=eve+online+user+interface&qft=+filterui:imagesize-wallpaper&FORM=R5IR4#view=detail&id=A2E0B0FD246D01011E9A25F47F2088658DCA8756&selectedIndex=2
 
 //////||  BACKOFFICE  ||\\\\\\
+Save items[] server side, send updates only to UI
 MAKE SURE NOT TO DO ANALYTICS ON REPEAT MESSAGES!
 load, save and update reports with and without data, 
 full traffic save + accelerated playback, extra $$
 -grunt?, scheduling for automated reporting.
 
 //////||  INTERFACE  ||\\\\\\settings menu 
-add a report browser, change between reports
+Presentation Modes: 
+	Runoff:multiple equal things in a race, 
+	Vs: 2 thing, flanking small columns 1 big middle column for slideshow type presentation
+	Inspection: 1 term or set of terms that is explored from many angles, not divided into columns
 click on stats to make them terms in sets?
 auto branch, or update columns based on content in others columns
 where are the pretty charts that are always moving?
 items modal template
-	delete item
 	move item to another column, including its stats
 	user defined stats to include, checkboxes.
 http://ngmodules.org/modules/AngularJS-Toaster
@@ -51,7 +54,6 @@ n-gram
 
 //////||  WORDSETS  ||\\\\\\
 When a wordset is saved, apply it to the existing data to re-sort.
-Allow wordsets to determine which column they are in.
 -cluster by common meme/theme?
 -word association arithmatic
 -preconfigfured word groups, biz buzzwords, cursing, politics, media, countries, nascar stuff, word lists to compete with each other
