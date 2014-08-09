@@ -1,4 +1,6 @@
 //////||  ISSUES  ||\\\\\\
+Digest only changed scopes. Reduce digest loops instead of apply fn
+Angular has bind once fn in beta
 If running a report, and you reload the page, node crashes, should just restart the report.
 If you load a report and login to twitter it reloads the page and messes up report settings.
 
