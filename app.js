@@ -12,7 +12,7 @@ var util = require('util');
 var OAuth = require('oauth').OAuth;
 var mongodb = require('mongodb');
 var fs = require('fs');
-var share = require('./modules/share')
+var share = require('./modules/share');
 var program = require('commander');
 var uuid = require('node-uuid');
 
@@ -45,7 +45,6 @@ app.use(express.cookieParser('this is just SALT in a wound'));
 app.use(express.session({secret: "this is just SALT in a wound"}));
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
-
 // development only
 if ('development' == app.get('env')) {app.use(express.errorHandler());}
 
@@ -126,18 +125,25 @@ app.post('/fuiapi', function(req, res, next) {
 			res.send({reportList:results});
 		});
 	}
-	if(strAction=='loadReport'){ dbReports.findOne({_id:d}, function(err, report){ 
-		report=fnNormalizeReport(report);
-	 	share.set(report,'report',req.session.uuid);
-		res.send(report);
-	});}
+	if(strAction=='loadReport'){ 
+		dbReports.findOne({_id:d}, function(err, report){ 
+			report=fnNormalizeReport(report);
+	 		share.set(report,'report');
+			res.send(report);
+		});
+	}
 	if(strAction=='init'){ 
 		//get the report settings, if multiple grab the users most recent
-	 dbReports.findOne({}, function(err, report){ 
-	 	report=fnNormalizeReport(report);
-	 	share.set(report,'report',req.session.uuid);
-		res.send(report);
-	 });
+	 var objReport=share.get('report');
+	 if(objReport){ console.log('share found'); res.send(objReport);}
+	 else{
+	 	console.log('load a default report');
+	 	dbReports.findOne({}, function(err, report){ 
+		 	objReport=fnNormalizeReport(report);
+		 	share.set(objReport,'report');
+			res.send(objReport);
+	 	});
+	 }
 	//get the word sets used
 	}
 	if(strAction=='saveReport'){ 

@@ -13,6 +13,7 @@ app.use(express.session({secret: "this is just SALT in a wound"}));
 var sentiment = require('sentiment');
 var torfSentiment = false;
 var share = null;
+var twit = null;
 var uuid = require('node-uuid');
 
 exports.setShare = function(obj) { share = obj; }
@@ -21,121 +22,113 @@ exports.index = function (req, res) {
 
     //console.log(req.session.term);
     // The first time a user visits we give them a unique ID to track them with
-    if(!req.session.uuid) {
-        req.session.uuid = uuid.v4();
-    }
+    if(!req.session.uuid) { req.session.uuid = uuid.v4(); }
 
     res.render('index', { title: 'SuddenFeedback' });
     
     var oauth = share.get('oauth', req.session.uuid);
-    if (oauth){
-        var twitData = share.get('twitData', req.session.uuid);
-        //console.log(req.session.twitData);
-        if(!twitData){
-            console.log('no twitData, getting it',oauth);
-            var twitter_credentials = share.get('twitter_credentials');
-            var twit = new twitter({
-                consumer_key: twitter_credentials.api_key,
-                consumer_secret: twitter_credentials.api_secret,
-                access_token_key: oauth.access_token,
-                access_token_secret: oauth.access_token_secret
-            });
-            twit.verifyCredentials(function (err, data) {
-                if(err) {
-                    console.log('getting twitData failed!',err);
-                } else {
-                    twitData=data.id; 
-                    share.set(twitData,'twitData', req.session.uuid);
+    var twitData = share.get('twitData', req.session.uuid);
+
+    if(oauth && !twitData && !twit){
+        //console.log('no twitData, getting it',oauth);
+        var twitter_credentials = share.get('twitter_credentials');
+        var twit = new twitter({
+            consumer_key: twitter_credentials.api_key,
+            consumer_secret: twitter_credentials.api_secret,
+            access_token_key: oauth.access_token,
+            access_token_secret: oauth.access_token_secret
+        });
+        twit.verifyCredentials(function (err, data) {
+            if(err){ console.log('getting twitData failed!',err); } 
+            else{ twitData=data.id; share.set(twitData,'twitData', req.session.uuid); }
+        });
+    }
+    var objReport = share.get('report');
+    if(twit && objReport){
+        //get the terms from the report used to track. Set in the report, will concat all terms that havf Fn==Find
+        var terms2Track = [];
+        //var userTerms = share.get('terms',req.session.uuid);
+        
+        //clean up the terms, the ttag module in the UI repaces spaces with -
+        _.forEach(objReport.terms,function(objSet){
+            if(objSet.fn=='Find'){ _.forEach(objSet.terms,function(objTerm){ terms2Track.push(objTerm.text.replace('-',' ')); }); }
+        });
+        
+        //determine if sentiment analysis is needed, probably will be an array of analysis to run instead f individual torfs
+        _.forEach(objReport.columns,function(objCol){ if(!torfSentiment && objCol.analysis && objCol.analysis.toLowerCase().indexOf('sentiment')!= -1){ torfSentiment=true; }});
+
+        // console.log(terms2Track);
+        twit.stream('statuses/filter', {track: terms2Track}, function (stream) {
+            stream.on('error', function(error, code) { console.log("Stream error: " + error + ": " + code); });
+            stream.on('data', function (objItem) {
+                //console.log('stream on data',objItem);
+                var arrItems=[];
+                var torfSend = true;
+                var filtered = false;
+                //console.log(req.session.report);
+                if(objReport && torfSend===true){
+                    objItem.priority= 1;
+                    if(objItem.retweeted_status !== undefined){if(objItem.retweeted_status.retweet_count > 0){ 
+                        objItem.priority += objItem.retweeted_status.retweet_count;
+                        objItem.entities=objItem.retweeted_status.entities;
+                        objItem.retweeted_status = null; //kep the browser from needing to store all this
+                    }}
+                 //_________________________________________\\
+                //----====|| NORMALIZE THE MESSAGE ||====----\\
+                    objItem.typ='Msg';
+                    objItem.text=fnCleanText(objItem.text,{});
+                    objItem.created_at=(new Date).getTime();
+                    //var objLatest = objItem; objLatest.column=4;arrItems.push(objLatest);//add latest
+                    //objItem.column=4; arrItems.push(objItem);
+                 //END NORMALIZING\\
+                //#################\\
+                 //_________________________________________\\
+                //----====|| ADD ANALYSIS TO MESSAGE ||====----\\
+                    objItem.analysis={};
+                    if(torfSentiment){objItem.analysis.sentiment=sentiment(objItem.text).score;}
+                 //END ANALYSIS\\
+                //##############\\
+                 //_____________________________________\\
+                //----====|| SORT INTO COLUMNS ||====----\\
+                    //loop through the root level term groups used
+                    //console.log(req.session.report.terms);
+
+                    //Global Filter
+                    _.forEach(objReport.terms,function(objSet){ if(filtered==false && objSet.fn=='Filter'){ 
+                        var strMatch= fnFirstTerm(objSet.terms,objItem.text);
+                        if(strMatch){ filtered = true; objItem.analysis.filtered=strMatch; };
+                     } });
+
+                    //loop through the column level term groups used
+
+                    //go through columns in order, col order matters for sorting, some items will pass through and add to multiple aolumns, default is to stop when a col is found
+                    for(i=0;i<objReport.columns.length;i++){
+                        if(objReport.columns[i].show.toLowerCase()=='notes' && objItem.analysis.filtered){ arrItems.push({column:objReport.columns[i].id,typ:'Msg',text:'filtered: '+objItem.analysis.filtered }); }
+                        else if(objReport.columns[i].analysis=='sentiment=positive' && !objItem.analysis.filtered && objItem.analysis.sentiment > 0){ objItem.column=objReport.columns[i].id; }
+                        else if(objReport.columns[i].analysis=='sentiment=negative' && !objItem.analysis.filtered && objItem.analysis.sentiment < 0){ objItem.column=objReport.columns[i].id; }
+                        else if(objReport.columns[i].analysis=='sentiment=neutral' && !objItem.analysis.filtered && objItem.analysis.sentiment == 0){ objItem.column=objReport.columns[i].id; }
+                        else if(objReport.columns[i].show=='ColumnTitle' && objItem.text.toLowerCase().indexOf(objReport.columns[i].label.toLowerCase())!= -1){ 
+                            if(objItem.analysis.filtered){ arrItems.push({column:objReport.columns[i].id,typ:'Tag',text:'filtered: '+objItem.analysis.filtered }); }else{objItem.column=objReport.columns[i].id;}
+                        }
+                    }
+                 //END COLUMN SORTING\\
+                //####################\\
+                    //objItem.user = null; //kep the browser from needing to store all this
+
+                    //SEND IT TO THE BrowSER WEBSOCKET
+                    if(objItem.column>0){
+                        arrItems.push(objItem);
+                        //add stats
+                        arrItems.push({column:objItem.column,typ:'User',text:objItem.user.screen_name});
+                        for(var i=0;i<objItem.entities.urls.length;i++){ arrItems.push({column:objItem.column,typ:'Link',text:objItem.entities.urls[i].expanded_url.toLowerCase() }); }
+                        for(var i=0;i<objItem.entities.symbols.length;i++){ arrItems.push({column:objItem.column,typ:'Symbol',text:objItem.entities.symbols[i].text.toLowerCase() }); }
+                        for(var i=0;i<objItem.entities.user_mentions.length;i++){ arrItems.push({column:objItem.column,typ:'Mention',text:objItem.entities.user_mentions[i].screen_name.toLowerCase() }); }
+                        for(var i=0;i<objItem.entities.hashtags.length;i++){ arrItems.push({column:objItem.column,typ:'Tag',text:objItem.entities.hashtags[i].text.toLowerCase() }); }
+                    }
+                    if(arrItems.length > 0){io.sockets.emit('newItems', arrItems);}
                 }
             });
-        }
-            //get the terms from the report used to track. Set in the report, will concat all terms that havf Fn==Find
-            var terms2Track = [];
-            //var userTerms = share.get('terms',req.session.uuid);
-            var objReport = share.get('report',req.session.uuid);
-            _.forEach(objReport.terms,function(objSet){
-                if(objSet.fn=='Find'){ _.forEach(objSet.terms,function(objTerm){ terms2Track.push(objTerm.text.replace('-',' ')); }); }
-            });
-            
-            //determine if sentiment analysis is needed, probably will be an array of analysis to run instead f individual torfs
-            _.forEach(objReport.columns,function(objCol){ if(!torfSentiment && objCol.analysis && objCol.analysis.toLowerCase().indexOf('sentiment')!= -1){ torfSentiment=true; }});
-
-            // console.log(terms2Track);
-            twit.stream('statuses/filter', {track: terms2Track}, function (stream) {
-                stream.on('error', function(error, code) {
-                    console.log("Stream error: " + error + ": " + code);
-                });
-
-                stream.on('data', function (objItem) {
-                    //console.log('stream on data',objItem);
-                    var arrItems=[];
-                    var torfSend = true;
-                    var filtered = false;
-                    //console.log(req.session.report);
-                    if(objReport && torfSend===true){
-                        objItem.priority= 1;
-                        if(objItem.retweeted_status !== undefined){if(objItem.retweeted_status.retweet_count > 0){ 
-                            objItem.priority += objItem.retweeted_status.retweet_count;
-                            objItem.entities=objItem.retweeted_status.entities;
-                            objItem.retweeted_status = null; //kep the browser from needing to store all this
-                        }}
-                     //_________________________________________\\
-                    //----====|| NORMALIZE THE MESSAGE ||====----\\
-                        objItem.typ='Msg';
-                        objItem.text=fnCleanText(objItem.text,{});
-                        objItem.created_at=(new Date).getTime();
-                        //var objLatest = objItem; objLatest.column=4;arrItems.push(objLatest);//add latest
-                        //objItem.column=4; arrItems.push(objItem);
-                     //END NORMALIZING\\
-                    //#################\\
-                     //_________________________________________\\
-                    //----====|| ADD ANALYSIS TO MESSAGE ||====----\\
-                        objItem.analysis={};
-                        if(torfSentiment){objItem.analysis.sentiment=sentiment(objItem.text).score;}
-                     //END ANALYSIS\\
-                    //##############\\
-                     //_____________________________________\\
-                    //----====|| SORT INTO COLUMNS ||====----\\
-                        //loop through the root level term groups used
-                        //console.log(req.session.report.terms);
-
-                        //Global Filter
-                        _.forEach(objReport.terms,function(objSet){ if(filtered==false && objSet.fn=='Filter'){ 
-                            var strMatch= fnFirstTerm(objSet.terms,objItem.text);
-                            if(strMatch){ filtered = true; objItem.analysis.filtered=strMatch; };
-                         } });
-
-                        //loop through the column level term groups used
-
-                        //go through columns in order, col order matters for sorting, some items will pass through and add to multiple aolumns, default is to stop when a col is found
-                        for(i=0;i<objReport.columns.length;i++){
-                            if(objReport.columns[i].show.toLowerCase()=='notes' && objItem.analysis.filtered){ arrItems.push({column:objReport.columns[i].id,typ:'Msg',text:'filtered: '+objItem.analysis.filtered }); }
-                            else if(objReport.columns[i].analysis=='sentiment=positive' && !objItem.analysis.filtered && objItem.analysis.sentiment > 0){ objItem.column=objReport.columns[i].id; }
-                            else if(objReport.columns[i].analysis=='sentiment=negative' && !objItem.analysis.filtered && objItem.analysis.sentiment < 0){ objItem.column=objReport.columns[i].id; }
-                            else if(objReport.columns[i].analysis=='sentiment=neutral' && !objItem.analysis.filtered && objItem.analysis.sentiment == 0){ objItem.column=objReport.columns[i].id; }
-                            else if(objReport.columns[i].show=='ColumnTitle' && objItem.text.toLowerCase().indexOf(objReport.columns[i].label.toLowerCase())!= -1){ 
-                                if(objItem.analysis.filtered){ arrItems.push({column:objReport.columns[i].id,typ:'Tag',text:'filtered: '+objItem.analysis.filtered }); }else{objItem.column=objReport.columns[i].id;}
-                            }
-                        }
-                     //END COLUMN SORTING\\
-                    //####################\\
-                        //objItem.user = null; //kep the browser from needing to store all this
-
-                        //SEND IT TO THE BrowSER WEBSOCKET
-                        if(objItem.column>0){
-                            arrItems.push(objItem);
-                            //add stats
-                            arrItems.push({column:objItem.column,typ:'User',text:objItem.user.screen_name});
-                            for(var i=0;i<objItem.entities.urls.length;i++){ arrItems.push({column:objItem.column,typ:'Link',text:objItem.entities.urls[i].expanded_url.toLowerCase() }); }
-                            for(var i=0;i<objItem.entities.symbols.length;i++){ arrItems.push({column:objItem.column,typ:'Symbol',text:objItem.entities.symbols[i].text.toLowerCase() }); }
-                            for(var i=0;i<objItem.entities.user_mentions.length;i++){ arrItems.push({column:objItem.column,typ:'Mention',text:objItem.entities.user_mentions[i].screen_name.toLowerCase() }); }
-                            for(var i=0;i<objItem.entities.hashtags.length;i++){ arrItems.push({column:objItem.column,typ:'Tag',text:objItem.entities.hashtags[i].text.toLowerCase() }); }
-                        }
-                        if(arrItems.length > 0){io.sockets.emit('newItems', arrItems);}
-                    }
-                });
-            }
-        );
+        }); //end stream
     }
 }
 

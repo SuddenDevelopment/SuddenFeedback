@@ -56,7 +56,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     }
     $scope.clear = function(){ for(var i=0;i<$scope.report.columns.length;i++){ $scope.report.columns[i].items=[]; $scope.report.columns[i].stats=[]; $scope.report.columns[i].priority=1; } }
     $scope.listReports = function(objReport,withData){ FUIAPI.post({a:'listReports'},function(response){ $scope.reportList=response.reportList; }); }
-    $scope.loadReport = function(intReport,withData){ FUIAPI.post({a:'loadReport',q:intReport},function(response){ $scope.report=response; }); }
+    $scope.loadReport = function(intReport,withData){ FUIAPI.post({a:'loadReport',q:intReport},function(response){ $scope.report=response; console.log(response); }); }
     $scope.saveReport = function(withData){ 
         if(!$scope.report._id||$scope.report._id!=$scope.report.name){$scope.report._id=$scope.report.name;} //the id will eventually be more complex than the name, for now this will do.
         FUIAPI.post({a:'saveReport',q:$scope.report},function(response){ }); 
@@ -88,7 +88,8 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.loadSet = function(){ FUIAPI.post({},function(response){  }); }
     $scope.delSet = function(){ FUIAPI.post({},function(response){  }); }
     //connect to the websocket
-    $scope.pause = function(){ if($scope.play){$scope.play=false;}else{$scope.play=true;} };
+    $scope.pause = function(){ 
+        if($scope.play){$scope.play=false; console.log('pause');}else{$scope.play=true;} console.log('play');};
     $scope.feed = function(){
         var socket = io.connect('http://localhost:3001'); 
         socket.on('newItems', function (arrItems){ 
