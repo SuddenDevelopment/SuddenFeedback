@@ -1,5 +1,6 @@
 //////||  ISSUES  ||\\\\\\
 Digest only changed scopes. Reduce digest loops instead of apply fn
+disconnect the socket client on pause.
 Angular has bind once fn in beta
 If running a report, and you reload the page, node crashes, should just restart the report.
 If you load a report and login to twitter it reloads the page and messes up report settings.
@@ -11,7 +12,6 @@ http://videohive.net/item/24-hitech-hud-interface-pack/2836699
 http://videohive.net/item/glowing-tech-circle-pack/8194396?ref=bridariam
 http://videohive.net/item/scifi-interface-hud-package/8226307?
 http://web.ccpgamescdn.com/newssystem/media/3066/3341/market_interface_ui.jpg
-http://www.bing.com/images/search?pq=eve+online+user+interface&sc=1-25&sp=-1&sk=&q=eve+online+user+interface&qft=+filterui:imagesize-wallpaper&FORM=R5IR4#view=detail&id=A2E0B0FD246D01011E9A25F47F2088658DCA8756&selectedIndex=2
 
 //////||  BACKOFFICE  ||\\\\\\
 Save items[] server side, send updates only to UI
@@ -50,10 +50,16 @@ NLP distance from messages / message clasifications
 
 //////||  ANALYSIS  ||\\\\\\
 Tracking.js
+https://github.com/superbrothers/capturejs
 spelling
 grammar,
 transalte
 n-gram
+
+//////|| CONTENT GENERATION? ||\\\\\\
+there are twitter trends functions in the twitter module/api
+trained and derivitive from reports, predictive.
+https://hubot.github.com/
 
 //////||  WORDSETS  ||\\\\\\
 When a wordset is saved, apply it to the existing data to re-sort.
