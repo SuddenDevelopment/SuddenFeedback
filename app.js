@@ -132,6 +132,11 @@ app.post('/fuiapi', function(req, res, next) {
 			res.send(report);
 		});
 	}
+	if(strAction=='delReport'){ 
+		dbReports.remove({_id:d}, function(err, response){ 
+			res.send('report deleted');
+		});
+	}
 	if(strAction=='init'){ 
 		//get the report settings, if multiple grab the users most recent
 	 var objReport=share.get('report');
@@ -149,7 +154,7 @@ app.post('/fuiapi', function(req, res, next) {
 	if(strAction=='saveReport'){ 
 	var d = req.param('q',null); 
 	  	console.log(d);
-	  	dbReports.update( {_id:d._id},{columns:d.columns,terms:d.terms},{upsert:true,safe:true},
+	  	dbReports.update( {_id:d._id},{columns:d.columns,terms:d.terms,name:d.name},{upsert:true,safe:true},
 		function(err,data){if (err){res.send('error');}else{res.send('success');}});
 	//todo: save to session for server side use
 	};

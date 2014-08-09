@@ -45,9 +45,10 @@ div.isotope-item-priority{margin-left:3px; bottom:3px;}
 }
 .itemMenu{z-index:99;}
 .isotope-item{z-index:1;}
-.row{margin-left: -2px; margin-right: -2px; height:100%; overflow: scroll;}
-.row.majorheight{height:75%; overflow:scroll; margin-bottom:5px;}
-.row.minorheight{height:25%; overflow:scroll; border-top: 3px double #5bc0de;}
+.row{margin-left: -2px; margin-right: -2px;}
+.fuiColumn{height:100%; overflow:scroll;}
+.fuiColumn.majorheight{height:75%; overflow:scroll; margin-bottom:5px;}
+.fuiColumn.minorheight{height:25%; overflow:scroll; border-top: 3px double #5bc0de;}
 
 /* animation stuff */
 .modal-backdrop.am-fade {
