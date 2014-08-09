@@ -14,7 +14,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.limits=[{limit:25},{limit:50},{limit:100},{limit:250},{limit:500},{limit:1000},{limit:10000}];
     $scope.wordFns=[{fn:'Find'},{fn:'Filter'},{fn:'Track'}];
     $scope.shows=[{name:'ColumnTitle'},{name:'Notes'},{name:'TermSet'},{name:'AnalysisScore'}];
-    $scope.analysis=[{name:'Sentiment'},{name:'Simiarity'},{name:'IntellectualDepth'},{name:'Vulgarity'}];
+    $scope.analysis=[{name:'Sentiment'},{name:'Simiarity'},{name:'IntellectualDepth'},{name:'Vulgarity'}]; //these shoukld load from the DB
     $scope.colSorts=[{name:'Analysis',prop:'score'},{name:'Priority',prop:'priority'},{name:'ID',prop:'id'}];
     //create the master object
     //manage individual items from the websocket
@@ -55,8 +55,9 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         }); 
     }
     $scope.clear = function(){ for(var i=0;i<$scope.report.columns.length;i++){ $scope.report.columns[i].items=[]; $scope.report.columns[i].stats=[]; $scope.report.columns[i].priority=1; } }
-    $scope.listReports = function(objReport,withData){ FUIAPI.post({a:'listReports'},function(response){ $scope.reportList=response.reportList; }); }
+    $scope.listReports = function(objReport,withData){ FUIAPI.post({a:'listReports'},function(response){ $scope.reportList=response.reportList; console.log(response); }); }
     $scope.loadReport = function(intReport,withData){ FUIAPI.post({a:'loadReport',q:intReport},function(response){ $scope.report=response; console.log(response); }); }
+    $scope.delReport = function(intReport,withData){ FUIAPI.post({a:'delReport',q:intReport},function(response){ console.log(response); }); }
     $scope.saveReport = function(withData){ 
         if(!$scope.report._id||$scope.report._id!=$scope.report.name){$scope.report._id=$scope.report.name;} //the id will eventually be more complex than the name, for now this will do.
         FUIAPI.post({a:'saveReport',q:$scope.report},function(response){ }); 
