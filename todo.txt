@@ -54,6 +54,7 @@ spelling
 grammar,
 transalte
 n-gram
+phantomjs on links
 
 //////|| CONTENT GENERATION? ||\\\\\\
 there are twitter trends functions in the twitter module/api
@@ -97,4 +98,5 @@ approach political campaigns and demonstrate some reports and how they can help 
 
 //////||  COMPETITORS  ||\\\\\\
 brandwatch
-
+http://trendsmap.com/
+http://trends24.in/ just reference
