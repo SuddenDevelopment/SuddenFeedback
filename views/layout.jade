@@ -21,7 +21,7 @@ html(ng-app="SuddenFeedbackApp")
         span(bs-modal="wmodal" data-template="wordsModal.html") words 
         span(bs-modal="rmodal" data-template="reportModal.html") report 
         span(bs-modal="lmodal" data-template="loadModal.html") load 
-        i(class="fa fa-pause" ng-click="pause()")
+        i(class="fa" ng-class="{'fa-pause':play, 'fa-play':!play}" ng-click="pause()")
         div(class="content container-fluid")
             //////||  columns  ||\\\\\
             div(ng-repeat="(index,column) in report.columns | orderBy:report.colSort:true" once-if="column.width>0" id="{{index}}" class="isotope-container col-lg-{{column.width}}")
