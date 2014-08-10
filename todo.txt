@@ -83,6 +83,7 @@ Working with language, not just numbers
 dynamic display
 Everything changes according to the data: order, format, display, good analysis adjusts
 unique distributable report format to explore
+Detail + summary in 1 format = context + conclusions
 
 //////||  ROADMAP  ||\\\\\\
 Direct sales, corporate installs

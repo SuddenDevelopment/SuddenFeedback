@@ -6,7 +6,7 @@ html,body, div.content {
 a {
   color: #00B7FF;
 }
-
+div.HbarSegment{display:inline-block;overflow:hidden;}
 div.isotope-container{ height:100%; }
 div.media{ text-align:center; float:left; display:inline; max-width:24%;}
 div.isotope-item-content{ float:left; display:inline; max-width:74%; padding:5px;}

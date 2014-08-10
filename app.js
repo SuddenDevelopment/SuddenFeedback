@@ -114,6 +114,8 @@ app.get('/auth/twitter', function(req, res) {
 	});
 });
 
+ //_______________________\\
+//----====|| API ||====----\\
 app.post('/fuiapi', function(req, res, next) {
 	var strAction = req.param('a', null); //todo: check post var against array of allowed options
 	//console.log(strAction);
@@ -140,9 +142,9 @@ app.post('/fuiapi', function(req, res, next) {
 	if(strAction=='init'){ 
 		//get the report settings, if multiple grab the users most recent
 	 var objReport=share.get('report');
-	 if(objReport){ console.log('share found'); res.send(objReport);}
+	 if(objReport){ res.send(objReport);}
 	 else{
-	 	console.log('load a default report');
+	 	//console.log('load a default report');
 	 	dbReports.findOne({}, function(err, report){ 
 		 	objReport=fnNormalizeReport(report);
 		 	share.set(objReport,'report');
@@ -168,6 +170,8 @@ app.post('/fuiapi', function(req, res, next) {
 	};
 	//todo: save to session for server side use
 });
+ //________END API________\\
+//#########################\\
 
 var twitter = require('ntwitter');
 app.get('/auth/twitter/callback', function(req, res, next) {
