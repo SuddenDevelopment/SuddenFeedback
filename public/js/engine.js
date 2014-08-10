@@ -1,11 +1,10 @@
 
 function getIndex(arr,key,value){ for(i=0; i<arr.length;i++){ if(arr[i][key]==value){ delete window.arr; return i; } } } //shim function to get the index by a key/value for when the index reported by angular doesnt match
+function fnSortArr(arrItems,strProp){ return _.sortBy(arrItems, function (obj) { return obj[strProp]; }); }
 
 var app = angular.module('SuddenFeedbackApp', ['mgcrea.ngStrap','ngSanitize','ngResource','ngTagsInput','once']);
 //api page / reoute for saving and loading non-streaming data
-app.factory('FUIAPI', function($resource){ return $resource('/fuiapi', '',{
-        'post':{method:'POST'}
-    }) });
+app.factory('FUIAPI', function($resource){ return $resource('/fuiapi', '',{ 'post':{method:'POST'} }) });
 
 app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.play=true;
@@ -27,17 +26,16 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         //||||  COLUMN+ARRAY LOOP  ||||\\
         //this is a one time loop through a collection when touched, do everything possible in the 1 loop.
         if(!objItem.priority){objItem.priority=1;} var torfRT=false; //set default priority, much of the system requires priority for realtime sorting
-
             _.forEach($scope.report.columns[idxColumn][propArray],function(objI){
                 if(objI.status > 0){objI.status--;}else if(objI.status < 0){objI.status++;}else{objI.status=0;} //status decay, connected to border colors  
                 if(torfRT===false && objI.text==objItem.text){
-                    if(objItem.priority < 2 || objItem.priority <= objI.priority){ objI.priority++; torfRT = true; } //cumulative priority
-                    else{objI.priority = objItem.priority; torfRT = true;} //replacing priority
+                    if(objItem.priority < 2 || objItem.priority <= objI.priority){ objI.priority++;} //cumulative priority
+                    else{objI.priority = objItem.priority;} //replacing priority
                     if(objI.status===0){objI.status=10;} // it exists and has decayed to 0 already, so it's an update
+                    torfRT = true; 
                 }
                 if(intLength>$scope.report.columns[idxColumn].limit && objI.position>$scope.report.columns[idxColumn].limit){ $scope.report.columns[idxColumn][propArray].splice(i--, 1); intLength--;} //limit reached, start trimming            
             });
-
             if(propArray=='items'){ $scope.report.columns[idxColumn].priority++; $scope.report.priority++; } //column priority, report priority used for column %
             if(propArray=='items' && objItem.analysis){var strAnalysis = $scope.report.columns[idxColumn].analysis.toLowerCase();}
             //console.log(objItem.analysis[strAnalysis]);
@@ -56,8 +54,8 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     }
     $scope.clear = function(){ for(var i=0;i<$scope.report.columns.length;i++){ $scope.report.columns[i].items=[]; $scope.report.columns[i].stats=[]; $scope.report.columns[i].priority=1; } }
     $scope.listReports = function(objReport,withData){ FUIAPI.post({a:'listReports'},function(response){ $scope.reportList=response.reportList; console.log(response); }); }
-    $scope.loadReport = function(intReport,withData){ FUIAPI.post({a:'loadReport',q:intReport},function(response){ $scope.report=response; console.log(response); }); }
-    $scope.delReport = function(intReport,withData){ FUIAPI.post({a:'delReport',q:intReport},function(response){ console.log(response); }); }
+    $scope.loadReport = function(strReport,withData){ FUIAPI.post({a:'loadReport',q:strReport},function(response){ $scope.report=response; console.log(response); }); }
+    $scope.delReport = function(strReport,withData){ FUIAPI.post({a:'delReport',q:strReport},function(response){ if(response=='report deleted'){ $scope.reportList.splice(getIndex($scope.reportList,'_id',strReport),1); } }); }
     $scope.saveReport = function(withData){ 
         if(!$scope.report._id||$scope.report._id!=$scope.report.name){$scope.report._id=$scope.report.name;} //the id will eventually be more complex than the name, for now this will do.
         FUIAPI.post({a:'saveReport',q:$scope.report},function(response){ }); 
