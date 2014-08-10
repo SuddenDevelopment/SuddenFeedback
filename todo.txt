@@ -13,7 +13,6 @@ http://videohive.net/item/scifi-interface-hud-package/8226307?
 http://web.ccpgamescdn.com/newssystem/media/3066/3341/market_interface_ui.jpg
 
 //////||  BACKOFFICE  ||\\\\\\
-Save items[] server side, send updates only to UI
 MAKE SURE NOT TO DO ANALYTICS ON REPEAT MESSAGES!
 load, save and update reports with and without data, 
 full traffic save + accelerated playback, extra $$
