@@ -110,7 +110,7 @@ exports.index = function (req, res) {
                     //go through columns in order, col order matters for sorting, some items will pass through and add to multiple aolumns, default is to stop when a col is found
                     var intColIndex = false;
                     for(i=0;i<objReport.columns.length;i++){
-                        if(objReport.columns[i].show.toLowerCase()=='notes' && objItem.analysis.filtered){ arrItems.push({column:objReport.columns[i].id,typ:'Msg',text:'filtered: '+objItem.analysis.filtered }); }
+                        if(objReport.columns[i].show.toLowerCase()=='notes' && objItem.analysis.filtered){ arrItems.push({column:objReport.columns[i].id,typ:'Filter',text:objItem.analysis.filtered }); }
                         else if(objReport.columns[i].analysis=='sentiment=positive' && !objItem.analysis.filtered && objItem.analysis.sentiment > 0){ objItem.column=objReport.columns[i].id; }
                         else if(objReport.columns[i].analysis=='sentiment=negative' && !objItem.analysis.filtered && objItem.analysis.sentiment < 0){ objItem.column=objReport.columns[i].id; }
                         else if(objReport.columns[i].analysis=='sentiment=neutral' && !objItem.analysis.filtered && objItem.analysis.sentiment == 0){ objItem.column=objReport.columns[i].id; }
@@ -120,7 +120,7 @@ exports.index = function (req, res) {
                             else if(_.find(objReport.columns[i].hashtags,{ 'text':strNeedle })){ objItem.column=objReport.columns[i].id; }
                             else if(_.find(objReport.columns[i].user_mentions,{ 'screen_name':strNeedle })){ objItem.column=objReport.columns[i].id; }
                         }
-                        if(objItem.column && objItem.analysis.filtered){ arrItems.push({column:objItem.column,typ:'Tag',text:'filtered: '+objItem.analysis.filtered }); } //add a per colum tag for filtered items
+                        if(objItem.column && objItem.analysis.filtered){ arrItems.push({column:objItem.column,typ:'Filter',text:objItem.analysis.filtered }); } //add a per colum tag for filtered items
                         if(objItem.column){ intColIndex=i;}
                     }
                     if(!objItem.column){ 
