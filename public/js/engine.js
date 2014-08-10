@@ -38,11 +38,10 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
             });
             if(propArray=='items'){ $scope.report.columns[idxColumn].priority++; $scope.report.priority++; } //column priority, report priority used for column %
             if(propArray=='items' && objItem.analysis){var strAnalysis = $scope.report.columns[idxColumn].analysis.toLowerCase();}
-            //console.log(objItem.analysis[strAnalysis]);
-            if(propArray=='items' && objItem.analysis){ $scope.report.columns[idxColumn].score += objItem.analysis[strAnalysis]; }
         if(torfRT === false){
             objItem.status= -5; //new item status count
             $scope.report.columns[idxColumn][propArray].unshift(objItem); 
+            if(propArray=='items' && objItem.analysis){ $scope.report.columns[idxColumn].score += objItem.analysis[strAnalysis]; }
         } //add
     }
     //menu options, initial setup, either loaded from a previous setup, or defaults
