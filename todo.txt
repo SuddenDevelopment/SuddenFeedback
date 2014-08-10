@@ -2,7 +2,7 @@
 Digest only changed scopes. Reduce digest loops instead of apply fn
 disconnect the socket client on pause.
 Angular has bind once fn in beta
-If running a report, and you reload the page, node crashes, should just restart the report.
+shoudnt need to create an item modal as every item is created.
 
 //////||  INSPIRATION  ||\\\\\\
 http://prologue.com/media/film/categories/main-titles-special-sequences/projects/iron-man-2/groups/interfaces
@@ -36,7 +36,7 @@ http://ngmodules.org/modules/angular-progress-arc
 
 //////||  BS FILTER  ||\\\\\\
 filter out excessive tagging and single letter tags
--translate mesages?
+https://github.com/Marak/translate.js
 region filter
 remove all trailing hashtags, remove leading hashtags, optionally
 naive bayse classify messages for use // pull from items with same analyst note!
@@ -74,7 +74,7 @@ http://aws.amazon.com/kinesis/
 //////||  PRICES  ||\\\\\\
 registration, viewing, exploring = free
 $20/report, scheduled or interactive
-$2k/server
+$2k/decicated server, prefer to host it than to install on a customer premise
 professional services report setup or analysis
 
 //////||  DIFFERENTIATORS  ||\\\\\\
