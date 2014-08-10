@@ -42,8 +42,23 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         if(torfRT === false){
             objItem.status= -5; //new item status count
             $scope.report.columns[idxColumn][propArray].unshift(objItem); 
-            if(propArray=='items' && objItem.analysis){ $scope.report.columns[idxColumn].score += objItem.analysis[strAnalysis]; }
+            if(propArray=='items' && objItem.analysis){ 
+                $scope.report.columns[idxColumn].score += objItem.analysis[strAnalysis]; 
+                $scope.addSlide(objItem);
+            }
         } //add
+    }
+
+    $scope.addSlide = function(objItem){ 
+        var idPresCol = getIndex($scope.report.columns,'show','Slides');
+        if(idPresCol){ //todo: convert this to a loop over an array for tighter code
+            objItem.text = objItem.text.replace('. ',".<br/>")
+            objItem.text = objItem.text.replace('? ',"?<br/>")
+            objItem.text = objItem.text.replace('! ',"?<br/>")
+            objItem.text = objItem.text.replace('; ',"?<br/>")
+            objItem.text = objItem.text.replace(': ',"?<br/>")
+            $scope.report.columns[idPresCol].items[0]=objItem; 
+        }
     }
     //menu options, initial setup, either loaded from a previous setup, or defaults
     $scope.loadOptions = function(){ FUIAPI.post({a:'init'},function(response){ 

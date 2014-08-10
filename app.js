@@ -156,7 +156,7 @@ app.post('/fuiapi', function(req, res, next) {
 	if(strAction=='saveReport'){ 
 	var d = req.param('q',null); 
 	  	console.log(d);
-	  	dbReports.update( {_id:d._id},{columns:d.columns,terms:d.terms,name:d.name},{upsert:true,safe:true},
+	  	dbReports.update( {_id:d._id},{columns:d.columns,terms:d.terms,name:d.name,order:d.order},{upsert:true,safe:true},
 		function(err,data){if (err){res.send('error');}else{res.send('success');}});
 	//todo: save to session for server side use
 	};
