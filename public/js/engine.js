@@ -12,7 +12,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.sorts=[{name:'priority',sort:'priority'},{name:'age',sort:'id'},{name:'username',sort:'user.screen_name'}];
     $scope.limits=[{limit:25},{limit:50},{limit:100},{limit:250},{limit:500},{limit:1000},{limit:10000}];
     $scope.wordFns=[{fn:'Find'},{fn:'Filter'},{fn:'Track'}];
-    $scope.shows=[{name:'ColumnTitle'},{name:'Notes'},{name:'TermSet'},{name:'AnalysisScore'}];
+    $scope.shows=[{name:'ColumnTitle'},{name:'Notes'},{name:'TermSet'},{name:'AnalysisScore'},{name:'Orphans'}];
     $scope.analysis=[{name:'Sentiment'},{name:'Simiarity'},{name:'IntellectualDepth'},{name:'Vulgarity'}]; //these shoukld load from the DB
     $scope.colSorts=[{name:'Analysis',prop:'score'},{name:'Priority',prop:'priority'},{name:'ID',prop:'id'}];
     //create the master object
