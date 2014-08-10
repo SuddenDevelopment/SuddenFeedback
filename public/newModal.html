@@ -1,0 +1,30 @@
+<div class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" ng-show="title">
+        <button type="button" class="close" ng-click="$hide()">&times;</button>
+      </div>
+      <div class="modal-body" >
+          <div style="width:100%;overflow:scroll;">
+            <ul>
+            <li>Template<select ng-model="report.template" ng-options="template.v as template.desc for template in templates"></select></li>
+        		<li>Theme</li>
+        		<li>Column Order{{report.colSort}} <select ng-model="report.colSort" ng-options="sort.prop as sort.name for sort in colSorts"></select></li>
+        		<li>Name <input ng-model="report.name" /></li>
+        		<li>Description <input ng-model="report.Description" /></li></li>
+        		<li>Started</li>
+        		<li>Updated</li>
+            <li>Item Count</li>
+            <li>Include by terms</li>
+            <li>Filter out terms</li>
+            <li>Count &amp; Highlight terms</li>
+        	</ul>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="saveReport()">Save</button>
+        <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

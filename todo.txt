@@ -19,10 +19,6 @@ full traffic save + accelerated playback, extra $$
 -grunt?, scheduling for automated reporting.
 
 //////||  INTERFACE  ||\\\\\\settings menu 
-Presentation Modes: 
-	Runoff:multiple equal things in a race, 
-	Vs: 2 thing, flanking small columns 1 big middle column for slideshow type presentation
-	Inspection: 1 term or set of terms that is explored from many angles, not divided into columns
 click on stats to make them terms in sets?
 auto branch, or update columns based on content in others columns
 where are the pretty charts that are always moving?
