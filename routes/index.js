@@ -16,11 +16,17 @@ var torfSentiment = false;
 var share = null;
 var twit = null;
 var uuid = require('node-uuid');
+var arrItems=[];
 
 exports.setShare = function(obj) { share = obj; }
 
 exports.index = function (req, res) {
-
+    var fnSend = _.debounce(function(arrItems,io){
+        if(arrItems.length > 0){
+            io.sockets.emit('newItems', arrItems);
+            var arrItems=[];
+        }
+    },100,{'maxWait': 500});
     //console.log(req.session.term);
     // The first time a user visits we give them a unique ID to track them with
     if(!req.session.uuid) { req.session.uuid = uuid.v4(); }
@@ -63,7 +69,6 @@ exports.index = function (req, res) {
             stream.on('error', function(error, code) { console.log("Stream error: " + error + ": " + code); });
             stream.on('data', function (objItem) {
                 //console.log('stream on data',objItem);
-                var arrItems=[];
                 var torfSend = true;
                 var filtered = false;
                 //console.log(req.session.report);
@@ -112,7 +117,8 @@ exports.index = function (req, res) {
                         else if(objReport.columns[i].show=='ColumnTitle'){ 
                             var strNeedle = objReport.columns[i].label.toLowerCase();
                             if(objItem.text.toLowerCase().indexOf(strNeedle)!= -1){objItem.column=objReport.columns[i].id;}
-                            //else if(_.find(objReport.columns[i].hashtags,{ 'text':strNeedle })){ objItem.column=objReport.columns[i].id; }
+                            else if(_.find(objReport.columns[i].hashtags,{ 'text':strNeedle })){ objItem.column=objReport.columns[i].id; }
+                            else if(_.find(objReport.columns[i].user_mentions,{ 'screen_name':strNeedle })){ objItem.column=objReport.columns[i].id; }
                         }
                         if(objItem.column && objItem.analysis.filtered){ arrItems.push({column:objItem.column,typ:'Tag',text:'filtered: '+objItem.analysis.filtered }); } //add a per colum tag for filtered items
                         if(objItem.column){ intColIndex=i;}
@@ -152,7 +158,8 @@ exports.index = function (req, res) {
                         for(var i=0;i<objItem.entities.user_mentions.length;i++){ arrItems.push({column:objItem.column,typ:'Mention',text:objItem.entities.user_mentions[i].screen_name.toLowerCase() }); }
                         for(var i=0;i<objItem.entities.hashtags.length;i++){ arrItems.push({column:objItem.column,typ:'Tag',text:objItem.entities.hashtags[i].text.toLowerCase() }); }
                     }else{ }
-                    if(arrItems.length > 0){io.sockets.emit('newItems', arrItems);}
+                    fnSend(arrItems,io);
+                    //if(arrItems.length > 0){io.sockets.emit('newItems', arrItems);}
                 }
             });
         }); //end stream
