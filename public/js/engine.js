@@ -12,10 +12,10 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.sorts=[{name:'priority',sort:'priority'},{name:'age',sort:'id'},{name:'username',sort:'user.screen_name'}];
     $scope.limits=[{limit:25},{limit:50},{limit:100},{limit:250},{limit:500},{limit:1000},{limit:10000}];
     $scope.wordFns=[{fn:'Find'},{fn:'Filter'},{fn:'Track'}];
-    $scope.shows=[{name:'ColumnTitle'},{name:'Notes'},{name:'TermSet'},{name:'AnalysisScore'},{name:'Orphans'}];
+    $scope.shows=[{name:'ColumnTitle'},{name:'Notes'},{name:'TermSet'},{name:'AnalysisScore'},{name:'Orphans'},{name:'Slides'}];
     $scope.analysis=[{name:'Sentiment'},{name:'Simiarity'},{name:'IntellectualDepth'},{name:'Vulgarity'}]; //these shoukld load from the DB
     $scope.colSorts=[{name:'Analysis',prop:'score'},{name:'Priority',prop:'priority'},{name:'ID',prop:'id'}];
-    $scope.templates=[{desc:'Runoff, 3+terms, 1 column each',v:'runoff'},{desc:'VS, 2 columns, 1 slideshow',v:'VS'},{desc:'Inspect, 1 term, several perspectives',v:'inspect'}];
+    $scope.templates=[{desc:'Runoff, 3+terms, 1 column each',v:'runoff'},{desc:'VS, 2 columns, 1 slideshow',v:'VS'},{desc:'Inspect, 1 term, several perspectives',v:'inspect'},{desc:'Custom',v:'Custom'}];
     //create the master object
     //manage individual items from the websocket
     $scope.addItem = function(objItem){ 
