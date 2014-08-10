@@ -16,15 +16,15 @@ var torfSentiment = false;
 var share = null;
 var twit = null;
 var uuid = require('node-uuid');
-var arrItems=[];
 
 exports.setShare = function(obj) { share = obj; }
 
 exports.index = function (req, res) {
+    var arrItems=[];
     var fnSend = _.debounce(function(arrItems,io){
         if(arrItems.length > 0){
             io.sockets.emit('newItems', arrItems);
-            var arrItems=[];
+            return true;
         }
     },100,{'maxWait': 500});
     //console.log(req.session.term);
@@ -158,7 +158,8 @@ exports.index = function (req, res) {
                         for(var i=0;i<objItem.entities.user_mentions.length;i++){ arrItems.push({column:objItem.column,typ:'Mention',text:objItem.entities.user_mentions[i].screen_name.toLowerCase() }); }
                         for(var i=0;i<objItem.entities.hashtags.length;i++){ arrItems.push({column:objItem.column,typ:'Tag',text:objItem.entities.hashtags[i].text.toLowerCase() }); }
                     }else{ }
-                    fnSend(arrItems,io);
+                    var torfSent = fnSend(arrItems,io);
+                    if(torfSent){ arrItems=[]; }
                     //if(arrItems.length > 0){io.sockets.emit('newItems', arrItems);}
                 }
             });
