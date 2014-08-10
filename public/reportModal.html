@@ -18,6 +18,11 @@
             <li>Filter out terms</li>
             <li>Count &amp; Highlight terms</li>
         	</ul>
+          Columns
+          <div class="row" ng-repeat="(index,column) in report.columns">
+                <div class="col-lg-10">{{column.label}}</div>
+                <div class="col-lg-2" ng-click="delCol(column.id)"><i class="fa fa-times"></i></div>
+              </div>
           </div>
       </div>
       <div class="modal-footer">
