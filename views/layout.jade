@@ -46,6 +46,7 @@ html(ng-app="SuddenFeedbackApp")
                             i(once-if="t.typ=='Tag'" class="fa fa-tag")
                             i(once-if="t.typ=='Mention'" class="fa fa-hand-o-right")
                             i(once-if="t.typ=='Symbol'" class="fa fa-usd")
+                            i(once-if="t.typ=='Filter'" class="fa fa-filter")
                             &nbsp;
                             span(once-text="t.text")
                         div(class='isotope-item-priority text-info'){{t.priority}}
@@ -64,5 +65,6 @@ html(ng-app="SuddenFeedbackApp")
                             i(once-if="t.typ=='Tag'" class="fa fa-tag")
                             i(once-if="t.typ=='Mention'" class="fa fa-hand-o-right")
                             i(once-if="t.typ=='Symbol'" class="fa fa-usd")
+                            i(once-if="t.typ=='Filter'" class="fa fa-filter")
                             &nbsp;
                             span(once-text="t.text")
