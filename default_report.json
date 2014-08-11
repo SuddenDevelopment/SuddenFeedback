@@ -1,5 +1,5 @@
 {
-	"_id" : "Anthony:Celebs",
+	"_id" : "Celebrity",
 	"columns" : [
 		{
 			"id" : 1,
@@ -11,10 +11,11 @@
 			"show" : "ColumnTitle",
 			"exclusive" : true,
 			"source" : "twitter",
-			"limit" : 100,
+			"limit" : 25,
 			"items" : [ ],
 			"stats" : [ ],
-			"score" : 2
+			"score" : 2,
+			"color" : "#600"
 		},
 		{
 			"id" : 3,
@@ -26,10 +27,11 @@
 			"show" : "ColumnTitle",
 			"exclusive" : true,
 			"source" : "twitter",
-			"limit" : 100,
+			"limit" : 25,
 			"items" : [ ],
 			"stats" : [ ],
-			"score" : 38
+			"score" : 38,
+			"color" : "#060"
 		},
 		{
 			"id" : 4,
@@ -41,10 +43,11 @@
 			"show" : "ColumnTitle",
 			"exclusive" : true,
 			"source" : "user",
-			"limit" : 100,
+			"limit" : 25,
 			"items" : [ ],
 			"stats" : [ ],
-			"score" : 17
+			"score" : 17,
+			"color" : "#006"
 		},
 		{
 			"id" : 5,
@@ -56,10 +59,11 @@
 			"show" : "ColumnTitle",
 			"exclusive" : true,
 			"source" : "user",
-			"limit" : 100,
+			"limit" : 25,
 			"items" : [ ],
 			"stats" : [ ],
-			"score" : 6
+			"score" : 6,
+			"color" : "#660"
 		},
 		{
 			"id" : 6,
@@ -71,22 +75,38 @@
 			"show" : "ColumnTitle",
 			"exclusive" : true,
 			"source" : "user",
-			"limit" : 100,
+			"limit" : 25,
 			"items" : [ ],
 			"stats" : [ ],
-			"score" : -5
+			"score" : -5,
+			"color" : "#066"
 		},
 		{
 			"label" : "notes",
 			"limit" : 100,
 			"sort" : "priority",
-			"width" : 2,
+			"width" : 1,
 			"items" : [ ],
 			"stats" : [ ],
 			"priority" : 1,
 			"id" : 49,
 			"show" : "Notes",
-			"score" : 0
+			"score" : 0,
+			"color" : "#606"
+		},
+		{
+			"label" : "Orphans",
+			"limit" : 100,
+			"sort" : "id",
+			"width" : 1,
+			"items" : [ ],
+			"stats" : [ ],
+			"priority" : 1,
+			"id" : 8,
+			"show" : "Orphans",
+			"analysis" : "Sentiment",
+			"score" : 0,
+			"color" : "#666"
 		}
 	],
 	"terms" : [
@@ -97,9 +117,6 @@
 			"terms" : [
 				{
 					"text" : "Miley"
-				},
-				{
-					"text" : "Beiber"
 				},
 				{
 					"text" : "Katy-Perry"
@@ -150,5 +167,6 @@
 			],
 			"fn" : "Track"
 		}
-	]
+	],
+	"name" : "Celebrity"
 }
