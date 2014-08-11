@@ -11,6 +11,7 @@ http://videohive.net/item/24-hitech-hud-interface-pack/2836699
 http://videohive.net/item/glowing-tech-circle-pack/8194396?ref=bridariam
 http://videohive.net/item/scifi-interface-hud-package/8226307?
 http://web.ccpgamescdn.com/newssystem/media/3066/3341/market_interface_ui.jpg
+http://www.themplio.com/themes/taurus-responsive-bootstrap3-admin-template/preview
 
 //////||  BACKOFFICE  ||\\\\\\
 MAKE SURE NOT TO DO ANALYTICS ON REPEAT MESSAGES!
@@ -19,6 +20,7 @@ full traffic save + accelerated playback, extra $$
 -grunt?, scheduling for automated reporting.
 
 //////||  INTERFACE  ||\\\\\\settings menu 
+vertical align middelt he slides column item
 click on stats to make them terms in sets?
 auto branch, or update columns based on content in others columns
 where are the pretty charts that are always moving?
