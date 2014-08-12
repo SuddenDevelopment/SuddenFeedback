@@ -5,20 +5,39 @@
         <button type="button" class="close" ng-click="$hide()">&times;</button>
       </div>
       <div class="modal-body" >
-          <div style="height:300px;width:100%;overflow:scroll;">
-            <ul>
-        			<li>id: {{column.id}} <input ng-model="column.id" /></li>
-              <li>color: {{column.color}} <input ng-model="column.color" /></li>
-              <li>priority: {{column.priority}}</li>
-              <li>label: {{column.label}}  <input ng-model="column.label" /></li>
-              <li>source: {{column.source}}</li>
-              <li>show: {{column.show}} <select ng-model="column.show" ng-options="show.name as show.name for show in shows"></select></li>
-               <li>sort: {{column.sort}} <select ng-model="column.sort" ng-options="sort.sort as sort.name for sort in sorts"></select></li>
-              <li>analysis: <select ng-model="column.analysis" ng-options="analysi.name as analysi.name for analysi in analysis"></select></li>
-              <li>limit: {{column.limit}} <select ng-model="column.limit" ng-options="limit.limit as limit.limit for limit in limits"></select></li>
-              <li>width: {{column.width}} <select ng-model="column.width" ng-options="width.width as width.name for width in widths"></select></li>
-        		</ul>
-          </div>
+        <h3>Column Settings</h3>
+        		<div class="row modal-menu-row">
+              <div class="col-lg-2">ID: </div>
+              <div class="col-lg-6"><input ng-model="column.id" /></div>
+            </div>
+            <div class="row modal-menu-row">
+              <div class="col-lg-2">Color: </div>
+              <div class="col-lg-6"><input ng-model="column.color" /></div>
+            </div>
+            <div class="row modal-menu-row">
+              <div class="col-lg-2">Priority: </div>
+              <div class="col-lg-6">{{column.priority}}</div>
+            </div>
+            <div class="row modal-menu-row">
+              <div class="col-lg-2">label: </div>
+              <div class="col-lg-6"><input ng-model="column.label" /></div>
+            </div>
+            <div class="row modal-menu-row">
+              <div class="col-lg-2">Show: </div>
+              <div class="col-lg-6"><input ng-model="column.show" /></div>
+            </div>
+            <div class="row modal-menu-row">
+              <div class="col-lg-2">Analysis: </div>
+              <div class="col-lg-6"><input ng-model="column.analysis" /></div>
+            </div>
+            <div class="row modal-menu-row">
+              <div class="col-lg-2">Limit: </div>
+              <div class="col-lg-6"><input ng-model="column.limit" /></div>
+            </div>
+            <div class="row modal-menu-row">
+              <div class="col-lg-2">Width: </div>
+              <div class="col-lg-6"><input ng-model="column.width" /></div>
+            </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" ng-click="delCol(column.id)">Remove</button>
