@@ -7,11 +7,9 @@ shoudnt need to create an item modal as every item is created.
 //////||  INSPIRATION  ||\\\\\\
 http://prologue.com/media/film/categories/main-titles-special-sequences/projects/iron-man-2/groups/interfaces
 http://architosh.com/wordpress/wp-content/uploads/2013/05/oblivion_3_07.jpg
-http://videohive.net/item/24-hitech-hud-interface-pack/2836699
 http://videohive.net/item/glowing-tech-circle-pack/8194396?ref=bridariam
 http://videohive.net/item/scifi-interface-hud-package/8226307?
-http://web.ccpgamescdn.com/newssystem/media/3066/3341/market_interface_ui.jpg
-http://www.themplio.com/themes/taurus-responsive-bootstrap3-admin-template/preview
+http://zanimation.com/
 
 //////||  BACKOFFICE  ||\\\\\\
 MAKE SURE NOT TO DO ANALYTICS ON REPEAT MESSAGES!
