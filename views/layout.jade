@@ -25,8 +25,8 @@ html(ng-app="SuddenFeedbackApp")
         i(class="fa" ng-class="{'fa-pause':play, 'fa-play':!play}" ng-click="pause()")
         div(class="content container-fluid")
             //////||  Horizontal Bar  ||\\\\\
-            div(class="row" style="width:100%;height:10px;overflow:hidden;")
-                div(class="HbarSegment" ng-repeat="(index,column) in report.columns | orderBy:report.colSort:true" ng-style="{width:((column.priority/report.priority)*100).toFixed(0)+'%', background:column.color}")&nbsp;
+            div(class="row" style="width:100%;height:5px;overflow:hidden;")
+                div(class="HbarSegment" ng-repeat="(index,column) in report.columns | orderBy:report.colSort:true" ng-style="{width:((column.priority/report.priority)*100).toFixed(0)+'%', background:column.color,'box-shadow':'0 2 20px '+column.color}")&nbsp;
             //////||  columns  ||\\\\\
             div(ng-repeat="(index,column) in report.columns | orderBy:report.colSort:true" once-if="column.width>0" id="{{index}}" class="isotope-container col-lg-{{column.width}}")
                 div(class="panel panel-primary" bs-modal="cmodal" data-template="colModal.html" style="margin-bottom:0;") 
