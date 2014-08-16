@@ -11,7 +11,25 @@ http://videohive.net/item/glowing-tech-circle-pack/8194396?ref=bridariam
 http://videohive.net/item/scifi-interface-hud-package/8226307?
 http://zanimation.com/
 
+http://well-formed-data.net/experiments/elastic_lists/
+http://www.wefeelfine.org/movements.html
+http://twistori.com/#i_hate
+http://visibletweets.com/
+user stats: http://foller.me/garin
+word cloud: http://www.wordle.net/
+http://angular-processing-demo.herokuapp.com/
+http://bedford.io/projects/coaltrace/
+twitter map: http://www.fbomb.co/
+best map: http://tweetping.net/
+https://github.com/mattosborn/angular-mappy
+http://square.github.io/crossfilter/
+timezone map: http://twitter.github.io/interactive/newyear2014/
+http://square.github.io/cubism/
+http://jacomyal.github.io/conrad.js/
+
 //////||  BACKOFFICE  ||\\\\\\
+https://github.com/ratscrew/ngMongo/wiki/how-it-all-works
+https://github.com/bnoguchi/everyauth
 MAKE SURE NOT TO DO ANALYTICS ON REPEAT MESSAGES!
 load, save and update reports with and without data, 
 full traffic save + accelerated playback, extra $$
@@ -50,6 +68,7 @@ grammar,
 transalte
 n-gram
 phantomjs on links
+unique messages / concepts
 
 //////|| CONTENT GENERATION? ||\\\\\\
 there are twitter trends functions in the twitter module/api
@@ -70,6 +89,8 @@ rss
 url shorteners http://dev.bitly.com/links.html#v3_expand
 http://dev.bitly.com/data_apis.html
 http://aws.amazon.com/kinesis/
+https://wiki.toolserver.org/view/Ghel
+YQL
 
 //////||  PRICES  ||\\\\\\
 registration, viewing, exploring = free
@@ -94,5 +115,8 @@ approach political campaigns and demonstrate some reports and how they can help 
 
 //////||  COMPETITORS  ||\\\\\\
 brandwatch
+sproutsocial
+http://www.tweetarchivist.com/79c0cf74/2110
+http://www.twitonomy.com/
 http://trendsmap.com/
 http://trends24.in/ just reference
