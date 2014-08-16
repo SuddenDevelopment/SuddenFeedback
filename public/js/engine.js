@@ -8,14 +8,15 @@ app.factory('FUIAPI', function($resource){ return $resource('/fuiapi', '',{ 'pos
 
 app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.play=true;
-    $scope.widths=[{name:'skinny',width:1},{name:'1/6 width',width:2} ,{name:'1/4 width',width:3} ,{name:'1/3 width',width:4} ,{name:'5/12 width',width:5} ,{name:'1/2 width',width:6} ,{name:'7/12 width',width:7} ,{name:'2/3 width',width:8} ,{name:'3/4 width',width:9} ,{name:'5/6 width',width:10} ,{name:'11/12 width',width:11} ,{name:'full width',width:12} ];
-    $scope.sorts=[{name:'priority',sort:'priority'},{name:'age',sort:'id'},{name:'username',sort:'user.screen_name'}];
-    $scope.limits=[{limit:25},{limit:50},{limit:100},{limit:250},{limit:500},{limit:1000},{limit:10000}];
-    $scope.wordFns=[{fn:'Find'},{fn:'Filter'},{fn:'Track'}];
-    $scope.shows=[{name:'ColumnTitle'},{name:'Notes'},{name:'TermSet'},{name:'AnalysisScore'},{name:'Orphans'},{name:'Slides'}];
-    $scope.analysis=[{name:'Sentiment'},{name:'Simiarity'},{name:'IntellectualDepth'},{name:'Vulgarity'}]; //these shoukld load from the DB
-    $scope.colSorts=[{name:'Analysis',prop:'score'},{name:'Priority',prop:'priority'},{name:'ID',prop:'id'}];
-    $scope.templates=[{desc:'Runoff, 3+terms, 1 column each',v:'runoff'},{desc:'VS, 2 columns, 1 slideshow',v:'VS'},{desc:'Inspect, 1 term, several perspectives',v:'inspect'},{desc:'Custom',v:'Custom'}];
+    $scope.widths=[{k:'skinny',v:1},{k:'1/6 width',v:2} ,{k:'1/4 width',v:3} ,{k:'1/3 width',v:4} ,{k:'5/12 width',v:5} ,{k:'1/2 width',v:6} ,{k:'7/12 width',v:7} ,{k:'2/3 width',v:8} ,{k:'3/4 width',v:9} ,{k:'5/6 width',v:10} ,{k:'11/12 width',v:11} ,{k:'full width',v:12} ];
+    $scope.heights=[{k:'1/8 height',v:'12.5%%'},{k:'1/4 height',v:'25%'},{k:'1/2 height',v:'50%'},{k:'3/4 height',v:'75%'}];
+    $scope.sorts=[{k:'priority',v:'priority'},{k:'age',v:'id'},{k:'username',v:'user.screen_name'}];
+    $scope.limits=[{v:25},{v:50},{v:100},{v:250},{v:500},{v:1000},{v:10000}];
+    $scope.wordFns=[{v:'Find'},{v:'Filter'},{v:'Track'}];
+    $scope.shows=[{v:'ColumnTitle'},{v:'Notes'},{v:'TermSet'},{v:'AnalysisScore'},{v:'Orphans'},{v:'Slides'}];
+    $scope.analysis=[{v:'Sentiment'},{v:'Simiarity'},{v:'IntellectualDepth'},{v:'Vulgarity'}]; //these shoukld load from the DB
+    $scope.colSorts=[{k:'Analysis',v:'score'},{k:'Priority',v:'priority'},{k:'ID',v:'id'}];
+    $scope.templates=[{k:'Runoff, 3+terms, 1 column each',v:'runoff'},{k:'VS, 2 columns, 1 slideshow',v:'VS'},{k:'Inspect, 1 term, several perspectives',v:'inspect'},{k:'Custom',v:'Custom'}];
     //create the master object
     //manage individual items from the websocket
     $scope.addItem = function(objItem){ 

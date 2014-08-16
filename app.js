@@ -12,7 +12,7 @@ var util = require('util');
 var OAuth = require('oauth').OAuth;
 var mongodb = require('mongodb');
 var fs = require('fs');
-var share = require('./modules/share');
+var share = require('./modules/share'); //utility wes wrote for data betwen node files instead of session
 var program = require('commander');
 var uuid = require('node-uuid');
 
