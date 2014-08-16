@@ -220,6 +220,7 @@ var fnNormalizeReport = function(objReport){
 	 	_.forEach(objReport.columns,function(objCol,i){
 	 		if(!objCol.score){ objReport.columns[i].score=0; } //set an initial analysis score if it doesnt exist
 	 		if(!objCol.priority || objCol.priority < 1){ objReport.columns[i].priority=1; }
+	 		if(!objCol.components){objReport.columns[i].components=[];}
 	 	});
 	return objReport;
 }

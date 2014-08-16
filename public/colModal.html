@@ -42,8 +42,20 @@
               <div class="col-lg-2">Width: </div>
               <div class="col-lg-6"><select ng-model="column.width" ng-options="arr.v as arr.k for arr in widths"></select></div>
             </div>
+        <h2>Column Components</h2>
+          <div ng-repeat="comp in column.components">
+            <div class="row modal-menu-row">
+              <div class="col-lg-2">Type: </div>
+              <div class="col-lg-6"><select ng-model="comp.type" ng-options="arr.v as arr.v for arr in comps"></select></div>
+            </div>
+            <div class="row modal-menu-row">
+              <div class="col-lg-2">Height: </div>
+              <div class="col-lg-6"><select ng-model="comp.height" ng-options="arr.v as arr.k for arr in heights"></select></div>
+            </div>
+          </div>
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="addComp(column.id)">Add Component</button>
         <button type="button" class="btn btn-default" ng-click="delCol(column.id)">Remove</button>
         <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
       </div>
