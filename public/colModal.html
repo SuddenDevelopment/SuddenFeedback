@@ -5,7 +5,7 @@
         <button type="button" class="close" ng-click="$hide()">&times;</button>
       </div>
       <div class="modal-body" >
-          <div style="height:300px;width:100%;overflow:scroll;">
+        <h2>Column Settings</h2>
         		<div class="row modal-menu-row">
               <div class="col-lg-2">ID: </div>
               <div class="col-lg-6"><input ng-model="column.id" /></div>
@@ -42,11 +42,6 @@
               <div class="col-lg-2">Width: </div>
               <div class="col-lg-6"><select ng-model="column.width" ng-options="width.width as width.name for width in widths"></select></div>
             </div>
-            <div class="row modal-menu-row">
-              <div class="col-lg-2">ID: </div>
-              <div class="col-lg-6"><input ng-model="column.id" /></div>
-            </div>
-          </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" ng-click="delCol(column.id)">Remove</button>
