@@ -9,7 +9,7 @@ app.factory('FUIAPI', function($resource){ return $resource('/fuiapi', '',{ 'pos
 app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.play=true;
     $scope.widths=[{k:'skinny',v:1},{k:'1/6 width',v:2} ,{k:'1/4 width',v:3} ,{k:'1/3 width',v:4} ,{k:'5/12 width',v:5} ,{k:'1/2 width',v:6} ,{k:'7/12 width',v:7} ,{k:'2/3 width',v:8} ,{k:'3/4 width',v:9} ,{k:'5/6 width',v:10} ,{k:'11/12 width',v:11} ,{k:'full width',v:12} ];
-    $scope.heights=[{k:'1/8 height',v:'12.5%%'},{k:'1/4 height',v:'25%'},{k:'1/2 height',v:'50%'},{k:'3/4 height',v:'75%'}];
+    $scope.heights=[{k:'1/8 height',v:'12.5'},{k:'1/4 height',v:'25'},{k:'1/2 height',v:'50'},{k:'3/4 height',v:'75'},{k:'full height',v:'100'}];
     $scope.sorts=[{k:'priority',v:'priority'},{k:'age',v:'id'},{k:'username',v:'user.screen_name'}];
     $scope.limits=[{v:25},{v:50},{v:100},{v:250},{v:500},{v:1000},{v:10000}];
     $scope.wordFns=[{v:'Find'},{v:'Filter'},{v:'Track'}];
@@ -17,6 +17,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.analysis=[{v:'Sentiment'},{v:'Simiarity'},{v:'IntellectualDepth'},{v:'Vulgarity'}]; //these shoukld load from the DB
     $scope.colSorts=[{k:'Analysis',v:'score'},{k:'Priority',v:'priority'},{k:'ID',v:'id'}];
     $scope.templates=[{k:'Runoff, 3+terms, 1 column each',v:'runoff'},{k:'VS, 2 columns, 1 slideshow',v:'VS'},{k:'Inspect, 1 term, several perspectives',v:'inspect'},{k:'Custom',v:'Custom'}];
+    $scope.comps=[{v:'Items'},{v:'Stats'},{v:'Map'},{v:'Montage'},{v:'Charts'},{v:'WordCloud'}];
     //create the master object
     //manage individual items from the websocket
     $scope.addItem = function(objItem){ 
@@ -97,7 +98,10 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         $scope.report.terms.push(newSet);
         //FUIAPI.query({},function(response){  }); 
     }
-    $scope.addCol = function(){ $scope.report.columns.push({label:'new',limit:100,sort:'priority',width:1,items:[],stats:[],priority:1,id:Math.floor((Math.random()*100)+1)}); }
+    $scope.addComp = function(idCol){ var intCol = getIndex($scope.report.columns,'id',idCol); $scope.report.columns[intCol].components.push({type:'Stats',height:'25'}); }
+    $scope.addCol = function(){ 
+        $scope.report.columns.push({label:'new',limit:100,sort:'priority',width:1,items:[],stats:[],priority:1,id:Math.floor((Math.random()*100)+1)}); 
+    }
     $scope.delCol = function(idCol){ $scope.report.columns.splice(getIndex($scope.report.columns,'id',idCol),1); }
     $scope.saveSet = function(){ FUIAPI.post({a:'saveTerms',q:$scope.report.terms},function(response){ console.log(response,'response'); }); }
     $scope.loadSet = function(){ FUIAPI.post({},function(response){  }); }
