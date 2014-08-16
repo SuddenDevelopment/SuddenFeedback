@@ -24,23 +24,23 @@
             </div>
             <div class="row modal-menu-row">
               <div class="col-lg-2">Show: </div>
-              <div class="col-lg-6"><select ng-model="column.show" ng-options="show.name as show.name for show in shows"></select></div>
+              <div class="col-lg-6"><select ng-model="column.show" ng-options="arr.v as arr.v for arr in shows"></select></div>
             </div>
              <div class="row modal-menu-row">
               <div class="col-lg-2">Sort: </div>
-              <div class="col-lg-6"><select ng-model="column.sort" ng-options="sort.sort as sort.name for sort in sorts"></select></div>
+              <div class="col-lg-6"><select ng-model="column.sort" ng-options="arr.v as arr.k for arr in sorts"></select></div>
             </div>
             <div class="row modal-menu-row">
               <div class="col-lg-2">Analysis: </div>
-              <div class="col-lg-6"><select ng-model="column.analysis" ng-options="analysi.name as analysi.name for analysi in analysis"></select></div>
+              <div class="col-lg-6"><select ng-model="column.analysis" ng-options="arr.v as arr.v for arr in analysis"></select></div>
             </div>
             <div class="row modal-menu-row">
               <div class="col-lg-2">Limit: </div>
-              <div class="col-lg-6"><select ng-model="column.limit" ng-options="limit.limit as limit.limit for limit in limits"></select></div>
+              <div class="col-lg-6"><select ng-model="column.limit" ng-options="arr.v as arr.v for arr in limits"></select></div>
             </div>
             <div class="row modal-menu-row">
               <div class="col-lg-2">Width: </div>
-              <div class="col-lg-6"><select ng-model="column.width" ng-options="width.width as width.name for width in widths"></select></div>
+              <div class="col-lg-6"><select ng-model="column.width" ng-options="arr.v as arr.k for arr in widths"></select></div>
             </div>
       </div>
       <div class="modal-footer">

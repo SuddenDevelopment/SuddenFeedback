@@ -9,7 +9,7 @@
             <ul>
             <li>Template<select ng-model="report.template" ng-options="template.v as template.desc for template in templates"></select></li>
         		<li>Theme</li>
-        		<li>Column Order{{report.colSort}} <select ng-model="report.colSort" ng-options="sort.prop as sort.name for sort in colSorts"></select></li>
+        		<li>Column Order{{report.colSort}} <select ng-model="report.colSort" ng-options="arr.v as arr.k for arr in colSorts"></select></li>
         		<li>Name <input ng-model="report.name" /></li>
         		<li>Description <input ng-model="report.Description" /></li></li>
         		<li>Started</li>
