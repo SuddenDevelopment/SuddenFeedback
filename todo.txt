@@ -47,10 +47,10 @@ http://ngmodules.org/modules/AngularJS-Toaster
 dyanmic item backgrounds, column backgrounds with transparent items
 -horizontal scroll through columns
 https://docs.angularjs.org/api/ng/service/$anchorScroll
-pause, buffer
 http://codepen.io/dmac37/pen/cfArp
 http://css-tricks.com/understanding-border-image/
 http://ngmodules.org/modules/angular-progress-arc
+http://blackgate.github.io/bg-splitter/ ?
 
 //////||  BS FILTER  ||\\\\\\
 filter out excessive tagging and single letter tags

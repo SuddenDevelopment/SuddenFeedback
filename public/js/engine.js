@@ -2,7 +2,7 @@
 function getIndex(arr,key,value){ for(i=0; i<arr.length;i++){ if(arr[i][key]==value){ delete window.arr; return i; } } } //shim function to get the index by a key/value for when the index reported by angular doesnt match
 function fnSortArr(arrItems,strProp){ return _.sortBy(arrItems, function (obj) { return obj[strProp]; }); }
 
-var app = angular.module('SuddenFeedbackApp', ['mgcrea.ngStrap','ngSanitize','ngResource','ngTagsInput','once']);
+var app = angular.module('SuddenFeedbackApp', ['mgcrea.ngStrap','ngSanitize','ngResource','ngTagsInput','once','ngAnimate']);
 //api page / reoute for saving and loading non-streaming data
 app.factory('FUIAPI', function($resource){ return $resource('/fuiapi', '',{ 'post':{method:'POST'} }) });
 

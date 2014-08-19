@@ -22,7 +22,8 @@ div.isotope-item-content{ float:left; display:inline; max-width:74%; padding:aut
 div.isotope-item img{  max-width:95%; max-height:128px; }
 div.fuiColumn.Slides.isotope-item img{max-height:95%;}
 div.isotope-item{ 
-	float: left; 
+	float: left;
+  color:#777;
 	border: 1px solid #111;
 	font: 12px;
 	width: 99%;
@@ -77,4 +78,42 @@ div.fuiColumn.Slides{ font-size: 40px; }
       opacity: 0;
     }
   }
+}
+
+
+.isotope-item.ng-enter, .isotope-item.ng-move {
+  -webkit-transition:0.5s linear all;
+  -moz-transition:0.5s linear all;
+  -o-transition:0.5s linear all;
+  transition:0.5s linear all;
+  opacity:0;
+}
+.isotope-item.ng-enter.ng-enter-active,
+.isotope-item.ng-move.ng-move-active {
+  opacity:1;
+}
+.isotope-item.ng-leave {
+  -webkit-animation:0.5s my_animation;
+  -moz-animation:0.5s my_animation;
+  -o-animation:0.5s my_animation;
+  animation:0.5s my_animation;
+}
+
+@keyframes my_animation {
+  from { opacity:1; }
+  to { opacity:0; }
+}
+@-webkit-keyframes my_animation {
+  from { opacity:1; }
+  to { opacity:0; }
+}
+
+@-moz-keyframes my_animation {
+  from { opacity:1; }
+  to { opacity:0; }
+}
+
+@-o-keyframes my_animation {
+  from { opacity:1; }
+  to { opacity:0; }
 }
