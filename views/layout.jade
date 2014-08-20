@@ -35,7 +35,7 @@ html(ng-app="SuddenFeedbackApp")
                             div(class="col-lg-8 text-left") {{column.label}}
                             div(class="col-lg-2 text-center") {{column.score}}
                             div(class="col-lg-2 text-right text-info" ng-style="{color:column.color}") {{((column.priority/report.priority)*100).toFixed(0)}}%
-                div(class="fuiColumn row" ng-class="{'majorheight':column.stats.length, 'Slides':column.show=='Slides'}")    
+                div(class="fuiColumn row" ng-style="{height:column.itemsheight+'%'}" ng-class="{'Slides':column.show=='Slides'}")    
                     //////||  items  ||\\\\\
                     div(class='isotope-item well well-sm' ng-animate=" 'animate' " ng-repeat="(i,t) in column.items | orderBy:column.sort:true | limitTo:column.limit track by t.text" ng-class="{'new':t.status<0,'updated':t.status>0}" bs-modal="imodal" data-template="itemModal.html")
                         div(class="media" once-if="t.entities.media")
@@ -55,9 +55,9 @@ html(ng-app="SuddenFeedbackApp")
                             a(ng-repeat="url in t.entities.urls" href="{{url.expanded_url}}")
                                 i(class="fa fa-link text-warning")
                         i(ng-if="t.geo" class="fa fa-map-marker")
-                //////||  stats  ||\\\\\
-                div(class="fuiColumn row" ng-if="column.stats.length" once-class="{'minorheight':column.stats.length}")
-                    div(class='isotope-item well well-sm' ng-repeat="(i,t) in column.stats | orderBy:'priority':true | limitTo:column.limit/4 track by t.text")
+                //////||  Components  ||\\\\\
+                div(class="fuiColumn fuiColumnComponent" ng-if="column.components.length" ng-repeat="comp in column.components" ng-style="{height:comp.height+'%'}")
+                    div(class='isotope-item well well-sm' ng-repeat="(i,t) in comp.items | orderBy:'priority':true | limitTo:20 track by t.text")
                         div(class='isotope-item-priority text-info text-right'){{t.priority}}
                         div(class='isotope-item-content')
                             //todo: convert to a ingle ng-class
