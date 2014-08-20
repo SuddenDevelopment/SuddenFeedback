@@ -23,13 +23,17 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.addItem = function(objItem){ 
         //console.log(objItem.analysis);
         var idxColumn = getIndex($scope.report.columns,'id',objItem.column); //get the column
-        var propArray='items'; if(objItem.typ!='Msg'){propArray='stats';} //decide which collection within a column to work on
-        var intLength=$scope.report.columns[idxColumn][propArray].length;
+        var propArray=$scope.report.columns[idxColumn].items; if(objItem.typ!='item' && $scope.report.columns[idxColumn].components.length > 0){
+            _.forEach($scope.report.columns[idxColumn].components,function(objComp,i){ 
+                if(objComp.type=='Stats'){propArray=$scope.report.columns[idxColumn].components[i].items;} 
+            });
+        } //decide which collection within a column to work on
+        var intLength=propArray.length;
         var arrDelete=[];
         //||||  COLUMN+ARRAY LOOP  ||||\\
         //this is a one time loop through a collection when touched, do everything possible in the 1 loop.
         if(!objItem.priority){objItem.priority=1;} var torfRT=false; //set default priority, much of the system requires priority for realtime sorting
-            _.forEach($scope.report.columns[idxColumn][propArray],function(objI){
+            _.forEach(propArray,function(objI){
                 if(objI.status > 0){objI.status--;}else if(objI.status < 0){objI.status++;}else{objI.status=0;} //status decay, connected to border colors  
                 if(torfRT===false && objI.text==objItem.text){
                     if(objItem.priority < 2 || objItem.priority <= objI.priority){ objI.priority++;} //cumulative priority
@@ -37,14 +41,14 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
                     if(objI.status===0){objI.status=10;} // it exists and has decayed to 0 already, so it's an update
                     torfRT = true; 
                 }
-                if(intLength>$scope.report.columns[idxColumn].limit && objI.position>$scope.report.columns[idxColumn].limit){ $scope.report.columns[idxColumn][propArray].splice(i--, 1); intLength--;} //limit reached, start trimming            
+                if(intLength>$scope.report.columns[idxColumn].limit && objI.position>$scope.report.columns[idxColumn].limit){ propArray.splice(i--, 1); intLength--;} //limit reached, start trimming            
             });
-            if(propArray=='items'){ $scope.report.columns[idxColumn].priority++; $scope.report.priority++; } //column priority, report priority used for column %
-            if(propArray=='items' && objItem.analysis){var strAnalysis = $scope.report.columns[idxColumn].analysis.toLowerCase();}
+            if(objItem.typ=='item'){ $scope.report.columns[idxColumn].priority++; $scope.report.priority++; } //column priority, report priority used for column %
+            if(objItem.typ=='item' && objItem.analysis){var strAnalysis = $scope.report.columns[idxColumn].analysis.toLowerCase();}
         if(torfRT === false){
             objItem.status= -5; //new item status count
-            $scope.report.columns[idxColumn][propArray].unshift(objItem); 
-            if(propArray=='items' && objItem.analysis){ 
+            propArray.unshift(objItem); 
+            if(objItem.typ=='item' && objItem.analysis){ 
                 $scope.report.columns[idxColumn].score += objItem.analysis[strAnalysis]; 
                 $scope.addSlide(objItem);
             }
@@ -56,9 +60,9 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         if(idPresCol){ //todo: convert this to a loop over an array for tighter code
             objItem.text = objItem.text.replace('. ',".<br/>")
             objItem.text = objItem.text.replace('? ',"?<br/>")
-            objItem.text = objItem.text.replace('! ',"?<br/>")
-            objItem.text = objItem.text.replace('; ',"?<br/>")
-            objItem.text = objItem.text.replace(': ',"?<br/>")
+            objItem.text = objItem.text.replace('! ',"!<br/>")
+            objItem.text = objItem.text.replace('; ',";<br/>")
+            objItem.text = objItem.text.replace(': ',":<br/>")
             $scope.report.columns[idPresCol].items[0]=objItem; 
         }
     }
@@ -66,6 +70,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.loadOptions = function(){ FUIAPI.post({a:'init'},function(response){ 
             $scope.report=response; //load any menu options and configs set in the DB that sit outside the report doc, system level
             if(!$scope.report.priority){$scope.report.priority=0; _.forEach($scope.report.columns,function(objC){$scope.report.priority+=objC.priority;});}
+            $scope.layout(); //calculate the panel sizes based on column components
             console.log(response); 
         }); 
     }
@@ -86,7 +91,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.updateNote = function(t){
         var intColumn = false;
         _.forEach($scope.report.columns,function(objCol){ if(objCol.show=='Notes'){ intColumn=objCol.id; } });
-        if(intColumn){ var objItem = {column:intColumn,text:'item note: '+t.notes,priority:1,typ:'Msg'}; $scope.addItem(objItem); }
+        if(intColumn){ var objItem = {column:intColumn,text:'item note: '+t.notes,priority:1,typ:'item'}; $scope.addItem(objItem); }
     }
     $scope.delItem = function(idItem,idColumn){ 
         var intColumn = false;
@@ -103,14 +108,17 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         $scope.report.columns.push({label:'new',limit:100,sort:'priority',width:1,items:[],stats:[],priority:1,id:Math.floor((Math.random()*100)+1)}); 
     }
     $scope.delCol = function(idCol){ $scope.report.columns.splice(getIndex($scope.report.columns,'id',idCol),1); }
+    $scope.layout = function(){ _.forEach($scope.report.columns,function(objCol,i){ 
+        var intItemContainerHeight = 100;
+        if(objCol.components.length > 0){ _.forEach(objCol.components,function(objComp){ intItemContainerHeight -= objComp.height; }); }
+        $scope.report.columns[i].itemsheight=intItemContainerHeight;
+    }); }
     $scope.saveSet = function(){ FUIAPI.post({a:'saveTerms',q:$scope.report.terms},function(response){ console.log(response,'response'); }); }
     $scope.loadSet = function(){ FUIAPI.post({},function(response){  }); }
     $scope.delSet = function(){ FUIAPI.post({},function(response){  }); }
-    //connect to the websocket
-    $scope.pause = function(){ 
-        if($scope.play){$scope.play=false; console.log('pause');}else{$scope.play=true;} console.log('play');};
+    $scope.pause = function(){ if($scope.play){$scope.play=false; console.log('pause');}else{$scope.play=true;} console.log('play');};
     $scope.feed = function(){
-        var socket = io.connect('http://localhost:3001'); 
+        var socket = io.connect('http://localhost:3001'); //connect to the websocket
         socket.on('newItems', function (arrItems){ 
             if($scope.play){
                 _.forEach(arrItems,function(objItem){ $scope.addItem(objItem); }); 
@@ -121,7 +129,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     }
     //start everything
     $scope.init = function(){ 
-        $scope.loadOptions(); 
+        $scope.loadOptions();
         $scope.feed();
     }
     //$scope.modalItem = function(objItem){ itemModal.show(); }

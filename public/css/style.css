@@ -59,8 +59,8 @@ div.isotope-item-priority{margin-left:3px; bottom:3px;}
 .isotope-item{z-index:1;}
 .row{margin-left: -2px; margin-right: -2px;}
 .fuiColumn{height:100%; overflow:scroll;}
-.fuiColumn.majorheight{height:75%; overflow:scroll; margin-bottom:5px;}
-.fuiColumn.minorheight{height:25%; overflow:scroll; border-top: 3px double #5bc0de;}
+.fuiColumn.component{height:75%; overflow:scroll; margin-bottom:5px;}
+.fuiColumnComponent{overflow:scroll; border-top: 3px double #5bc0de;}
 div.fuiColumn.Slides{ font-size: 40px; }
 /* animation stuff */
 .modal-backdrop.am-fade {

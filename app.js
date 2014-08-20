@@ -221,6 +221,9 @@ var fnNormalizeReport = function(objReport){
 	 		if(!objCol.score){ objReport.columns[i].score=0; } //set an initial analysis score if it doesnt exist
 	 		if(!objCol.priority || objCol.priority < 1){ objReport.columns[i].priority=1; }
 	 		if(!objCol.components){objReport.columns[i].components=[];}
+	 		if(objCol.components.length){ _.forEach(objCol.components,function(objComp,ii){
+	 			if(!objComp.items){ objReport.columns[i].components[ii].items=[]; }
+	 		}) }
 	 	});
 	return objReport;
 }
