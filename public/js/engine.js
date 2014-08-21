@@ -25,7 +25,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         var idxColumn = getIndex($scope.report.columns,'id',objItem.column); //get the column
         var propArray=$scope.report.columns[idxColumn].items; if(objItem.typ!='item' && $scope.report.columns[idxColumn].components.length > 0){
             _.forEach($scope.report.columns[idxColumn].components,function(objComp,i){ 
-                if(objComp.type=='Stats'){propArray=$scope.report.columns[idxColumn].components[i].items;} 
+                if(objComp.typ=='Stats'){propArray=$scope.report.columns[idxColumn].components[i].items;} 
             });
         } //decide which collection within a column to work on
         var intLength=propArray.length;
@@ -108,11 +108,9 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         $scope.report.terms.push(newSet);
         //FUIAPI.query({},function(response){  }); 
     }
-    $scope.addComp = function(idCol){ var intCol = getIndex($scope.report.columns,'id',idCol); $scope.report.columns[intCol].components.push({type:'Stats',height:'25'}); }
+    $scope.addComp = function(idCol){ var intCol = getIndex($scope.report.columns,'id',idCol); $scope.report.columns[intCol].components.push({typ:'Stats',height:'25'}); }
     $scope.delComp = function(idCol,i){ var intCol = getIndex($scope.report.columns,'id',idCol); $scope.report.columns[intCol].components.splice(i,1); }
-    $scope.addCol = function(){ 
-        $scope.report.columns.push({label:'new',limit:100,sort:'priority',width:1,items:[],stats:[],priority:1,id:Math.floor((Math.random()*100)+1)}); 
-    }
+    $scope.addCol = function(){ $scope.report.columns.push({label:'new',limit:100,sort:'priority',width:1,items:[],stats:[],priority:1,id:Math.floor((Math.random()*100)+1)}); }
     $scope.delCol = function(idCol){ $scope.report.columns.splice(getIndex($scope.report.columns,'id',idCol),1); }
     $scope.layout = function(){ _.forEach($scope.report.columns,function(objCol,i){ 
         var intItemContainerHeight = 100;
