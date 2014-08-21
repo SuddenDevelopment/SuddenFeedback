@@ -121,7 +121,7 @@ exports.index = function (req, res) {
                             else if(_.find(objReport.columns[i].user_mentions,{ 'screen_name':strNeedle })){ objItem.column=objReport.columns[i].id; }
                         }
                         if(objItem.column && objItem.analysis.filtered){ arrItems.push({column:objItem.column,typ:'Filter',text:objItem.analysis.filtered }); } //add a per colum tag for filtered items
-                        if(objItem.column){ intColIndex=i;}
+                        if(objItem.column && !intColIndex){ intColIndex=i;}
                     }
                     if(!objItem.column){ 
                         intColIndex = getIndex(objReport.columns,'show','Orphans');
@@ -155,8 +155,7 @@ exports.index = function (req, res) {
                     if(torfSend && objItem.column>0){
                         arrItems.push(objItem);
                         //add stats
-                        if(objReport.columns[intColIndex].components.length){ console.log( objReport.columns[intColIndex].components[0].type ); }
-                        if(objReport.columns[intColIndex].components && _.find(objReport.columns[intColIndex].components,{'type':'Stats'})){
+                        if( _.find(objReport.columns[intColIndex].components,{'typ':'Stats'}) ){
                             arrItems.push({column:objItem.column,typ:'User',text:objItem.user.screen_name});
                             for(var i=0;i<objItem.entities.urls.length;i++){ arrItems.push({column:objItem.column,typ:'Link',text:objItem.entities.urls[i].expanded_url.toLowerCase() }); }
                             for(var i=0;i<objItem.entities.symbols.length;i++){ arrItems.push({column:objItem.column,typ:'Symbol',text:objItem.entities.symbols[i].text.toLowerCase() }); }
