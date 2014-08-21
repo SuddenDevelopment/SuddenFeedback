@@ -74,7 +74,12 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
             console.log(response); 
         }); 
     }
-    $scope.clear = function(){ for(var i=0;i<$scope.report.columns.length;i++){ $scope.report.columns[i].items=[]; $scope.report.columns[i].stats=[]; $scope.report.columns[i].priority=1; } }
+    $scope.clear = function(){ 
+            _.forEach($scope.report.columns,function(objCol,i){
+                $scope.report.columns[i].items = []; $scope.report.columns[i].priority=1;
+                if(objCol.components){ _.forEach(objCol.components,function(objComp,ii){ $scope.report.columns[i].components[ii].items=[]; }); }
+            });
+        }
     $scope.listReports = function(objReport,withData){ FUIAPI.post({a:'listReports'},function(response){ $scope.reportList=response.reportList; console.log(response); }); }
     $scope.loadReport = function(strReport,withData){ FUIAPI.post({a:'loadReport',q:strReport},function(response){ $scope.report=response; console.log(response); }); }
     $scope.delReport = function(strReport,withData){ FUIAPI.post({a:'delReport',q:strReport},function(response){ if(response=='report deleted'){ $scope.reportList.splice(getIndex($scope.reportList,'_id',strReport),1); } }); }
