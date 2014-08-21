@@ -109,6 +109,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
         //FUIAPI.query({},function(response){  }); 
     }
     $scope.addComp = function(idCol){ var intCol = getIndex($scope.report.columns,'id',idCol); $scope.report.columns[intCol].components.push({type:'Stats',height:'25'}); }
+    $scope.delComp = function(idCol,i){ var intCol = getIndex($scope.report.columns,'id',idCol); $scope.report.columns[intCol].components.splice(i,1); }
     $scope.addCol = function(){ 
         $scope.report.columns.push({label:'new',limit:100,sort:'priority',width:1,items:[],stats:[],priority:1,id:Math.floor((Math.random()*100)+1)}); 
     }
