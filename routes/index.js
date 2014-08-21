@@ -155,11 +155,14 @@ exports.index = function (req, res) {
                     if(torfSend && objItem.column>0){
                         arrItems.push(objItem);
                         //add stats
-                        arrItems.push({column:objItem.column,typ:'User',text:objItem.user.screen_name});
-                        for(var i=0;i<objItem.entities.urls.length;i++){ arrItems.push({column:objItem.column,typ:'Link',text:objItem.entities.urls[i].expanded_url.toLowerCase() }); }
-                        for(var i=0;i<objItem.entities.symbols.length;i++){ arrItems.push({column:objItem.column,typ:'Symbol',text:objItem.entities.symbols[i].text.toLowerCase() }); }
-                        for(var i=0;i<objItem.entities.user_mentions.length;i++){ arrItems.push({column:objItem.column,typ:'Mention',text:objItem.entities.user_mentions[i].screen_name.toLowerCase() }); }
-                        for(var i=0;i<objItem.entities.hashtags.length;i++){ arrItems.push({column:objItem.column,typ:'Tag',text:objItem.entities.hashtags[i].text.toLowerCase() }); }
+                        if(objReport.columns[intColIndex].components.length){ console.log( objReport.columns[intColIndex].components[0].type ); }
+                        if(objReport.columns[intColIndex].components && _.find(objReport.columns[intColIndex].components,{'type':'Stats'})){
+                            arrItems.push({column:objItem.column,typ:'User',text:objItem.user.screen_name});
+                            for(var i=0;i<objItem.entities.urls.length;i++){ arrItems.push({column:objItem.column,typ:'Link',text:objItem.entities.urls[i].expanded_url.toLowerCase() }); }
+                            for(var i=0;i<objItem.entities.symbols.length;i++){ arrItems.push({column:objItem.column,typ:'Symbol',text:objItem.entities.symbols[i].text.toLowerCase() }); }
+                            for(var i=0;i<objItem.entities.user_mentions.length;i++){ arrItems.push({column:objItem.column,typ:'Mention',text:objItem.entities.user_mentions[i].screen_name.toLowerCase() }); }
+                            for(var i=0;i<objItem.entities.hashtags.length;i++){ arrItems.push({column:objItem.column,typ:'Tag',text:objItem.entities.hashtags[i].text.toLowerCase() }); }
+                        }
                     }else{ }
                     var torfSent = fnSend(arrItems,io);
                     if(torfSent){ arrItems=[]; }
