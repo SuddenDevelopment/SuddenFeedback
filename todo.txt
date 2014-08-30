@@ -30,6 +30,8 @@ http://jacomyal.github.io/conrad.js/
 //////||  BACKOFFICE  ||\\\\\\
 https://github.com/ratscrew/ngMongo/wiki/how-it-all-works
 https://github.com/bnoguchi/everyauth
+https://github.com/primus/primus   ?
+http://marcolanaro.github.io/DataChannel.IO/  ?
 MAKE SURE NOT TO DO ANALYTICS ON REPEAT MESSAGES!
 load, save and update reports with and without data, 
 full traffic save + accelerated playback, extra $$
