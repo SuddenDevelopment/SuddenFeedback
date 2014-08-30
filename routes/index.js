@@ -4,6 +4,7 @@ function getIndex(arr,key,value){ for(i=0; i<arr.length;i++){ if(arr[i][key]==va
 /*
  * GET home page.
  */
+var debug = true;
 var _ = require('lodash');
 var twitter = require('ntwitter');
 var io = require('socket.io').listen(3001, {log: false});
@@ -145,7 +146,7 @@ exports.index = function (req, res) {
                             objReport.columns[intColIndex]['items'] = fnSortArr(objReport.columns[intColIndex]['items'],objReport.columns[intColIndex].sort); //sort the column
                             if(getIndex(objReport.columns[intColIndex]['items'],'id',objItem.id)>objReport.columns[intColIndex].limit){ torfSend=false; }//make sure it's high enough sort order to sed to browser
                         }
-                    }else{
+                    }else if(debug===true){
                         console.log('column: '+objItem.column+"\n"+objItem.text)+"\n \n"; //when this is triggered no column was assigned, if it happens too often something is wrong
                     }
                 //END LOCAL STORAGE\\
@@ -162,7 +163,7 @@ exports.index = function (req, res) {
                             for(var i=0;i<objItem.entities.user_mentions.length;i++){ arrItems.push({column:objItem.column,typ:'Mention',text:objItem.entities.user_mentions[i].screen_name.toLowerCase() }); }
                             for(var i=0;i<objItem.entities.hashtags.length;i++){ arrItems.push({column:objItem.column,typ:'Tag',text:objItem.entities.hashtags[i].text.toLowerCase() }); }
                         }
-                    }else{ }
+                    }else if(debug===true){ console.log('column: '+objItem.column+"\n"+objItem.text); }
                     var torfSent = fnSend(arrItems,io);
                     if(torfSent){ arrItems=[]; }
                     //if(arrItems.length > 0){io.sockets.emit('newItems', arrItems);}
