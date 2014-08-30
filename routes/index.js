@@ -137,7 +137,7 @@ exports.index = function (req, res) {
 
                     //SEND IT TO THE BrowSER WEBSOCKET
                     if(torfSend && objItem.column>0){
-                        arrItems.push(objItem);
+                        if(!objItem.analysis.filtered){arrItems.push(objItem);}
                         //add stats
                         if( _.find(objReport.columns[intColIndex].components,{'typ':'Stats'}) ){
                             arrItems.push({column:objItem.column,typ:'User',text:objItem.user.screen_name});
