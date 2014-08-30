@@ -56,13 +56,10 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     }
 
     $scope.addSlide = function(objItem){ 
-        var idPresCol = getIndex($scope.report.columns,'show','Slides');
+        var idPresCol = getIndex($scope.report.columns,'show','Slides'); //find the slides column
         if(idPresCol){ //todo: convert this to a loop over an array for tighter code
-            objItem.text = objItem.text.replace('. ',".<br/>")
-            objItem.text = objItem.text.replace('? ',"?<br/>")
-            objItem.text = objItem.text.replace('! ',"!<br/>")
-            objItem.text = objItem.text.replace('; ',";<br/>")
-            objItem.text = objItem.text.replace(': ',":<br/>")
+            var arrBreakingCharacters = ['. ','? ','! ','; ',': ']; //add line breakes for slides
+            _.forEach(arrBreakingCharacters,function(strChar){ objItem.text = objItem.text.replace(strChar,strChar+"<br/>"); })
             $scope.report.columns[idPresCol].items[0]=objItem; 
         }
     }
