@@ -80,15 +80,10 @@ exports.index = function (req, res) {
                         objItem.entities=objItem.retweeted_status.entities;
                         objItem.retweeted_status = null; //kep the browser from needing to store all this
                     }}
-                 //_________________________________________\\
-                //----====|| NORMALIZE THE MESSAGE ||====----\\
-                    objItem.typ='item';
-                    objItem.text=fnCleanText(objItem.text,{});
-                    objItem.created_at=(new Date).getTime();
-                    //var objLatest = objItem; objLatest.column=4;arrItems.push(objLatest);//add latest
-                    //objItem.column=4; arrItems.push(objItem);
-                 //END NORMALIZING\\
-                //#################\\
+
+
+                    objItem = fnNormalizeItem(objItem); //Normalize the Item
+
                  //_________________________________________\\
                 //----====|| ADD ANALYSIS TO MESSAGE ||====----\\
                     objItem.analysis={};
@@ -196,6 +191,13 @@ var fnFirstTerm = function(arrNeedles,strHaystack){
     }
     return strMatch;
 };
+
+var fnNormalizeItem = function(objItem){
+    if(!objItem.typ){objItem.typ='item'; }
+    if(objItem.text){objItem.text=fnCleanText(objItem.text,{}); }
+    if(!objItem.created_at){objItem.created_at=(new Date).getTime(); }
+    return objItem;
+}
 
 var fnCleanText = function(strSubject,objOptions){
     //REMOVE THE 1ST RT
