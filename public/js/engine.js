@@ -21,7 +21,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     //create the master object
     //manage individual items from the websocket
     $scope.addItem = function(objItem){ 
-        //console.log(objItem.analysis);
+        //console.log(objItem.column);
         var idxColumn = getIndex($scope.report.columns,'id',objItem.column); //get the column
         var propArray=$scope.report.columns[idxColumn].items; if(objItem.typ!='item' && $scope.report.columns[idxColumn].components.length > 0){
             _.forEach($scope.report.columns[idxColumn].components,function(objComp,i){ 
@@ -57,9 +57,10 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
 
     $scope.addSlide = function(objItem){ 
         var idPresCol = getIndex($scope.report.columns,'show','Slides'); //find the slides column
-        if(idPresCol){ //todo: convert this to a loop over an array for tighter code
-            var arrBreakingCharacters = ['. ','? ','! ','; ',': ']; //add line breakes for slides
-            _.forEach(arrBreakingCharacters,function(strChar){ objItem.text = objItem.text.replace(strChar,strChar+"<br/>"); })
+        if(idPresCol){ 
+            //for some reason modifying the text for slide was causing it to mismatch and threw an ngrepeat error.
+            //var arrBreakingCharacters = ['. ','? ','! ','; ',': ']; //add line breakes for slides
+            //_.forEach(arrBreakingCharacters,function(strChar){ objItem.text = objItem.text.replace(strChar,strChar+"<br/>"); })
             $scope.report.columns[idPresCol].items[0]=objItem; 
         }
     }
