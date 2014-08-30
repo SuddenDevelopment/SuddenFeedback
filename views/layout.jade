@@ -38,9 +38,7 @@ html(ng-app="SuddenFeedbackApp")
                 div(class="fuiColumn row" ng-style="{height:column.itemsheight+'%'}" ng-class="{'Slides':column.show=='Slides'}")    
                     //////||  items  ||\\\\\
                     div(class='isotope-item well well-sm' ng-animate=" 'animate' " ng-repeat="(i,t) in column.items | orderBy:column.sort:true | limitTo:column.limit track by t.text" ng-class="{'new':t.status<0,'updated':t.status>0}" bs-modal="imodal" data-template="itemModal.html")
-                        div(class="media" once-if="t.entities.media")
-                            img(ng-repeat="i in t.entities.media" once-src="i.media_url")
-                        div(class='isotope-item-content')
+                        div(once-class="{'col-lg-9':t.entities.media[0]}")
                             //todo: convert to a single ng-class
                             i(once-if="t.typ=='User'" class="fa fa-user")
                             i(once-if="t.typ=='Link'" class="fa fa-link")
@@ -50,11 +48,15 @@ html(ng-app="SuddenFeedbackApp")
                             i(once-if="t.typ=='Filter'" class="fa fa-filter")
                             &nbsp;
                             span(once-html="t.text")
-                        div(class='isotope-item-priority text-info'){{t.priority}}
-                        div(class='isotope-item-urls')
-                            a(ng-repeat="url in t.entities.urls" href="{{url.expanded_url}}")
-                                i(class="fa fa-link text-warning")
-                        i(ng-if="t.geo" class="fa fa-map-marker")
+                        div(once-if="t.entities.media" class="col-lg-3")
+                            img(ng-repeat="i in t.entities.media" once-src="i.media_url")
+                        div(class="col-lg-12")
+                            div(class="col-lg-4 text-left")
+                                a(ng-repeat="url in t.entities.urls" href="{{url.expanded_url}}")
+                                    i(class="fa fa-link text-warning")
+                            div(class="col-lg-4 text-center")
+                                i(ng-if="t.geo" class="fa fa-map-marker")
+                            div(class="col-lg-4 text-info text-right"){{t.priority}}
                 //////||  Components  ||\\\\\
                 div(class="fuiColumn fuiColumnComponent" ng-if="column.components.length" ng-repeat="comp in column.components" ng-style="{height:comp.height+'%'}")
                     div(class='isotope-item well well-sm' ng-repeat="(i,t) in comp.items | orderBy:'priority':true | limitTo:20 track by t.text")
