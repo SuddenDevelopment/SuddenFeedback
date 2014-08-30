@@ -1,8 +1,9 @@
 //////||  ISSUES  ||\\\\\\
-Digest only changed scopes. Reduce digest loops instead of apply fn
+Digest only changed scopes. Reduce digest loops instead of $apply()
 disconnect the socket client on pause.
-Angular has bind once fn in beta
+Angular has bind once fn in beta replace the once module once it's in GA
 shoudnt need to create an item modal as every item is created.
+twitter has special emji characters allowed currently not being shown, but they show in a command line debug
 
 //////||  INSPIRATION  ||\\\\\\
 http://prologue.com/media/film/categories/main-titles-special-sequences/projects/iron-man-2/groups/interfaces

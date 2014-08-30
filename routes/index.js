@@ -72,38 +72,26 @@ exports.index = function (req, res) {
                 //console.log('stream on data',objItem);
                 var torfSend = true;
                 var filtered = false;
-                //console.log(req.session.report);
-                if(objReport && torfSend===true){
-                    objItem.priority= 1;
-                    if(objItem.retweeted_status !== undefined){if(objItem.retweeted_status.retweet_count > 0){ 
-                        objItem.priority += objItem.retweeted_status.retweet_count;
-                        objItem.entities=objItem.retweeted_status.entities;
-                        objItem.retweeted_status = null; //kep the browser from needing to store all this
-                    }}
-
-
+                
+                if(objReport){
+                    objItem = fnTwitter2Item(objItem); //feed specific transform to an item
                     objItem = fnNormalizeItem(objItem); //Normalize the Item
 
                  //_________________________________________\\
                 //----====|| ADD ANALYSIS TO MESSAGE ||====----\\
-                    objItem.analysis={};
-                    if(torfSentiment){objItem.analysis.sentiment=sentiment(objItem.text).score;}
+                    
+                    if(torfSentiment){objItem.analysis.sentiment=sentiment(objItem.text).score;} //add sentiment analysis
                  //END ANALYSIS\\
                 //##############\\
-                 //_____________________________________\\
-                //----====|| SORT INTO COLUMNS ||====----\\
                     //loop through the root level term groups used
-                    //console.log(req.session.report.terms);
-
                     //Global Filter
                     _.forEach(objReport.terms,function(objSet){ if(filtered==false && objSet.fn=='Filter'){ 
                         var strMatch= fnFirstTerm(objSet.terms,objItem.text);
                         if(strMatch){ filtered = true; objItem.analysis.filtered=strMatch; };
                      } });
-
-                    //loop through the column level term groups used
-
-                    //go through columns in order, col order matters for sorting, some items will pass through and add to multiple aolumns, default is to stop when a col is found
+                 //_____________________________________\\
+                //----====|| SORT INTO COLUMNS ||====----\\
+                    //go through columns in order, col order matters for sorting, some items will pass through and add to multiple columns, default is to stop when a col is found
                     var intColIndex = false;
                     for(i=0;i<objReport.columns.length;i++){
                         if(objReport.columns[i].show.toLowerCase()=='notes' && objItem.analysis.filtered){ arrItems.push({column:objReport.columns[i].id,typ:'Filter',text:objItem.analysis.filtered }); }
@@ -159,9 +147,8 @@ exports.index = function (req, res) {
                             for(var i=0;i<objItem.entities.hashtags.length;i++){ arrItems.push({column:objItem.column,typ:'Tag',text:objItem.entities.hashtags[i].text.toLowerCase() }); }
                         }
                     }else if(debug===true){ console.log('column: '+objItem.column+"\n"+objItem.text); }
-                    var torfSent = fnSend(arrItems,io);
-                    if(torfSent){ arrItems=[]; }
-                    //if(arrItems.length > 0){io.sockets.emit('newItems', arrItems);}
+                    var torfSent = fnSend(arrItems,io); //send, to debounced functions
+                    if(torfSent){ arrItems=[]; } //clear the quue on success
                 }
             });
         }); //end stream
@@ -192,10 +179,23 @@ var fnFirstTerm = function(arrNeedles,strHaystack){
     return strMatch;
 };
 
+var fnTwitter2Item = function(objItem){
+    objItem.priority= 1; //start priority if its not retweeted
+    //replace data with retweet data because they are redundant
+    if(objItem.retweeted_status !== undefined){if(objItem.retweeted_status.retweet_count > 0){ 
+        objItem.priority += objItem.retweeted_status.retweet_count;
+        objItem.entities=objItem.retweeted_status.entities;
+    }}
+    return objItem;
+}
+
 var fnNormalizeItem = function(objItem){
+    //this is a generc normaile, not specific to any feed coming in
     if(!objItem.typ){objItem.typ='item'; }
     if(objItem.text){objItem.text=fnCleanText(objItem.text,{}); }
     if(!objItem.created_at){objItem.created_at=(new Date).getTime(); }
+    if(!objItem.analysis){ objItem.analysis={}; };
+    objItem = _.pick( objItem,['title','text','typ','created_at','updated_at','column','analysis','priority','img','link','entities','user']);//reduce to only needed properties
     return objItem;
 }
 
