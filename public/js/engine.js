@@ -17,7 +17,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.analysis=[{v:'Sentiment'},{v:'Simiarity'},{v:'IntellectualDepth'},{v:'Vulgarity'}]; //these shoukld load from the DB
     $scope.colSorts=[{k:'Analysis',v:'score'},{k:'Priority',v:'priority'},{k:'ID',v:'id'}];
     $scope.templates=[{k:'Runoff, 3+terms, 1 column each',v:'runoff'},{k:'VS, 2 columns, 1 slideshow',v:'VS'},{k:'Inspect, 1 term, several perspectives',v:'inspect'},{k:'Custom',v:'Custom'}];
-    $scope.comps=[{v:'Items'},{v:'Stats'},{v:'Link'},{v:'Tag'},{v:'User'},{v:'Mention'},{v:'Map'},{v:'Montage'},{v:'Charts'},{v:'WordCloud'}];
+    $scope.comps=[{v:'Items'},{v:'Stats'},{v:'Link'},{v:'Tag'},{v:'User'},{v:'Mention'},{v:'Filter'},{v:'Map'},{v:'Montage'},{v:'Charts'},{v:'WordCloud'}];
     $scope.titles=[{v:'none'},{v:'user'}];
     //create the master object
     //manage individual items from the websocket
