@@ -45,11 +45,11 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
                 if(intLength>$scope.report.columns[idxColumn].limit && objI.position>$scope.report.columns[idxColumn].limit){ propArray.splice(i--, 1); intLength--;} //limit reached, start trimming            
             });
             if(objItem.typ=='item'){ $scope.report.columns[idxColumn].priority++; $scope.report.priority++; } //column priority, report priority used for column %
-            if(objItem.typ=='item' && objItem.analysis){var strAnalysis = $scope.report.columns[idxColumn].analysis.toLowerCase();}
+            if(objItem.typ=='item' && objItem.analysis && $scope.report.columns[idxColumn].analysis){var strAnalysis = $scope.report.columns[idxColumn].analysis.toLowerCase();} //get the analysis type, the col analysis SHOUL have a matching analysis property
         if(torfRT === false){
             objItem.status= -5; //new item status count
             propArray.unshift(objItem); 
-            if(objItem.typ=='item' && objItem.analysis){ 
+            if(objItem.typ=='item' && objItem.analysis && strAnalysis != ''){ 
                 $scope.report.columns[idxColumn].score += objItem.analysis[strAnalysis]; 
                 $scope.addSlide(objItem);
             }
