@@ -1,4 +1,6 @@
 
+var debug = true;
+
 /**
  * Module dependencies.
  */
@@ -155,9 +157,9 @@ app.post('/fuiapi', function(req, res, next) {
 	}
 	if(strAction=='saveReport'){ 
 	var d = req.param('q',null); 
-	  	console.log(d);
 	  	dbReports.update( {_id:d._id},{columns:d.columns,terms:d.terms,name:d.name,colSort:d.colSort,titles:d.titles},{upsert:true,safe:true},
 		function(err,data){if (err){res.send('error');}else{res.send('success');}});
+		share.set(d,'report');
 	//todo: save to session for server side use
 	};
 	if(strAction=='saveTerms'){ 
