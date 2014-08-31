@@ -15,43 +15,39 @@ app.use(express.session({secret: "this is just SALT in a wound"}));
 var sentiment = require('sentiment');
 var torfSentiment = false;
 var share = null;
-var twit = null;
 var uuid = require('node-uuid');
 
 exports.setShare = function(obj) { share = obj; }
 
-exports.index = function (req, res) {
-    var arrItems=[];
-    var fnSend = _.debounce(function(arrItems,io){
-        if(arrItems.length > 0){
-            io.sockets.emit('newItems', arrItems);
-            return true;
-        }
-    },100,{'maxWait': 500});
-    //console.log(req.session.term);
-    // The first time a user visits we give them a unique ID to track them with
-    if(!req.session.uuid) { req.session.uuid = uuid.v4(); }
+var destroyStream = exports.destroyStream = function(req, res) {
+    var stream = share.get('stream', req.session.uuid);
+    if(!stream) { 
+        console.log('stream', stream);
+        res.send('error'); return; 
+        return;
+    }
 
-    res.render('index', { title: 'SuddenFeedback' });
-    
+    console.log('destroying stream');
+    stream.destroy();
+
+    res.send('success');
+};
+
+var fnSend = _.debounce(function(arrItems,io){
+    if(arrItems.length > 0){
+        io.sockets.emit('newItems', arrItems);
+        return true;
+    }
+},100,{'maxWait': 500});
+
+var connectStream = exports.connectStream = function(req, res) {
     var oauth = share.get('oauth', req.session.uuid);
     var twitData = share.get('twitData', req.session.uuid);
+    var twit = share.get('twit', req.session.uuid);
 
-    if(oauth && !twitData && !twit){
-        //console.log('no twitData, getting it',oauth);
-        var twitter_credentials = share.get('twitter_credentials');
-        var twit = new twitter({
-            consumer_key: twitter_credentials.api_key,
-            consumer_secret: twitter_credentials.api_secret,
-            access_token_key: oauth.access_token,
-            access_token_secret: oauth.access_token_secret
-        });
-        twit.verifyCredentials(function (err, data) {
-            if(err){ console.log('getting twitData failed!',err); } 
-            else{ twitData=data.id; share.set(twitData,'twitData', req.session.uuid); }
-        });
-    }
+    var arrItems=[];
     var objReport = share.get('report');
+    
     if(twit && objReport){
         //get the terms from the report used to track. Set in the report, will concat all terms that havf Fn==Find
         var terms2Track = [];
@@ -67,9 +63,9 @@ exports.index = function (req, res) {
 
         // console.log(terms2Track);
         twit.stream('statuses/filter', {track: terms2Track}, function (stream) {
+            share.set(stream,'stream',req.session.uuid);
             stream.on('error', function(error, code) { console.log("Stream error: " + error + ": " + code); });
             stream.on('data', function (objItem) {
-                //console.log('stream on data',objItem);
                 var torfSend = true;
                 var filtered = false;
                 
@@ -151,6 +147,39 @@ exports.index = function (req, res) {
                 }
             });
         }); //end stream
+    }
+}
+
+exports.index = function (req, res) {
+    //console.log(req.session.term);
+    // The first time a user visits we give them a unique ID to track them with
+    if(!req.session.uuid) { req.session.uuid = uuid.v4(); }
+
+    res.render('index', { title: 'SuddenFeedback' });
+    
+    var oauth = share.get('oauth', req.session.uuid);
+    var twitData = share.get('twitData', req.session.uuid);
+    var twit = share.get('twit', req.session.uuid);
+
+    if(oauth && !twitData && !twit){
+        //console.log('no twitData, getting it',oauth);
+        var twitter_credentials = share.get('twitter_credentials');
+        twit = new twitter({
+            consumer_key: twitter_credentials.api_key,
+            consumer_secret: twitter_credentials.api_secret,
+            access_token_key: oauth.access_token,
+            access_token_secret: oauth.access_token_secret
+        });
+        twit.verifyCredentials(function (err, data) {
+            if(err){ console.log('getting twitData failed!',err); } 
+            else { 
+                twitData=data.id; 
+                share.set(twitData,'twitData', req.session.uuid); 
+                share.set(twit,'twit', req.session.uuid);
+
+                connectStream(req,res);
+            }
+        });
     }
 }
 
