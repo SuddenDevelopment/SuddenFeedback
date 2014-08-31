@@ -119,7 +119,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.saveSet = function(){ FUIAPI.post({a:'saveTerms',q:$scope.report.terms},function(response){ console.log(response,'response'); }); }
     $scope.loadSet = function(){ FUIAPI.post({},function(response){  }); }
     $scope.delSet = function(){ FUIAPI.post({},function(response){  }); }
-    $scope.pause = function(){ if($scope.play){$scope.play=false; console.log('pause');FUIAPI.post({a:'pauseStream'});}else{$scope.play=true;console.log('play');FUIAPI.post({a:'playStream'});}};
+    $scope.pause = function(){ if($scope.play){$scope.play=false;FUIAPI.post({a:'pauseStream'});}else{$scope.play=true;FUIAPI.post({a:'playStream'});}};
     $scope.feed = function(){
         var socket = io.connect('http://localhost:3001'); //connect to the websocket
         socket.on('newItems', function (arrItems){ 
