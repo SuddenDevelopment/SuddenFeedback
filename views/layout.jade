@@ -38,6 +38,7 @@ html(ng-app="SuddenFeedbackApp")
                 div(class="fuiColumn row" ng-style="{height:column.itemsheight+'%'}" ng-class="{'Slides':column.show=='Slides'}")    
                     //////||  items  ||\\\\\
                     div(class='isotope-item well well-sm' ng-animate=" 'animate' " ng-repeat="(i,t) in column.items | orderBy:column.sort:true | limitTo:column.limit track by t.text" ng-class="{'new':t.status<0,'updated':t.status>0}" bs-modal="imodal" data-template="itemModal.html")
+                        div(once-if="t.title!=undefined" class="col-lg-12 item-title"){{t.title}}
                         div(once-class="{'col-lg-9':t.entities.media[0]}")
                             //todo: convert to a single ng-class
                             i(once-if="t.typ=='User'" class="fa fa-user")

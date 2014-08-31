@@ -18,6 +18,10 @@
             <li>Filter out terms</li>
             <li>Count &amp; Highlight terms</li>
         	</ul>
+           <div class="row modal-menu-row">
+              <div class="col-lg-2">Item Titles: </div>
+              <div class="col-lg-6"><select ng-model="report.titles" ng-options="arr.v as arr.v for arr in titles"></select></div>
+            </div>
           Columns
           <div class="row" ng-repeat="(index,column) in report.columns">
                 <div class="col-lg-10">{{column.label}}</div>

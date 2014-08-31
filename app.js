@@ -156,7 +156,7 @@ app.post('/fuiapi', function(req, res, next) {
 	if(strAction=='saveReport'){ 
 	var d = req.param('q',null); 
 	  	console.log(d);
-	  	dbReports.update( {_id:d._id},{columns:d.columns,terms:d.terms,name:d.name,colSort:d.colSort},{upsert:true,safe:true},
+	  	dbReports.update( {_id:d._id},{columns:d.columns,terms:d.terms,name:d.name,colSort:d.colSort,titles:d.titles},{upsert:true,safe:true},
 		function(err,data){if (err){res.send('error');}else{res.send('success');}});
 	//todo: save to session for server side use
 	};
@@ -216,6 +216,7 @@ app.get('/auth/twitter/callback', function(req, res, next) {
 var fnNormalizeReport = function(objReport){
 	//do a little report cleanup if needed
 	 	if(!objReport.colSort){ objReport.colSort='priority'; }
+	 	if(!objReport.titles){ objReport.titles='none'; }
 	 	if(!objReport.priority || objReport.priority < objReport.columns.length){ objReport.priority=objReport.columns.length; }
 	 	_.forEach(objReport.columns,function(objCol,i){
 	 		if(!objCol.score){ objReport.columns[i].score=0; } //set an initial analysis score if it doesnt exist
