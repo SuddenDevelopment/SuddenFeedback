@@ -74,7 +74,9 @@ exports.index = function (req, res) {
                 var filtered = false;
                 
                 if(objReport){
-                    objItem = fnTwitter2Item(objItem); //feed specific transform to an item
+                    objOptions = {};
+                    if(objReport.titles){ objOptions.titles=objReport.titles; }
+                    objItem = fnTwitter2Item(objItem,objOptions); //feed specific transform to an item
                     objItem = fnNormalizeItem(objItem); //Normalize the Item
 
                  //_________________________________________\\
@@ -108,7 +110,7 @@ exports.index = function (req, res) {
                         if(objItem.column && !intColIndex){ intColIndex=i;}
                     }
                     if(!objItem.column){ 
-                        intColIndex = getIndex(objReport.columns,'show','Orphans');
+                        intColIndex = getIndex(objReport.columns,'show','Orphans'); //special column to show items that dont have a home.
                         if(intColIndex){objItem.column = objReport.columns[intColIndex].id;} 
                     }
                  //END COLUMN SORTING\\
@@ -135,7 +137,7 @@ exports.index = function (req, res) {
                 //END LOCAL STORAGE\\
                 //##################\\
 
-                    //SEND IT TO THE BrowSER WEBSOCKET
+                    //SEND IT TO THE Browser WEBSOCKET
                     if(torfSend && objItem.column>0){
                         if(!objItem.analysis.filtered){arrItems.push(objItem);}
                         //add stats
@@ -179,9 +181,10 @@ var fnFirstTerm = function(arrNeedles,strHaystack){
     return strMatch;
 };
 
-var fnTwitter2Item = function(objItem){
+var fnTwitter2Item = function(objItem,objOptions){
     objItem.priority= 1; //start priority if its not retweeted
     //replace data with retweet data because they are redundant
+    if(objOptions.titles && objOptions.titles=='user'){objItem.title=objItem.user.screen_name;}
     if(objItem.retweeted_status !== undefined){if(objItem.retweeted_status.retweet_count > 0){ 
         objItem.priority += objItem.retweeted_status.retweet_count;
         objItem.entities=objItem.retweeted_status.entities;

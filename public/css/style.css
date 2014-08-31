@@ -59,6 +59,12 @@ div.isotope-item-priority{margin-left:3px; bottom:3px;}
 .fuiColumn.component{height:75%; overflow:scroll; margin-bottom:5px;}
 .fuiColumnComponent{overflow:scroll; border-top: 3px double #5bc0de;}
 div.fuiColumn.Slides{ font-size: 40px; }
+
+.item-title{  
+  border-bottom:1px solid #888;
+  padding:0 3px;
+  color:#aaa;
+}
 /* animation stuff */
 .modal-backdrop.am-fade {
   opacity: .5;

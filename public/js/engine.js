@@ -18,6 +18,7 @@ app.controller('FUI',function($scope,$modal,FUIAPI){
     $scope.colSorts=[{k:'Analysis',v:'score'},{k:'Priority',v:'priority'},{k:'ID',v:'id'}];
     $scope.templates=[{k:'Runoff, 3+terms, 1 column each',v:'runoff'},{k:'VS, 2 columns, 1 slideshow',v:'VS'},{k:'Inspect, 1 term, several perspectives',v:'inspect'},{k:'Custom',v:'Custom'}];
     $scope.comps=[{v:'Items'},{v:'Stats'},{v:'Map'},{v:'Montage'},{v:'Charts'},{v:'WordCloud'}];
+    $scope.titles=[{v:'none'},{v:'user'}];
     //create the master object
     //manage individual items from the websocket
     $scope.addItem = function(objItem){ 
