@@ -118,59 +118,72 @@ app.get('/auth/twitter', function(req, res) {
 
  //_______________________\\
 //----====|| API ||====----\\
-app.post('/fuiapi', function(req, res, next) {
-	var strAction = req.param('a', null); //todo: check post var against array of allowed options
-	//console.log(strAction);
-	var report = {};
-	var d = req.param('q',null); //console.log(d);
-	//res.send(JSON.stringify([{Label:'good'}]));
-	if(strAction=='listReports'){ 
+var sendErrorSuccess = function(err,data){if (err){res.send('error');}else{res.send('success');}}
+var fuapiActions = {
+	listReports:function(req,res,next) {
 		dbReports.find({},{columns:0,terms:0}).toArray(function(err, results){
 			res.send({reportList:results});
 		});
-	}
-	if(strAction=='loadReport'){ 
+	},
+	loadReport:function(req,res,next) {
+		var report = {};
+		var d = req.param('q',null); //console.log(d);
 		dbReports.findOne({_id:d}, function(err, report){ 
 			report=fnNormalizeReport(report);
 	 		share.set(report,'report');
 			res.send(report);
 		});
-	}
-	if(strAction=='delReport'){ 
+	},
+	delReport:function(req,res,next) {
+		var report = {};
+		var d = req.param('q',null); //console.log(d);
 		dbReports.remove({_id:d}, function(err, response){ 
 			res.send('report deleted');
 		});
-	}
-	if(strAction=='init'){ 
-		//get the report settings, if multiple grab the users most recent
-	 var objReport=share.get('report');
-	 if(objReport){ res.send(objReport);}
-	 else{
-	 	//console.log('load a default report');
-	 	dbReports.findOne({}, function(err, report){ 
-		 	objReport=fnNormalizeReport(report);
-		 	share.set(objReport,'report');
-			res.send(objReport);
-	 	});
-	 }
-	//get the word sets used
-	}
-	if(strAction=='saveReport'){ 
-	var d = req.param('q',null); 
-	  	dbReports.update( {_id:d._id},{columns:d.columns,terms:d.terms,name:d.name,colSort:d.colSort,titles:d.titles},{upsert:true,safe:true},
-		function(err,data){if (err){res.send('error');}else{res.send('success');}});
-		share.set(d,'report');
-	//todo: save to session for server side use
-	};
-	if(strAction=='saveTerms'){ 
-	var d = req.param('q',null); 
+	},
+	init: function(req,res,next) {
+	    //get the report settings, if multiple grab the users most recent
+	    var objReport=share.get('report');
+	    if(objReport){ res.send(objReport);}
+	    else{
+	 	   //console.log('load a default report');
+	 	   dbReports.findOne({}, function(err, report){ 
+		 	  objReport=fnNormalizeReport(report);
+		 	  share.set(objReport,'report');
+			  res.send(objReport);
+	 	   });
+	 	   //get the word sets used
+	   }
+	},
+	saveReport: function(req,res,next) {
+		var d = req.param('q',null); 
+	  		dbReports.update( {_id:d._id},{columns:d.columns,terms:d.terms,name:d.name,colSort:d.colSort,titles:d.titles},{upsert:true,safe:true},
+			sendErrorSuccess);
+			share.set(d,'report');
+		//todo: save to session for server side use
+	},
+	saveTerms: function(req,res,next) {
+		var d = req.param('q',null); 
 	  	//console.log(d);
 	  	for(var i=0; i<d.length;i++){
 		  	dbTerms.update( {_id:d[i].user+':'+d[i].name},{user:d[i].user,name:d[i].name,terms:d[i].terms},{upsert:true,safe:true},
-			function(err,data){if (err){res.send('error');}else{res.send('success');}});
+			sendErrorSuccess);
 	  	}
-	};
+	},
 	//todo: save to session for server side use
+	playStream: routes.connectStream,
+	pauseStream: routes.destroyStream
+};
+
+
+app.post('/fuiapi', function(req, res, next) {
+	var strAction = req.param('a', null);
+	console.log('strAction',strAction);
+	if(fuapiActions[strAction]) {
+		fuapiActions[strAction](req,res,next);
+	} else {
+		res.send('error');
+	}
 });
  //________END API________\\
 //#########################\\
