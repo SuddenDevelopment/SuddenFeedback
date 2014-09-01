@@ -26,10 +26,23 @@ program
   .option('-t, --twitter [user]', 'Whose access credentials to use for accessing Twitter')
   .parse(process.argv);
 
-var twitter_credentials_to_use = 'anthony';
-if(program.twitter) twitter_credentials_to_use = program.twitter
 
-var twitter_credentials = JSON.parse(fs.readFileSync('./config/twitter.json'))[twitter_credentials_to_use];
+/**
+* 	Returns the Twitter credentials for the user account passed in 
+*	by the --twitter -t argument
+*/
+var fnGetTwitterCreds = function(){
+
+	if('null' === typeof(program.twitter)){
+		throw "No Twitter account provided, cannot proceed";
+	} else {
+		console.log('[INFO] using Twitter account: ' + program.twitter)
+		return JSON.parse(fs.readFileSync('./config/twitter.json'))[program.twitter];		
+	}
+
+};
+
+var twitter_credentials = fnGetTwitterCreds();
 
 share.set(twitter_credentials, 'twitter_credentials');
 
