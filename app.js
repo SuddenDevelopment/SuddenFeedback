@@ -95,7 +95,7 @@ var oa = new OAuth(
 	twitter_credentials.api_key,
 	twitter_credentials.api_secret,
 	"1.0",
-	"http://localhost:3000/auth/twitter/callback",
+	"http://"+host_ip+":3000/auth/twitter/callback",
 	"HMAC-SHA1"
 );
 
