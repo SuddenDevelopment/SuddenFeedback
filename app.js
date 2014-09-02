@@ -17,6 +17,7 @@ var fs = require('fs');
 var share = require('./modules/share'); //utility wes wrote for data betwen node files instead of session
 var program = require('commander');
 var uuid = require('node-uuid');
+var os = require('os');
 
 routes.setShare(share);
 
@@ -42,9 +43,22 @@ var fnGetTwitterCreds = function(){
 
 };
 
-var twitter_credentials = fnGetTwitterCreds();
+/**
+ * *    Returns the host IP address if on eth0 else returns loopback 
+ *  @TODO this should probably go in a utils class
+ *  */
+var fnGetIPAddress = function(){
+    if( 'null' !== typeof(os.networkInterfaces().eth0[0].address)){
+        return os.networkInterfaces().eth0[0].address;
+    } else {
+        return '127.0.0.1';
+    }
+}
 
+var twitter_credentials = fnGetTwitterCreds();
 share.set(twitter_credentials, 'twitter_credentials');
+
+var host_ip = fnGetIPAddress();
 
 var app = express();
 
