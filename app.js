@@ -33,7 +33,7 @@ program
 */
 var fnGetTwitterCreds = function(){
 
-	if('null' === typeof(program.twitter)){
+	if('undefined' === typeof(program.twitter)){
 		throw "No Twitter account provided, cannot proceed";
 	} else {
 		console.log('[INFO] using Twitter account: ' + program.twitter)
