@@ -48,7 +48,8 @@ var fnGetTwitterCreds = function(){
  *  @TODO this should probably go in a utils class
  *  */
 var fnGetIPAddress = function(){
-    if( 'null' !== typeof(os.networkInterfaces().eth0[0].address)){
+	var isMac = /^darwin/.test(process.platform);
+    if( !isMac ){
         return os.networkInterfaces().eth0[0].address;
     } else if( 'null' !== typeof(os.networkInterfaces().en0[0].address )){
 		return os.networkInterfaces().en0[0].address
