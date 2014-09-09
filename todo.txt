@@ -1,7 +1,27 @@
+//////||  Items To Launch  ||\\\\\\
+Goal: Have something compelling + functional. It doesn't need to be perfect, it needs to create and measure interest.
+1. Build the sample report suite, run through each as a user to verify it makes sense / functions exist to perform the reports. (Anthony)
+2. Create a stripped down interface for a report player/viewer that will display data publicly/free, this is the first thing to launch (Anthony)
+3. Clean up visuals, presentation worthy, create videos in action. (Anthony)
+4. Tie reports to Users / logins
+5. Host
+6. Stabilize, make sure loading reports, and other normal operations dont crash.
+7. Accept payments, something easy, +bitcoin?
+
+//////||  Report Suite  ||\\\\\\
+Goal: Create a report per use case, directly show the possibilities, dont leave it to anyones ability to connect the dots on how this can be used.
+1. Politics, something ongoing and always in flux
+2. Celebrity, from the perspective of an agent
+3. Mass Journalism
+4. Non Politics Current Event
+5. Sport buzz, teams in a league, cars in a race
+6. Feedback wall presentation mode.
+7. Malware (I'll make an option to disable images because free porn MUST be in this report)
+8. Debug: Self feeding demonstartion of error reporting debugging, sending events to UI instead of console.
+
 //////||  ISSUES  ||\\\\\\
 Digest only changed scopes. Reduce digest loops instead of $apply()
 disconnect the socket client on pause.
-Angular has bind once fn in beta replace the once module once it's in GA
 shoudnt need to create an item modal as every item is created.
 twitter has special emji characters allowed currently not being shown, but they show in a command line debug
 
@@ -29,19 +49,12 @@ http://square.github.io/cubism/
 http://jacomyal.github.io/conrad.js/
 
 //////||  BACKOFFICE  ||\\\\\\
-https://github.com/ratscrew/ngMongo/wiki/how-it-all-works
 https://github.com/bnoguchi/everyauth
-https://github.com/primus/primus   ?
-http://marcolanaro.github.io/DataChannel.IO/  ?
 http://imgops.com/
-MAKE SURE NOT TO DO ANALYTICS ON REPEAT MESSAGES!
-load, save and update reports with and without data, 
+MAKE SURE NOT TO DO ANALYTICS ON REPEAT MESSAGES! 
 full traffic save + accelerated playback, extra $$
--grunt?, scheduling for automated reporting.
 
 //////||  INTERFACE  ||\\\\\\settings menu 
-vertical align middelt he slides column item
-click on stats to make them terms in sets?
 auto branch, or update columns based on content in others columns
 where are the pretty charts that are always moving?
 items modal template
@@ -49,7 +62,7 @@ items modal template
 	user defined stats to include, checkboxes.
 http://ngmodules.org/modules/AngularJS-Toaster
 dyanmic item backgrounds, column backgrounds with transparent items
--horizontal scroll through columns
+-horizontal scroll through columns, columns dynamicall show/hide
 https://docs.angularjs.org/api/ng/service/$anchorScroll
 http://codepen.io/dmac37/pen/cfArp
 http://css-tricks.com/understanding-border-image/
