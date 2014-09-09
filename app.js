@@ -50,7 +50,7 @@ var fnGetTwitterCreds = function(){
 var fnGetIPAddress = function(){
     if( 'null' !== typeof(os.networkInterfaces().eth0[0].address)){
         return os.networkInterfaces().eth0[0].address;
-    } else if( 'null' !== typeof(os.networkInterfaces().en0[0].address ){
+    } else if( 'null' !== typeof(os.networkInterfaces().en0[0].address )){
 		return os.networkInterfaces().en0[0].address
     } else {
         return '127.0.0.1';
