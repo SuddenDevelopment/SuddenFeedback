@@ -17,6 +17,7 @@ var fs = require('fs');
 var share = require('./modules/share'); //utility wes wrote for data betwen node files instead of session
 var program = require('commander');
 var uuid = require('node-uuid');
+var os = require('os');
 
 routes.setShare(share);
 
@@ -33,7 +34,7 @@ program
 */
 var fnGetTwitterCreds = function(){
 
-	if('null' === typeof(program.twitter)){
+	if('undefined' === typeof(program.twitter)){
 		throw "No Twitter account provided, cannot proceed";
 	} else {
 		console.log('[INFO] using Twitter account: ' + program.twitter)
@@ -42,9 +43,25 @@ var fnGetTwitterCreds = function(){
 
 };
 
-var twitter_credentials = fnGetTwitterCreds();
+/**
+ * *    Returns the host IP address if on eth0 else returns loopback 
+ *  @TODO this should probably go in a utils class
+ *  */
+var fnGetIPAddress = function(){
+	var interfaces = []; for(key in os.networkInterfaces()) { interfaces.push(key); }
+    if( _.contains(interfaces,'eth0') ){
+        return os.networkInterfaces().eth0[0].address;
+    } else if( _.contains(interfaces,'en0') ){
+		return os.networkInterfaces().en0[0].address
+    } else {
+        return '127.0.0.1';
+    }
+}
 
+var twitter_credentials = fnGetTwitterCreds();
 share.set(twitter_credentials, 'twitter_credentials');
+
+var host_ip = fnGetIPAddress();
 
 var app = express();
 
@@ -81,7 +98,7 @@ var oa = new OAuth(
 	twitter_credentials.api_key,
 	twitter_credentials.api_secret,
 	"1.0",
-	"http://localhost:3000/auth/twitter/callback",
+	"http://"+host_ip+":3000/auth/twitter/callback",
 	"HMAC-SHA1"
 );
 

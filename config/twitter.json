@@ -3,8 +3,12 @@
 		"api_key":"9kFmLFgQw25ls1lvY4VLHCpDN",
 		"api_secret":"qyw9KEhgqMBSXvEZJhwLXvUyMiFtRKbArPSxxW1b97V0A6qUT3"
 	},
-	"wes":{
-		"api_key":"QSMRGsx2lFuznQ4gwXK95LaO3",
-		"api_secret":"QPJO5Nx9vS4Xk3kt2TBt4TklZOHai91YRFUfplw71fd8hqMVUd"
+    "wes":{
+        "api_key":"QSMRGsx2lFuznQ4gwXK95LaO3",
+        "api_secret":"QPJO5Nx9vS4Xk3kt2TBt4TklZOHai91YRFUfplw71fd8hqMVUd"
+    },
+    "steve":{
+		"api_key":"Bmx7rOOPVXqegSx9ms6yzR2GE",
+		"api_secret":"lgbKqBdMHZjF4Rbb4JkcE0Bocgjczy78FfzlX7h4t70p1AV3hz"
 	}
 }
