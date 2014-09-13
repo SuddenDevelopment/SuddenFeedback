@@ -49,20 +49,25 @@ var fnGetTwitterCreds = function(){
  *  */
 var fnGetIPAddress = function(){
 	var interfaces = []; for(key in os.networkInterfaces()) { interfaces.push(key); }
-    if( _.contains(interfaces,'eth0') ){
-        return os.networkInterfaces().eth0[0].address;
-    } else if( _.contains(interfaces,'en0') ){
-		return os.networkInterfaces().en0[0].address
-    } else {
-        return '127.0.0.1';
+    var strHost='localhost';
+    if( _.contains(interfaces,'eth0') ){ 
+    	var objInterface = _.find(os.networkInterfaces().eth0[0],{'family':'IPv4'}); 
+    	if(objInterface){ strHost=objInterface.address; }
     }
+    else if( _.contains(interfaces,'en0') ){ 
+    	var objInterface = _.find(os.networkInterfaces().en0[0].address,{'family':'IPv4'}); 
+    	if(objInterface){ strHost=objInterface.address; }
+    }
+    else { return 'localhost'; }
+    if(strHost=='127.0.0.1'){return 'localhost';}
+    else{ return strHost; }
 }
 
 var twitter_credentials = fnGetTwitterCreds();
 share.set(twitter_credentials, 'twitter_credentials');
 
 var host_ip = fnGetIPAddress();
-
+console.log(host_ip);
 var app = express();
 
 // all environments
