@@ -4,7 +4,11 @@ function getIndex(arr,key,value){ for(i=0; i<arr.length;i++){ if(arr[i][key]==va
 /*
  * GET home page.
  */
-var debug = true;
+
+var appConfig = require('../config/app.json');
+var debug = appConfig.env_config[appConfig.env].debug;
+var logger = require('../modules/logger');
+
 var _ = require('lodash');
 var twitter = require('ntwitter');
 var io = require('socket.io').listen(3001, {log: false});
@@ -21,9 +25,9 @@ exports.setShare = function(obj) { share = obj; }
 
 var destroyStream = exports.destroyStream = function(req, res) {
     var stream = share.get('stream', req.session.uuid);
-    if(!stream) { 
+    if(!stream) {
         console.log('stream', stream);
-        res.send('error'); return; 
+        res.send('error'); return;
         return;
     }
 
@@ -47,17 +51,17 @@ var connectStream = exports.connectStream = function(req, res) {
 
     var arrItems=[];
     var objReport = share.get('report');
-    
+
     if(twit && objReport){
         //get the terms from the report used to track. Set in the report, will concat all terms that havf Fn==Find
         var terms2Track = [];
         //var userTerms = share.get('terms',req.session.uuid);
-        
+
         //clean up the terms, the ttag module in the UI repaces spaces with -
         _.forEach(objReport.terms,function(objSet){
             if(objSet.fn=='Find'){ _.forEach(objSet.terms,function(objTerm){ terms2Track.push(objTerm.text.replace('-',' ')); }); }
         });
-        
+
         //determine if sentiment analysis is needed, probably will be an array of analysis to run instead f individual torfs
         _.forEach(objReport.columns,function(objCol){ if(!torfSentiment && objCol.analysis && objCol.analysis.toLowerCase().indexOf('sentiment')!= -1){ torfSentiment=true; }});
 
@@ -68,7 +72,7 @@ var connectStream = exports.connectStream = function(req, res) {
             stream.on('data', function (objItem) {
                 var torfSend = true;
                 var filtered = false;
-                
+
                 if(objReport){
                     objOptions = {};
                     if(objReport.titles){ objOptions.titles=objReport.titles; }
@@ -77,13 +81,13 @@ var connectStream = exports.connectStream = function(req, res) {
 
                  //_________________________________________\\
                 //----====|| ADD ANALYSIS TO MESSAGE ||====----\\
-                    
+
                     if(torfSentiment){objItem.analysis.sentiment=sentiment(objItem.text).score;} //add sentiment analysis
                  //END ANALYSIS\\
                 //##############\\
                     //loop through the root level term groups used
                     //Global Filter
-                    _.forEach(objReport.terms,function(objSet){ if(filtered==false && objSet.fn=='Filter'){ 
+                    _.forEach(objReport.terms,function(objSet){ if(filtered==false && objSet.fn=='Filter'){
                         var strMatch= fnFirstTerm(objSet.terms,objItem.text);
                         if(strMatch){ filtered = true; objItem.analysis.filtered=strMatch; };
                      } });
@@ -96,7 +100,7 @@ var connectStream = exports.connectStream = function(req, res) {
                         else if(objReport.columns[i].analysis=='sentiment=positive' && !objItem.analysis.filtered && objItem.analysis.sentiment > 0){ objItem.column=objReport.columns[i].id; }
                         else if(objReport.columns[i].analysis=='sentiment=negative' && !objItem.analysis.filtered && objItem.analysis.sentiment < 0){ objItem.column=objReport.columns[i].id; }
                         else if(objReport.columns[i].analysis=='sentiment=neutral' && !objItem.analysis.filtered && objItem.analysis.sentiment == 0){ objItem.column=objReport.columns[i].id; }
-                        else if(objReport.columns[i].show=='ColumnTitle'){ 
+                        else if(objReport.columns[i].show=='ColumnTitle'){
                             var strNeedle = objReport.columns[i].label.toLowerCase();
                             if(objItem.text.toLowerCase().indexOf(strNeedle)!= -1){objItem.column=objReport.columns[i].id;}
                             else if(_.find(objReport.columns[i].hashtags,{ 'text':strNeedle })){ objItem.column=objReport.columns[i].id; }
@@ -105,9 +109,9 @@ var connectStream = exports.connectStream = function(req, res) {
                         if(objItem.column && objItem.analysis.filtered){ arrItems.push({column:objItem.column,typ:'Filter',text:objItem.analysis.filtered }); } //add a per colum tag for filtered items
                         if(objItem.column && !intColIndex){ intColIndex=i;}
                     }
-                    if(!objItem.column){ 
+                    if(!objItem.column){
                         intColIndex = getIndex(objReport.columns,'show','Orphans'); //special column to show items that dont have a home.
-                        if(intColIndex){objItem.column = objReport.columns[intColIndex].id;} 
+                        if(intColIndex){objItem.column = objReport.columns[intColIndex].id;}
                     }
                  //END COLUMN SORTING\\
                 //####################\\
@@ -115,14 +119,14 @@ var connectStream = exports.connectStream = function(req, res) {
                 //----====|| STORE LOCALLY ||====----\\
                     var torfRT = false;
                     if(objItem.column){
-                        _.forEach(objReport.columns[intColIndex]['items'],function(objI){ 
+                        _.forEach(objReport.columns[intColIndex]['items'],function(objI){
                             if(objI.text==objItem.text){
                                 if(objItem.priority < 2 || objItem.priority <= objI.priority){ objI.priority++;} //cumulative priority
                                 else{objI.priority = objItem.priority;} //replacing priority
                                 torfRT = true;
-                            }         
+                            }
                         });
-                        if(torfRT === false){ 
+                        if(torfRT === false){
                             objReport.columns[intColIndex]['items'].unshift(objItem); //add
                             objReport.columns[intColIndex]['items'] = fnSortArr(objReport.columns[intColIndex]['items'],objReport.columns[intColIndex].sort); //sort the column
                             if(getIndex(objReport.columns[intColIndex]['items'],'id',objItem.id)>objReport.columns[intColIndex].limit){ torfSend=false; }//make sure it's high enough sort order to sed to browser
@@ -151,12 +155,13 @@ var connectStream = exports.connectStream = function(req, res) {
 }
 
 exports.index = function (req, res) {
+
     //console.log(req.session.term);
     // The first time a user visits we give them a unique ID to track them with
     if(!req.session.uuid) { req.session.uuid = uuid.v4(); }
 
     res.render('index', { title: 'SuddenFeedback' });
-    
+
     var oauth = share.get('oauth', req.session.uuid);
     var twitData = share.get('twitData', req.session.uuid);
     var twit = share.get('twit', req.session.uuid);
@@ -171,10 +176,10 @@ exports.index = function (req, res) {
             access_token_secret: oauth.access_token_secret
         });
         twit.verifyCredentials(function (err, data) {
-            if(err){ console.log('getting twitData failed!',err); } 
-            else { 
-                twitData=data.id; 
-                share.set(twitData,'twitData', req.session.uuid); 
+            if(err){ console.log('getting twitData failed!',err); }
+            else {
+                twitData=data.id;
+                share.set(twitData,'twitData', req.session.uuid);
                 share.set(twit,'twit', req.session.uuid);
 
                 connectStream(req,res);
@@ -188,9 +193,9 @@ var fnSortArr = function(arrItems,strProp){ return _.sortBy(arrItems, function (
 /* TO BE PULLED INTO OTHER FILES / MODULES  */
 var fnAllTerms = function(arrNeedles,strHaystack){
     arrMatches = [];
-    for(var y=0;y<arrNeedles.length;y++){ 
+    for(var y=0;y<arrNeedles.length;y++){
         if(arrNeedles[y].hasOwnProperty('text')){strNeedle=arrNeedles[y].text.toLowerCase();}else{strNeedle=arrNeedles[y].toLowerCase();}
-        if(strHaystack.toLowerCase().indexOf(strNeedle)!= -1){ arrMatches.push(strNeedle); } 
+        if(strHaystack.toLowerCase().indexOf(strNeedle)!= -1){ arrMatches.push(strNeedle); }
     }
     return arrMatches;
 }
@@ -199,10 +204,10 @@ var fnFirstTerm = function(arrNeedles,strHaystack){
     //console.log(arrNeedles);
     //find the first term that matches and return it, return false if none found.
     var strMatch=false;
-    for(var y=0;y<arrNeedles.length;y++){ 
+    for(var y=0;y<arrNeedles.length;y++){
         //console.log(arrNeedles[y]);
         if(arrNeedles[y].hasOwnProperty('text')){strNeedle=arrNeedles[y].text.toLowerCase();}else{strNeedle=arrNeedles[y].toLowerCase();}
-        if(strMatch===false && strHaystack.toLowerCase().indexOf(strNeedle)!= -1){ strMatch = strNeedle; } 
+        if(strMatch===false && strHaystack.toLowerCase().indexOf(strNeedle)!= -1){ strMatch = strNeedle; }
     }
     return strMatch;
 };
@@ -211,7 +216,7 @@ var fnTwitter2Item = function(objItem,objOptions){
     objItem.priority= 1; //start priority if its not retweeted
     //replace data with retweet data because they are redundant
     if(objOptions.titles && objOptions.titles=='user'){objItem.title=objItem.user.screen_name;}
-    if(objItem.retweeted_status !== undefined){if(objItem.retweeted_status.retweet_count > 0){ 
+    if(objItem.retweeted_status !== undefined){if(objItem.retweeted_status.retweet_count > 0){
         objItem.priority += objItem.retweeted_status.retweet_count;
         objItem.entities=objItem.retweeted_status.entities;
     }}

@@ -8,11 +8,44 @@ Requirements
 
 Getting Started
 ===============
-1. start mongo /usr/local/mongodb/bin/mongod
-2. insert record from default_report.json into suddenfeedback.reports
-3. start app ./node app.js
-4. point to the app from a browser http://localhost:3000
-5. login to twitter from the app
+1. Set up a Twitter account
+
+2) Generate an API key (or just use Anthong's creds: see below).
+
+3. If you generated your own API key, then modify the Twitter config file
+    (config/twitter.json) to include an entry for your account (SKIP, if you're
+    using Anthong's creds):
+
+    "<your twitter handle>":{
+        "api_key": "<twitter api key>",
+        "api_secret": "<twitter api secret>"
+    }
+
+4. Non-Vagrant users proceed to step 5. Vagrant users: you have to configure your
+    Vagrant config file ("Vagrantfile") to contain an entry to forward ports 3000
+        and 3001 from the host to the guest machine. To do this:
+
+    4a) Shut down Vagrant: vagrant halt
+    4b) Modify Vagrantfile to forward ports needed for the main app and socket
+        communication:
+
+        config.vm.network "forwarded_port", guest: 3000, host: 3000
+        config.vm.network "forwarded_port", guest: 3001, host: 3001
+
+    4c) Start Vagrant: vagrant up
+    4d) SSH to the Vagrant box: vagrant ssh
+
+5. Start mongo. Perhaps one of the following:
+    /usr/local/mongodb/bin/mongod
+    sudo /usr/bin/mongod
+
+6. Start the app:
+    cd <project directory>
+    node app.js --seed --twitter=<your Twitter handle | anthony>
+
+7. Point to the app from a browser: http://localhost:3000
+
+8. Use the "login to twitter" link in the app to login to your Twitter account.
 
 Idea and task list in todo file.
 
@@ -22,7 +55,7 @@ General Concepts
 ================
 - A report combines an overall concept, exploration or monitoring of a subject
 - Filter the noise, constantly show what's most important and sort by importance
-- High information density, everything has meaning, borders, position, color 
+- High information density, everything has meaning, borders, position, color
 
 2. Columns
 ================

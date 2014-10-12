@@ -1,94 +1,78 @@
-
-var debug = true;
-
 /**
- * Module dependencies.
+ * package.json dependencies.
  */
 var _ = require('lodash');
 var express = require('express');
-var routes = require('./routes');
-var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
 var util = require('util');
 var OAuth = require('oauth').OAuth;
 var mongodb = require('mongodb');
 var fs = require('fs');
-var share = require('./modules/share'); //utility wes wrote for data betwen node files instead of session
 var program = require('commander');
 var uuid = require('node-uuid');
 var os = require('os');
 
+/**
+ * Local module dependencies.
+ */
+var appConfig = require('./config/app.json');
+var localization = require('./config/localization.json');
+var user = require('./routes/user');
+var share = require('./modules/share'); //utility wes wrote for data betwen node files instead of session
+var logger = require('./modules/logger');
+var exception = require('./modules/exception');
+var reportHandler = require('./modules/report');
+var twitter_util = require('./modules/twitter_util');
+var ip_util = require('./modules/ip_util');
+var noop = require('./modules/noop');
+var fuapi = require('./modules/fuapi');
+
+var routes = require('./routes');
 routes.setShare(share);
 
+var debug = appConfig.env_config[appConfig.env].debug;
+
 program
-  .version('0.0.1')
-  .option('-s, --seed','Initialize mongo with seed data')
-  .option('-t, --twitter [user]', 'Whose access credentials to use for accessing Twitter')
+  .version(appConfig.version)
+  .option('-s, --seed', localization[appConfig.lang].mongo.param_instructions)
+  .option('-t, --twitter [user]', localization[appConfig.lang].twitter.param_instructions)
+  .option('-p, --protocol [http|https]', localization[appConfig.lang].protocol.param_instructions)
   .parse(process.argv);
 
+var PROTOCOL = program.protocol || appConfig.env_config[appConfig.env].protocol;
+var PORT = process.env.PORT || appConfig.env_config[appConfig.env].port;
 
-/**
-* 	Returns the Twitter credentials for the user account passed in 
-*	by the --twitter -t argument
-*/
-var fnGetTwitterCreds = function(){
-
-	if('undefined' === typeof(program.twitter)){
-		throw "No Twitter account provided, cannot proceed";
-	} else {
-		console.log('[INFO] using Twitter account: ' + program.twitter)
-		return JSON.parse(fs.readFileSync('./config/twitter.json'))[program.twitter];		
-	}
-
-};
-
-/**
- * *    Returns the host IP address if on eth0 else returns loopback 
- *  @TODO this should probably go in a utils class
- *  */
-var fnGetIPAddress = function(){
-	var interfaces = []; for(key in os.networkInterfaces()) { interfaces.push(key); }
-    var strHost='localhost';
-    if( _.contains(interfaces,'eth0') ){ 
-    	var objInterface = _.find(os.networkInterfaces().eth0[0],{'family':'IPv4'}); 
-    	if(objInterface){ strHost=objInterface.address; }
-    }
-    else if( _.contains(interfaces,'en0') ){ 
-    	var objInterface = _.find(os.networkInterfaces().en0[0].address,{'family':'IPv4'}); 
-    	if(objInterface){ strHost=objInterface.address; }
-    }
-    else { return 'localhost'; }
-    if(strHost=='127.0.0.1'){return 'localhost';}
-    else{ return strHost; }
-}
-
-var twitter_credentials = fnGetTwitterCreds();
+var twitter_credentials = twitter_util.getCredentials(program);
 share.set(twitter_credentials, 'twitter_credentials');
 
-var host_ip = fnGetIPAddress();
-console.log(host_ip);
+var host_ip = ip_util.getIpAddress();
+logger.log(logger.INFO, localization[appConfig.lang].common.host_ip + ": " + host_ip);
+
 var app = express();
 
 // all environments
-app.set('port', process.env.PORT || 3000);
-app.set('views', __dirname + '/views');
-app.set('view engine', 'jade');
+app.set('port', PORT);
+app.set('views', appConfig.views_dir);
+app.set('view engine', appConfig.view_engine);
 app.use(express.favicon());
-app.use(express.logger('dev'));
+app.use(express.logger(appConfig.env.toLowerCase()));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
-app.use(express.cookieParser('this is just SALT in a wound'));
-app.use(express.session({secret: "this is just SALT in a wound"}));
+app.use(express.cookieParser(appConfig.env_config[appConfig.env].salts.cookie));
+app.use(express.session({secret: appConfig.env_config[appConfig.env].salts.session}));
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
+
 // development only
 if ('development' == app.get('env')) {app.use(express.errorHandler());}
 
 app.get('/', routes.index);
 //app.get('/users', user.list);
 
-http.createServer(app).listen(app.get('port'), function() { console.log('Express server listening on port ' + app.get('port')); });
+http.createServer(app).listen(app.get('port'), function() {
+    logger.log(logger.INFO, localization[appConfig.lang].express.listening + app.get('port'));
+});
 
 /*
  * GET home page.
@@ -98,183 +82,117 @@ http.createServer(app).listen(app.get('port'), function() { console.log('Express
     access_token_secret: '2N3WH09m2la6q7xMKzKc34ZWq9ySgypqbxreGnYPGTJ5J'
  */
 var oa = new OAuth(
-	"https://api.twitter.com/oauth/request_token",
-	"https://api.twitter.com/oauth/access_token",
+	appConfig.env_config[appConfig.env].twitter.request_token_url,
+	appConfig.env_config[appConfig.env].twitter.access_token_url,
 	twitter_credentials.api_key,
 	twitter_credentials.api_secret,
-	"1.0",
-	"http://"+host_ip+":3000/auth/twitter/callback",
-	"HMAC-SHA1"
+	appConfig.env_config[appConfig.env].oauth.version,
+	PROTOCOL + "://" + host_ip + ":"+ PORT + appConfig.env_config[appConfig.env].oauth.callback_path,
+	appConfig.env_config[appConfig.env].oauth.mac_type
 );
 
-//var MONGO_URL="mongodb://suddenfeedback:d34thRAY!B00m!@kahana.mongohq.com:10090/feedback"
-var MONGO_URL="mongodb://127.0.0.1:27017/suddenfeedback"
-var MongoClient = mongodb.MongoClient
-
-// Placeholders
-var dbUsers, dbOptions, dbReports, dbTerms = {};
+var MONGO_URL = appConfig.env_config[appConfig.env].mongo.conn_url;
+var MongoClient = mongodb.MongoClient;
+var MongoConn;
+var mongo_collections = { users: null, reports: null, terms: null };
 
 MongoClient.connect(MONGO_URL, function(err, db) {
-	  if(err) {
-	  	console.log('Cannot connect to mongo!');
-	  	process.exit(-1);
-	  }
-	  dbUsers = db.collection('users');
-	  dbOptions = db.collection('options');
-	  dbReports = db.collection('reports');
-	  dbTerms = db.collection('terms');
+      if(err) {
+	  	  logger.log(logger.ERROR, localization[appConfig.lang].mongo.no_conn);
+	  	  process.exit(-1);
+	  } else {
+          logger.log(logger.INFO, localization[appConfig.lang].mongo.conn);
+      }
 
-	  console.log('Connected to mongo');
+      MongoConn = db;
 
-	  if(program.seed) {
-	  	console.log('Seeding mongo');
-		var default_report = JSON.parse(fs.readFileSync('default_report.json'));
-		var default_terms = JSON.parse(fs.readFileSync('default_terms.json'));
-		dbReports.insert(default_report, function(){});
-		dbTerms.insert(default_terms, function(){});
+      for (var db_table in mongo_collections) {
+          mongo_collections[db_table] = MongoConn.collection(db_table);
+      }
+
+      fuapi.config(routes, mongo_collections);
+
+	  if (program.seed) {
+	  	logger.log(logger.INFO, localization[appConfig.lang].mongo.seeding);
+
+        var seeders = appConfig.env_config[appConfig.env].seeders;
+
+        for (var seeder in seeders) {
+            MongoConn.collection(seeder).insert(JSON.parse(fs.readFileSync(appConfig.env_config[appConfig.env].seeder_path + seeders[seeder])), noop);
+        }
 	  }
 });
 
 app.get('/auth/twitter', function(req, res) {
 	oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results) {
 		if (error) {
-			console.log(error);
-			res.send("yeah no. didn't work.")
+			logger.log(logger.ERROR, error);
+			res.send(localization[appConfig.lang].oauth.no_request_token);
 		} else {
 			share.set({
 				"oauth_token": oauth_token,
 				"oauth_token_secret": oauth_token_secret
 			},'oauth', req.session.uuid);
 
-			res.redirect('https://twitter.com/oauth/authenticate?oauth_token=' + oauth_token)
+			res.redirect(appConfig.env_config[appConfig.env].twitter.auth_url_prefix + oauth_token)
 		}
 	});
 });
 
  //_______________________\\
 //----====|| API ||====----\\
-var sendErrorSuccess = function(err,data){if (err){res.send('error');}else{res.send('success');}}
-var fuapiActions = {
-	listReports:function(req,res,next) {
-		dbReports.find({},{columns:0,terms:0}).toArray(function(err, results){
-			res.send({reportList:results});
-		});
-	},
-	loadReport:function(req,res,next) {
-		var report = {};
-		var d = req.param('q',null); //console.log(d);
-		dbReports.findOne({_id:d}, function(err, report){ 
-			report=fnNormalizeReport(report);
-	 		share.set(report,'report');
-			res.send(report);
-		});
-	},
-	delReport:function(req,res,next) {
-		var report = {};
-		var d = req.param('q',null); //console.log(d);
-		dbReports.remove({_id:d}, function(err, response){ 
-			res.send('report deleted');
-		});
-	},
-	init: function(req,res,next) {
-	    //get the report settings, if multiple grab the users most recent
-	    var objReport=share.get('report');
-	    if(objReport){ res.send(objReport);}
-	    else{
-	 	   //console.log('load a default report');
-	 	   dbReports.findOne({}, function(err, report){ 
-		 	  objReport=fnNormalizeReport(report);
-		 	  share.set(objReport,'report');
-			  res.send(objReport);
-	 	   });
-	 	   //get the word sets used
-	   }
-	},
-	saveReport: function(req,res,next) {
-		var d = req.param('q',null); 
-	  		dbReports.update( {_id:d._id},{columns:d.columns,terms:d.terms,name:d.name,colSort:d.colSort,titles:d.titles},{upsert:true,safe:true},
-			sendErrorSuccess);
-			share.set(d,'report');
-		//todo: save to session for server side use
-	},
-	saveTerms: function(req,res,next) {
-		var d = req.param('q',null); 
-	  	//console.log(d);
-	  	for(var i=0; i<d.length;i++){
-		  	dbTerms.update( {_id:d[i].user+':'+d[i].name},{user:d[i].user,name:d[i].name,terms:d[i].terms},{upsert:true,safe:true},
-			sendErrorSuccess);
-	  	}
-	},
-	//todo: save to session for server side use
-	playStream: routes.connectStream,
-	pauseStream: routes.destroyStream
-};
-
-
 app.post('/fuiapi', function(req, res, next) {
 	var strAction = req.param('a', null);
-	console.log('strAction',strAction);
-	if(fuapiActions[strAction]) {
-		fuapiActions[strAction](req,res,next);
+
+    if (fuapi[strAction]) {
+		fuapi[strAction](req, res, next);
 	} else {
 		res.send('error');
 	}
 });
+
  //________END API________\\
 //#########################\\
+
 
 var twitter = require('ntwitter');
 app.get('/auth/twitter/callback', function(req, res, next) {
 	var oauth = share.get('oauth',req.session.uuid);
-	
+
 	if (oauth) {
 		oauth.oauth_verifier = req.query.oauth_verifier;
-		
+
 		oa.getOAuthAccessToken(oauth.oauth_token, oauth.oauth_token_secret, oauth.oauth_verifier,
 			function(error, oauth_access_token, oauth_access_token_secret, results) {
 				console.log(results);
 
 				if (error) {
 					console.log(error);
-					res.send("yeah something broke.");
+					res.send(localization[appConfig.lang].oauth.access_token_error);
 				} else {
 					oauth.access_token = oauth_access_token;
 					oauth.access_token_secret = oauth_access_token_secret;
 					share.set(oauth,'oauth', req.session.uuid);
 
-					//console.log(req);
 					var twit = new twitter({
 						consumer_key: twitter_credentials.api_key,
 						consumer_secret: twitter_credentials.api_secret,
 						access_token_key: oauth.access_token,
 						access_token_secret: oauth.access_token_secret
 					});
+
 					twit.verifyCredentials(function(err, data) {
-						if(err) {
-							console.log('error verifying twit credentials',err);
+						if (err) {
+                            logger.log(logger.ERROR, localization[appConfig.lang].twitter.auth_failure, err);
 						} else {
-							//console.log('success verifying twit credentials ', data);
+							logger.log(logger.DEBUG, localization[appConfig.lang].twitter.auth_success, data);
 							res.redirect('/');
 						}
 					});
 				}
 			}
 		);
-	} else{ next(new Error("you're not supposed to be here.")); }
+	} else {
+        next(new Error(localization[appConfig.lang].oath.unauthorized));
+    }
 });
-
-var fnNormalizeReport = function(objReport){
-	//do a little report cleanup if needed
-	 	if(!objReport.colSort){ objReport.colSort='priority'; }
-	 	if(!objReport.titles){ objReport.titles='none'; }
-	 	if(!objReport.priority || objReport.priority < objReport.columns.length){ objReport.priority=objReport.columns.length; }
-	 	_.forEach(objReport.columns,function(objCol,i){
-	 		if(!objCol.score){ objReport.columns[i].score=0; } //set an initial analysis score if it doesnt exist
-	 		if(!objCol.priority || objCol.priority < 1){ objReport.columns[i].priority=1; }
-	 		if(!objCol.components){objReport.columns[i].components=[];}
-	 		if(objCol.components.length){ _.forEach(objCol.components,function(objComp,ii){
-	 			if(!objComp.items){ objReport.columns[i].components[ii].items=[]; }
-	 		}) }
-	 	});
-	return objReport;
-}
