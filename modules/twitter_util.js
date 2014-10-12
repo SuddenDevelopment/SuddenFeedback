@@ -7,7 +7,7 @@
 var _ = require('lodash');
 var fs = require('fs');
 
-var appConfig = require('../config/app.json');
+var app_config = require('../config/app.json');
 var localization = require('../config/localization.json');
 var logger = new require('./logger');
 var exception = new require('./exception');
@@ -21,20 +21,20 @@ var TwitterUtil = function() {};
  * Returns the Twitter credentials for the user account passed in
  * by the --twitter -t argument
  */
-TwitterUtil.prototype.getCredentials = function(program){
+TwitterUtil.prototype.getCredentials = function(program, callback){
 
     if('undefined' === typeof(program.twitter)){
-        exception.throw(localization[appConfig.lang].twitter.parameter_not_present);
+        exception.throw(localization[app_config.lang].twitter.parameter_not_present);
     } else {
-        logger.log(logger.INFO, localization[appConfig.lang].twitter.using_credentials + program.twitter);
+        logger.log(logger.INFO, localization[app_config.lang].twitter.using_credentials + program.twitter);
 
-        var twConfig = JSON.parse(fs.readFileSync(appConfig.env_config[appConfig.env].twitter.config_path));
+        var twConfig = JSON.parse(fs.readFileSync(app_config.env_config[app_config.env].twitter.config_path));
 
         if (!_.has(twConfig, program.twitter)) {
-            exception.throw(localization[appConfig.lang].twitter.config_does_not_exist);
+            exception.throw(localization[app_config.lang].twitter.config_does_not_exist);
         }
 
-        return twConfig[program.twitter];
+        callback(twConfig[program.twitter]);
     }
 
 };

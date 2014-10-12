@@ -5,7 +5,7 @@
  */
 
 var fs = require('fs');
-var appConfig = require('../config/app.json');
+var app_config = require('../config/app.json');
 var localization = require('../config/localization.json');
 var noop = require('../modules/noop');
 
@@ -13,11 +13,11 @@ var noop = require('../modules/noop');
  * Class Logger
  */
 var Logger = function() {
-    this.env = appConfig.env;
-    this.env_config = appConfig.env_config;
+    this.env = app_config.env;
+    this.env_config = app_config.env_config;
     this.log_levels = this.env_config[this.env].log_levels;
     this.log_path = this.env_config[this.env].log_path;
-    this.logs_disabled = appConfig.logs_disabled;
+    this.logs_disabled = app_config.logs_disabled;
 
     this.INFO = "info";
     this.DEBUG = "debug";

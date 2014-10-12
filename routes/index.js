@@ -5,8 +5,8 @@ function getIndex(arr,key,value){ for(i=0; i<arr.length;i++){ if(arr[i][key]==va
  * GET home page.
  */
 
-var appConfig = require('../config/app.json');
-var debug = appConfig.env_config[appConfig.env].debug;
+var app_config = require('../config/app.json');
+var debug = app_config.env_config[app_config.env].debug;
 var logger = require('../modules/logger');
 
 var _ = require('lodash');

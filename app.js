@@ -16,7 +16,7 @@ var os = require('os');
 /**
  * Local module dependencies.
  */
-var appConfig = require('./config/app.json');
+var app_config = require('./config/app.json');
 var localization = require('./config/localization.json');
 var user = require('./routes/user');
 var share = require('./modules/share'); //utility wes wrote for data betwen node files instead of session
@@ -26,41 +26,63 @@ var reportHandler = require('./modules/report');
 var twitter_util = require('./modules/twitter_util');
 var ip_util = require('./modules/ip_util');
 var noop = require('./modules/noop');
-var fuapi = require('./modules/fuapi');
+var fuiapi = require('./modules/fui_api');
 
 var routes = require('./routes');
 routes.setShare(share);
 
-var debug = appConfig.env_config[appConfig.env].debug;
+var debug = app_config.env_config[app_config.env].debug;
 
 program
-  .version(appConfig.version)
-  .option('-s, --seed', localization[appConfig.lang].mongo.param_instructions)
-  .option('-t, --twitter [user]', localization[appConfig.lang].twitter.param_instructions)
-  .option('-p, --protocol [http|https]', localization[appConfig.lang].protocol.param_instructions)
+  .version(app_config.version)
+  .option('-s, --seed', localization[app_config.lang].mongo.param_instructions)
+  .option('-t, --twitter [user]', localization[app_config.lang].twitter.param_instructions)
+  .option('-p, --protocol [http|https]', localization[app_config.lang].protocol.param_instructions)
   .parse(process.argv);
 
-var PROTOCOL = program.protocol || appConfig.env_config[appConfig.env].protocol;
-var PORT = process.env.PORT || appConfig.env_config[appConfig.env].port;
-
-var twitter_credentials = twitter_util.getCredentials(program);
-share.set(twitter_credentials, 'twitter_credentials');
+var PROTOCOL = program.protocol || app_config.env_config[app_config.env].protocol;
+var PORT = process.env.PORT || app_config.env_config[app_config.env].port;
 
 var host_ip = ip_util.getIpAddress();
-logger.log(logger.INFO, localization[appConfig.lang].common.host_ip + ": " + host_ip);
+logger.log(logger.INFO, localization[app_config.lang].common.host_ip + ": " + host_ip);
+
+var twitter_credentials;
+var oa;
+
+twitter_util.getCredentials(program, function (creds) {
+    twitter_credentials = creds;
+    share.set(twitter_credentials, 'twitter_credentials');
+
+    /*
+     * GET home page.
+          consumer_key: '9kFmLFgQw25ls1lvY4VLHCpDN',
+        consumer_secret: 'qyw9KEhgqMBSXvEZJhwLXvUyMiFtRKbArPSxxW1b97V0A6qUT3',
+        access_token: '961522914-MYbXA2PLITQplMieKLje0zP0L3ddad1FN8xFKMUY',
+        access_token_secret: '2N3WH09m2la6q7xMKzKc34ZWq9ySgypqbxreGnYPGTJ5J'
+     */
+    oa = new OAuth(
+        app_config.env_config[app_config.env].twitter.request_token_url,
+        app_config.env_config[app_config.env].twitter.access_token_url,
+        twitter_credentials.api_key,
+        twitter_credentials.api_secret,
+        app_config.env_config[app_config.env].oauth.version,
+        PROTOCOL + "://" + host_ip + ":"+ PORT + app_config.env_config[app_config.env].oauth.callback_path,
+        app_config.env_config[app_config.env].oauth.mac_type
+    );
+});
 
 var app = express();
 
 // all environments
 app.set('port', PORT);
-app.set('views', appConfig.views_dir);
-app.set('view engine', appConfig.view_engine);
+app.set('views', app_config.views_dir);
+app.set('view engine', app_config.view_engine);
 app.use(express.favicon());
-app.use(express.logger(appConfig.env.toLowerCase()));
+app.use(express.logger(app_config.env.toLowerCase()));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
-app.use(express.cookieParser(appConfig.env_config[appConfig.env].salts.cookie));
-app.use(express.session({secret: appConfig.env_config[appConfig.env].salts.session}));
+app.use(express.cookieParser(app_config.env_config[app_config.env].salts.cookie));
+app.use(express.session({secret: app_config.env_config[app_config.env].salts.session}));
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -71,37 +93,20 @@ app.get('/', routes.index);
 //app.get('/users', user.list);
 
 http.createServer(app).listen(app.get('port'), function() {
-    logger.log(logger.INFO, localization[appConfig.lang].express.listening + app.get('port'));
+    logger.log(logger.INFO, localization[app_config.lang].express.listening + app.get('port'));
 });
 
-/*
- * GET home page.
-  	consumer_key: '9kFmLFgQw25ls1lvY4VLHCpDN',
-    consumer_secret: 'qyw9KEhgqMBSXvEZJhwLXvUyMiFtRKbArPSxxW1b97V0A6qUT3',
-    access_token: '961522914-MYbXA2PLITQplMieKLje0zP0L3ddad1FN8xFKMUY',
-    access_token_secret: '2N3WH09m2la6q7xMKzKc34ZWq9ySgypqbxreGnYPGTJ5J'
- */
-var oa = new OAuth(
-	appConfig.env_config[appConfig.env].twitter.request_token_url,
-	appConfig.env_config[appConfig.env].twitter.access_token_url,
-	twitter_credentials.api_key,
-	twitter_credentials.api_secret,
-	appConfig.env_config[appConfig.env].oauth.version,
-	PROTOCOL + "://" + host_ip + ":"+ PORT + appConfig.env_config[appConfig.env].oauth.callback_path,
-	appConfig.env_config[appConfig.env].oauth.mac_type
-);
-
-var MONGO_URL = appConfig.env_config[appConfig.env].mongo.conn_url;
+var MONGO_URL = app_config.env_config[app_config.env].mongo.conn_url;
 var MongoClient = mongodb.MongoClient;
 var MongoConn;
 var mongo_collections = { users: null, reports: null, terms: null };
 
 MongoClient.connect(MONGO_URL, function(err, db) {
       if(err) {
-	  	  logger.log(logger.ERROR, localization[appConfig.lang].mongo.no_conn);
+	  	  logger.log(logger.ERROR, localization[app_config.lang].mongo.no_conn);
 	  	  process.exit(-1);
 	  } else {
-          logger.log(logger.INFO, localization[appConfig.lang].mongo.conn);
+          logger.log(logger.INFO, localization[app_config.lang].mongo.conn);
       }
 
       MongoConn = db;
@@ -110,15 +115,15 @@ MongoClient.connect(MONGO_URL, function(err, db) {
           mongo_collections[db_table] = MongoConn.collection(db_table);
       }
 
-      fuapi.config(routes, mongo_collections);
+      fuiapi.config(routes, mongo_collections);
 
 	  if (program.seed) {
-	  	logger.log(logger.INFO, localization[appConfig.lang].mongo.seeding);
+	  	logger.log(logger.INFO, localization[app_config.lang].mongo.seeding);
 
-        var seeders = appConfig.env_config[appConfig.env].seeders;
+        var seeders = app_config.env_config[app_config.env].seeders;
 
         for (var seeder in seeders) {
-            MongoConn.collection(seeder).insert(JSON.parse(fs.readFileSync(appConfig.env_config[appConfig.env].seeder_path + seeders[seeder])), noop);
+            MongoConn.collection(seeder).insert(JSON.parse(fs.readFileSync(app_config.env_config[app_config.env].seeder_path + seeders[seeder])), noop);
         }
 	  }
 });
@@ -127,14 +132,14 @@ app.get('/auth/twitter', function(req, res) {
 	oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results) {
 		if (error) {
 			logger.log(logger.ERROR, error);
-			res.send(localization[appConfig.lang].oauth.no_request_token);
+			res.send(localization[app_config.lang].oauth.no_request_token);
 		} else {
 			share.set({
 				"oauth_token": oauth_token,
 				"oauth_token_secret": oauth_token_secret
 			},'oauth', req.session.uuid);
 
-			res.redirect(appConfig.env_config[appConfig.env].twitter.auth_url_prefix + oauth_token)
+			res.redirect(app_config.env_config[app_config.env].twitter.auth_url_prefix + oauth_token)
 		}
 	});
 });
@@ -144,8 +149,8 @@ app.get('/auth/twitter', function(req, res) {
 app.post('/fuiapi', function(req, res, next) {
 	var strAction = req.param('a', null);
 
-    if (fuapi[strAction]) {
-		fuapi[strAction](req, res, next);
+    if (fuiapi[strAction]) {
+		fuiapi[strAction](req, res, next);
 	} else {
 		res.send('error');
 	}
@@ -168,7 +173,7 @@ app.get('/auth/twitter/callback', function(req, res, next) {
 
 				if (error) {
 					console.log(error);
-					res.send(localization[appConfig.lang].oauth.access_token_error);
+					res.send(localization[app_config.lang].oauth.access_token_error);
 				} else {
 					oauth.access_token = oauth_access_token;
 					oauth.access_token_secret = oauth_access_token_secret;
@@ -183,9 +188,9 @@ app.get('/auth/twitter/callback', function(req, res, next) {
 
 					twit.verifyCredentials(function(err, data) {
 						if (err) {
-                            logger.log(logger.ERROR, localization[appConfig.lang].twitter.auth_failure, err);
+                            logger.log(logger.ERROR, localization[app_config.lang].twitter.auth_failure, err);
 						} else {
-							logger.log(logger.DEBUG, localization[appConfig.lang].twitter.auth_success, data);
+							logger.log(logger.DEBUG, localization[app_config.lang].twitter.auth_success, data);
 							res.redirect('/');
 						}
 					});
@@ -193,6 +198,6 @@ app.get('/auth/twitter/callback', function(req, res, next) {
 			}
 		);
 	} else {
-        next(new Error(localization[appConfig.lang].oath.unauthorized));
+        next(new Error(localization[app_config.lang].oath.unauthorized));
     }
 });

@@ -1,24 +1,24 @@
 /**
- * Module: Fuapi
+ * Module: FuiApi
  * Description: Servers as the primary API for the client app
  * Last Modified: 10-11-2014 by Andrew Forth
  */
 
 var fs = require('fs');
-var appConfig = require('../config/app.json');
+var app_config = require('../config/app.json');
 var share = require('./share'); //utility wes wrote for data betwen node files instead of session
 var reportHandler = require('./report');
 var logger = require('./logger');
 
 /**
- * Class Fuapi
+ * Class FuiApi
  */
-var Fuapi = function() {
+var FuiApi = function() {
     this.routes = null;
     this.collections = {};
 };
 
-Fuapi.prototype.init = function(req, res, next) {
+FuiApi.prototype.init = function(req, res, next) {
     //get the report settings, if multiple grab the users most recent
     var objReport = share.get('report');
 
@@ -35,7 +35,7 @@ Fuapi.prototype.init = function(req, res, next) {
    }
 };
 
-Fuapi.prototype.config = function(routes, collections) {
+FuiApi.prototype.config = function(routes, collections) {
     this.routes = routes;
 
     //todo: save to session for server side use
@@ -45,13 +45,13 @@ Fuapi.prototype.config = function(routes, collections) {
     this.collections = collections;
 };
 
-Fuapi.prototype.listReports = function(req, res, next) {
+FuiApi.prototype.listReports = function(req, res, next) {
     this.collections['reports'].find({},{ columns: 0, terms: 0 }).toArray(function(err, results){
         res.send({ reportList: results });
     });
 };
 
-Fuapi.prototype.loadReport = function(req, res, next) {
+FuiApi.prototype.loadReport = function(req, res, next) {
     var report = {};
     var d = req.param('q', null); //console.log(d);
     this.collections['reports'].findOne({ _id:d }, function(err, report) {
@@ -61,7 +61,7 @@ Fuapi.prototype.loadReport = function(req, res, next) {
     });
 };
 
-Fuapi.prototype.delReport = function(req, res, next) {
+FuiApi.prototype.delReport = function(req, res, next) {
     var report = {};
     var d = req.param('q', null); //console.log(d);
     this.collections['reports'].remove({ _id: d }, function(err, response) {
@@ -69,7 +69,7 @@ Fuapi.prototype.delReport = function(req, res, next) {
     });
 };
 
-Fuapi.prototype.saveReport = function(req, res, next) {
+FuiApi.prototype.saveReport = function(req, res, next) {
     var d = req.param('q', null);
 
     this.collections['reports'].update({ _id:d._id }
@@ -81,7 +81,7 @@ Fuapi.prototype.saveReport = function(req, res, next) {
     //todo: save to session for server side use
 };
 
-Fuapi.prototype.saveTerms = function(req, res, next) {
+FuiApi.prototype.saveTerms = function(req, res, next) {
     var d = req.param('q', null);
 
     for (var i=0; i<d.length;i++) {
@@ -92,7 +92,7 @@ Fuapi.prototype.saveTerms = function(req, res, next) {
     }
 };
 
-Fuapi.prototype.sendErrorSuccess = function(err, data) {
+FuiApi.prototype.sendErrorSuccess = function(err, data) {
     if (err) {
         res.send('error');
     } else {
@@ -100,4 +100,4 @@ Fuapi.prototype.sendErrorSuccess = function(err, data) {
     }
 };
 
-module.exports = new Fuapi();
+module.exports = new FuiApi();

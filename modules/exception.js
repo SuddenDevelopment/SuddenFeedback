@@ -1,26 +1,26 @@
 /**
  * Module: Exception
  * Description: Handles exceptions thrown by the system
- * Last Modified: 10-11-2014 by Andrew Forth
+ * Last Modified: 10-12-2014 by Andrew Forth
  */
 
-var fs = require('fs');
-var appConfig = require('../config/app.json');
+var app_config = require('../config/app.json');
 var logger = require('../modules/logger');
+
+var should_throw = app_config.env_config[app_config.env].throw_exceptions;
 
 /**
  * Class Exception
  */
-var Exception = function() {
-    this.env = appConfig.env;
-    this.env_config = appConfig.env_config;
-};
+var Exception = function() {};
 
 Exception.prototype.throw = function(msg, suppress_logs) {
 
-    logger.log(logger.ERROR, msg);
+    if (!suppress_logs) {
+        logger.log(logger.ERROR, msg);
+    }
 
-    if (this.env_config[this.env].throw_exceptions) {
+    if (should_throw) {
         throw "[" + logger.ERROR.toUpperCase() + "] " + msg;
     }
 };

@@ -1,21 +1,15 @@
 /**
  * Module: Report
  * Description: Generates reports
- * Last Modified: 10-11-2014 by Andrew Forth
+ * Last Modified: 10-12-2014 by Andrew Forth
  */
 
 var _ = require('lodash');
-var fs = require('fs');
-var appConfig = require('../config/app.json');
-var logger = require('../modules/logger');
 
 /**
  * Class Report
  */
-var Report = function() {
-    this.env = appConfig.env;
-    this.env_config = appConfig.env_config;
-};
+var Report = function() {};
 
 Report.prototype.normalize = function(objReport){
 
