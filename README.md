@@ -8,11 +8,11 @@ Requirements
 
 Getting Started
 ===============
-1. Set up a Twitter account
+1) Set up a Twitter account
 
 2) Generate an API key (or just use Anthong's creds: see below).
 
-3. If you generated your own API key, then modify the Twitter config file
+3) If you generated your own API key, then modify the Twitter config file
     (config/twitter.json) to include an entry for your account (SKIP, if you're
     using Anthong's creds):
 
@@ -21,7 +21,7 @@ Getting Started
         "api_secret": "<twitter api secret>"
     }
 
-4. Non-Vagrant users proceed to step 5. Vagrant users: you have to configure your
+4) Non-Vagrant users proceed to step 5. Vagrant users: you have to configure your
     Vagrant config file ("Vagrantfile") to contain an entry to forward ports 3000
         and 3001 from the host to the guest machine. To do this:
 
@@ -35,17 +35,17 @@ Getting Started
     4c) Start Vagrant: vagrant up
     4d) SSH to the Vagrant box: vagrant ssh
 
-5. Start mongo. Perhaps one of the following:
+5) Start mongo. Perhaps one of the following:
     /usr/local/mongodb/bin/mongod
     sudo /usr/bin/mongod
 
-6. Start the app:
+6) Start the app:
     cd <project directory>
     node app.js --seed --twitter=<your Twitter handle | anthony>
 
-7. Point to the app from a browser: http://localhost:3000
+7) Point to the app from a browser: http://localhost:3000
 
-8. Use the "login to twitter" link in the app to login to your Twitter account.
+8) Use the "login to twitter" link in the app to login to your Twitter account.
 
 Idea and task list in todo file.
 
