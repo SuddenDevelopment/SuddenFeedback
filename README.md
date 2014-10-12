@@ -41,7 +41,7 @@ Getting Started
 
 6) Start the app:
     cd <project directory>
-    node app.js --seed --twitter=<your Twitter handle | anthony>
+    node app.js --seed --twitter=anthony
 
 7) Point to the app from a browser: http://localhost:3000
 
