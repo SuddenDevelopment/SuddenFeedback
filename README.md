@@ -36,8 +36,8 @@ Getting Started
     4d) SSH to the Vagrant box: vagrant ssh
 
 5) Start mongo. Perhaps one of the following:
-    /usr/local/mongodb/bin/mongod
-    sudo /usr/bin/mongod
+    5a) /usr/local/mongodb/bin/mongod
+    5b) sudo /usr/bin/mongod
 
 6) Start the app:
     cd <project directory>
