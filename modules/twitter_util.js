@@ -1,16 +1,33 @@
 /**
  * Module: TwitterUtil
  * Description: Provides utilities for working with Twitter
- * Last Modified: 10-11-2014 by Andrew Forth
  */
 
+//_________________________________________\\
+//----====|| Package Dependencies ||====----\\
 var _ = require('lodash');
 var fs = require('fs');
+//________END Package Dependencies_________\\
+//##########################################\\
 
+
+//_______________________________________\\
+//----====|| Local Dependencies ||====----\\
 var app_config = require('../config/app.json');
-var localization = require('../config/localization.json');
-var logger = new require('./logger');
-var exception = new require('./exception');
+var locales = require('../config/locales.json');
+var logger = require('./logger');
+var exception = require('./exception');
+//________END Local Dependencies_________\\
+//########################################\\
+
+
+//____________________________\\
+//----====|| Helpers ||====----\\
+var env_config = app_config.env_config[app_config.env];
+var localization = locales[app_config.lang];
+//________END Helpers_________\\
+//#############################\\
+
 
 /**
  * Class TwitterUtil
@@ -21,20 +38,20 @@ var TwitterUtil = function() {};
  * Returns the Twitter credentials for the user account passed in
  * by the --twitter -t argument
  */
-TwitterUtil.prototype.getCredentials = function(program, callback){
+TwitterUtil.prototype.getCredentials = function(api_account, callback){
 
-    if('undefined' === typeof(program.twitter)){
-        exception.throw(localization[app_config.lang].twitter.parameter_not_present);
+    if('undefined' === typeof(api_account)){
+        exception.throw(localization.twitter.parameter_not_present);
     } else {
-        logger.log(logger.INFO, localization[app_config.lang].twitter.using_credentials + program.twitter);
+        logger.log(logger.INFO, localization.twitter.using_credentials + api_account);
 
-        var twConfig = JSON.parse(fs.readFileSync(app_config.env_config[app_config.env].twitter.config_path));
+        var twConfig = JSON.parse(fs.readFileSync(env_config.data_providers.twitter.config_path));
 
-        if (!_.has(twConfig, program.twitter)) {
-            exception.throw(localization[app_config.lang].twitter.config_does_not_exist);
+        if (!_.has(twConfig, api_account)) {
+            exception.throw(localization.twitter.config_does_not_exist);
         }
 
-        callback(twConfig[program.twitter]);
+        callback(twConfig[api_account]);
     }
 
 };

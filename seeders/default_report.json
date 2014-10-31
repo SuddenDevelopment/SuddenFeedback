@@ -1,5 +1,6 @@
 {
 	"_id" : "Celebrity",
+	"type" : "twitter",
 	"columns" : [
 		{
 			"id" : 1,

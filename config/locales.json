@@ -1,0 +1,37 @@
+{
+    "en-us": {
+        "common": {
+            "host_ip": "Host IP",
+            "disabled": "Disabled",
+            "not_authorized_for_type": "Not authorized to access data type"
+        },
+        "express": {
+            "listening": "Express server listening on port: "
+        },
+        "logs": {
+            "unsupported_level": "Unsupported log level"
+        },
+        "mongo": {
+            "param_instructions": "Initialize mongo with seed data",
+            "no_conn": "Cannot connect to mongo!",
+            "conn": "Connected to mongo",
+            "seeding": "Seeding mongo"
+        },
+        "oauth": {
+            "no_request_token": "Yeah no. didn't work.",
+            "unauthorized": "You're not supposed to be here, mijo.",
+            "access_token_error": "OAuth access token error"
+        },
+        "protocol": {
+            "param_instructions": "What protocol to use. Should be http or https"
+        },
+        "twitter": {
+            "param_instructions": "Whose access credentials to use for accessing Twitter",
+            "parameter_not_present": "No Twitter account provided, cannot proceed",
+            "config_does_not_exist": "Specified Twitter account does not exist in config, cannot proceed",
+            "using_credentials": "Using Twitter account: ",
+            "auth_success": "Success verifying twit credentials",
+            "auth_failure": "Error verifying twit credentials"
+        }
+    }
+}

@@ -1,11 +1,15 @@
 /**
  * Module: IpUtil
  * Description: Provides utilities for working with IP addresses
- * Last Modified: 10-11-2014 by Andrew Forth
  */
 
+//_________________________________________\\
+//----====|| Package Dependencies ||====----\\
 var _ = require('lodash');
 var os = require('os');
+//________END Package Dependencies_________\\
+//##########################################\\
+
 
 /**
  * Class IpUtil
@@ -18,27 +22,27 @@ var IpUtil = function() {};
 IpUtil.prototype.getIpAddress = function(){
     var interfaces = [];
     var osInterfaces = os.networkInterfaces();
-    var objInterface = _.find(osInterfaces.eth0[0],{'family':'IPv4'});
-    var strHost='localhost';
+    var objInterface = _.find(osInterfaces.eth0[0], { 'family': 'IPv4' });
+    var strHost = 'localhost';
 
     for (key in osInterfaces) {
         interfaces.push(key);
     }
 
-    if (_.contains(interfaces,'eth0')) {
+    if (_.contains(interfaces, 'eth0')) {
         if (objInterface) {
-            strHost=objInterface.address;
+            strHost = objInterface.address;
         }
-    } else if (_.contains(interfaces,'en0')) {
-        var objInterface = _.find(os.networkInterfaces().en0[0].address,{'family':'IPv4'});
+    } else if (_.contains(interfaces, 'en0')) {
+        var objInterface = _.find(os.networkInterfaces().en0[0].address, { 'family': 'IPv4' });
         if (objInterface) {
-            strHost=objInterface.address;
+            strHost = objInterface.address;
         }
     } else {
         return 'localhost';
     }
 
-    if (strHost=='127.0.0.1') {
+    if (strHost === '127.0.0.1') {
         return 'localhost';
     } else {
         return strHost;

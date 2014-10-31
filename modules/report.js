@@ -1,17 +1,21 @@
 /**
  * Module: Report
- * Description: Generates reports
- * Last Modified: 10-12-2014 by Andrew Forth
+ * Description:
  */
 
+//_________________________________________\\
+//----====|| Package Dependencies ||====----\\
 var _ = require('lodash');
+//________END Package Dependencies_________\\
+//##########################################\\
+
 
 /**
  * Class Report
  */
 var Report = function() {};
 
-Report.prototype.normalize = function(objReport){
+Report.prototype.normalize = function(objReport) {
 
     //do a little report cleanup if needed
     if (!objReport.colSort) {
@@ -26,7 +30,7 @@ Report.prototype.normalize = function(objReport){
         objReport.priority = objReport.columns.length;
     }
 
-    _.forEach(objReport.columns,function(objCol,i) {
+    _.forEach(objReport.columns, function(objCol, i) {
 
         if (!objCol.score) { //set an initial analysis score if it doesnt exist
             objReport.columns[i].score = 0;
@@ -41,7 +45,7 @@ Report.prototype.normalize = function(objReport){
         }
 
         if (objCol.components.length) {
-            _.forEach(objCol.components,function(objComp,ii) {
+            _.forEach(objCol.components, function(objComp, ii) {
                 if (!objComp.items) {
                     objReport.columns[i].components[ii].items = [];
                 }
