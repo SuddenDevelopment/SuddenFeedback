@@ -22,7 +22,9 @@ var IpUtil = function() {};
 IpUtil.prototype.getIpAddress = function(){
     var interfaces = [];
     var osInterfaces = os.networkInterfaces();
-    var objInterface = _.find(osInterfaces.eth0[0], { 'family': 'IPv4' });
+
+    //this needs a conditional before setting, or else it fails when not found. -ant
+    //var objInterface = _.find(osInterfaces.eth0[0], { 'family': 'IPv4' });
     var strHost = 'localhost';
 
     for (key in osInterfaces) {
