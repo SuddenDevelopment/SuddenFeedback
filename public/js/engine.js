@@ -284,7 +284,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         });
     };
 
-    $scope.listReports = function(objReport, withData) {
+    $scope.listReports = function() {
         FUIAPI.post({ a: 'listReports', t: $scope.selectedDataType },
             function(response) {
                 $scope.reportList = response.reportList;
