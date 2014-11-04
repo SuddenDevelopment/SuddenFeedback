@@ -1,0 +1,86 @@
+todo: Login Page
+===================
+  Allows the user to login, logging in connects them to their saved reports, settings, wordsets
+
+Report Page
+===================
+  A page loaded with columns, ready to accept a feed
+
+Column
+===================
+  A "Bucket" within the report, can conatin components and items. What determines what goes into the column is completely user defined, anything from simple user defined keywords to complex analysis score ranges.
+  
+  Column Items
+  ===================
+    Individual "messages" can be an item from logs, a tweet, a status, any individual message that is conveyed to the system for aggregation and sorting. This is the default content of a column. These are passed through the framework and decorated with analysis and properties that determine how to handle them by the system as they are passed
+
+  Column Component
+  ===================
+    A Component is a subdivision of a column to hold something other than an item. It must stay within the context of the column. It can be things such as tag stats charts, maps anything that helps give meaning to the context of the column.
+
+  Column Menu
+  ===================
+    Click on the Column heading for a menu
+    Adding components divides the column vertically
+    Color: Used for the Hbar above the columns and the % in the column header
+    Show: decides what Items go into the column
+    Sort: is what property items are sorted on
+    Analysis: Is what kind of analysis is applied to messages
+    Limit: Set the display limit for the web page, limit is used for the backend to determine which ones are worth sending to the UI
+    Width: Column Width
+
+Item
+===================
+  Click on an Item to see it in a modal Window.
+  You can remove the Item from the column
+  todo: move item to another column.
+  If you type a note into the text box and hit enter it will go into a "Notes" column if it exists, Notes are treated like Items
+
+Top Menu
+===================
+  The top Menu is meant to be a minimal (no larger than one line) menu to do everything necessary to admin and build a report, needs some polish tho.
+
+  Login to twitter
+  ===================
+    This is simply carried forward from my first prototype. Logging in should be on a separate login page, connecting to twitter would be based on the report selected or loaded by the user.
+
+  Words
+  ===================
+    This is where buckets of words are to be configured, there is a LOT of potential in this area. The buckets of words are to define words that are used for adding and removing items from columns, and analysis. For example you can Have words to get items into a column, filter out items that have crap you don't want to see, and then other sets of words to do some scoring on the content. Scoring is simple arithmatic from signed integers assigned to words, this is how the sentiment analysis is done. Eventually words can be trained from sets of messages
+
+  Reports
+  ===================
+    Define top level details about the report.
+
+    Reset Data
+    ===================
+      Same report new data, might be good after changing settings significantly.
+
+    Add Column
+    ===================
+      IT can be awkward to add a column from anywhere else, this is the main place.
+
+    Save
+    ===================
+      Save the report and all features to Persistance layer.
+
+    New Report
+    ===================
+      todo: new report wizard to walk through major report types with descriptions, easy setup with defaults
+      Define a new report.
+
+  New
+  ===================
+    Alias to New Report
+
+  Load
+  ===================
+    Load the previously defined reports, with or without data.
+
+  todo: Publish
+  ===================
+    After defining, running, editing, adding analysis to a report, publish it to a repository to share with others. The viewer would be a stripped down version of the UI which will replay but not allow any editing.
+  
+  Pause / Play
+  ===================
+    Pause or resume the stream
