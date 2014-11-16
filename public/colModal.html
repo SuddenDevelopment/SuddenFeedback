@@ -20,7 +20,7 @@
             </div>
             <div class="row modal-menu-row">
               <div class="col-lg-2">label: </div>
-              <div class="col-lg-6"><input ng-model="column.label" /></div>
+              <div class="col-lg-6"><input class="inputtext input_middle required gradient" ng-model="column.label" /></div>
             </div>
             <div class="row modal-menu-row">
               <div class="col-lg-2">Show: </div>
@@ -53,14 +53,14 @@
               <div class="col-lg-6"><select ng-model="comp.height" ng-options="arr.v as arr.k for arr in heights"></select></div>
             </div>
             <div class="row modal-menu-row">
-              <div class="col-lg-2"><button type="button" class="btn btn-default" ng-click="delComp(column.id,i)">Remove Component</button></div>
+              <div class="col-lg-2"><span class="btn btn-red"><button type="button" class="gradient" ng-click="delComp(column.id,i)">Remove Component</button></span></div>
             </div>
           </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" ng-click="addComp(column.id)">Add Component</button>
-        <button type="button" class="btn btn-default" ng-click="delCol(column.id)">Remove</button>
-        <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
+        <span class="btn btn-red"><button type="button" class="gradient" ng-click="addComp(column.id)">Add Component</button></span>
+        <span class="btn btn-red"><button type="button" class="gradient" ng-click="delCol(column.id)">Remove</button></span>
+        <span class="btn btn-red"><button type="button" class="gradient" ng-click="$hide()">Close</button></span>
       </div>
     </div>
   </div>

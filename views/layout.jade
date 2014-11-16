@@ -1,10 +1,9 @@
 doctype 5
 html(ng-app="SuddenFeedbackApp")
     head
-        link(rel='stylesheet', href='/css/font-awesome.min.css')
         link(rel='stylesheet', href='/css/bootstrap.css')
+        link(rel='stylesheet', href='/css/font-awesome.min.css')
         link(rel='stylesheet', href='/css/ng-tags-input.min.css')
-        link(rel='stylesheet', href='/css/style.css')
         script(src='/js/lodash.min.js')
         script(src='/js/angular.js')
         script(src='/js/angular-animate.min.js')
@@ -16,59 +15,77 @@ html(ng-app="SuddenFeedbackApp")
         script(src='/js/ng-tags-input.min.js')
         script(src='/js/once.js')
         script(src='/js/engine.js',type='text/javascript')
+            /* 
+            link(rel='stylesheet', href='/css/bootstrap.css')
+            link(rel='stylesheet', href='/css/style.css')
+            link(href='/dark/css/bootstrap.css' media="screen" rel="stylesheet")
+             */
+            /* Bootstrap theme requirements */
+            /* TODO: uopdate and replace with angular native stuff */
+        
+        link(href='/dark/style.css' media="screen" rel="stylesheet")
+        script(src='/dark/js/libs/jquery-1.10.0.js' type='text/javascript')
+        script(src='/dark/js/libs/jquery-1.10.0.js' type='text/javascript')
+        script(src='/dark/js/libs/jquery-ui.min.js' type='text/javascript')
+        script(src='/dark/js/libs/bootstrap.min.js' type='text/javascript')
+        script(src='/dark/js/general.js' type='text/javascript')
+            /* End Bootstrap Theme */
     body(ng-controller='FUI' ng-init="init()")
         block content
-        a(href='/auth/twitter') login to twitter. 
-        span(bs-modal="wmodal" data-template="wordsModal.html") words 
-        span(bs-modal="rmodal" data-template="reportModal.html") report 
-        span(bs-modal="nmodal" data-template="newModal.html") new 
-        span(bs-modal="lmodal" data-template="loadModal.html") load 
-        i(class="fa" ng-class="{'fa-pause':play, 'fa-play':!play}" ng-click="pause()")
-        div(class="content container-fluid")
-            //////||  Horizontal Bar  ||\\\\\
-            div(class="row" style="width:100%;height:5px;overflow:hidden;")
-                div(class="HbarSegment" ng-repeat="(index,column) in report.columns | orderBy:report.colSort:true" ng-style="{width:((column.priority/report.priority)*100).toFixed(0)+'%', background:column.color,'box-shadow':'0 2 20px '+column.color}")&nbsp;
-            //////||  columns  ||\\\\\
-            div(ng-repeat="(index,column) in report.columns | orderBy:report.colSort:true" once-if="column.width>0" id="{{index}}" class="isotope-container col-lg-{{column.width}}")
-                div(class="panel panel-primary" bs-modal="cmodal" data-template="colModal.html" style="margin-bottom:0;") 
-                        div(ng-if="column.label!='none'" class="row panel-heading")
-                            div(class="col-lg-8 text-left") {{column.label}}
-                            div(class="col-lg-2 text-center") {{column.score}}
-                            div(class="col-lg-2 text-right text-info" ng-style="{color:column.color}") {{((column.priority/report.priority)*100).toFixed(0)}}%
-                div(class="fuiColumn row" ng-style="{height:column.itemsheight+'%'}" ng-class="{'Slides':column.show=='Slides'}")    
-                    //////||  items  ||\\\\\
-                    div(class='isotope-item well well-sm' ng-animate=" 'animate' " ng-repeat="(i,t) in column.items | orderBy:column.sort:true | limitTo:column.limit track by t.text" ng-class="{'new':t.status<0,'updated':t.status>0}" bs-modal="imodal" data-template="itemModal.html")
-                        div(once-if="t.title!=undefined" class="col-lg-12 item-title"){{t.title}}
-                        div(once-class="{'col-lg-9':t.entities.media[0]}")
-                            //todo: convert to a single ng-class
-                            i(once-if="t.typ=='User'" class="fa fa-user")
-                            i(once-if="t.typ=='Link'" class="fa fa-link")
-                            i(once-if="t.typ=='Tag'" class="fa fa-tag")
-                            i(once-if="t.typ=='Mention'" class="fa fa-hand-o-right")
-                            i(once-if="t.typ=='Symbol'" class="fa fa-usd")
-                            i(once-if="t.typ=='Filter'" class="fa fa-filter")
-                            &nbsp;
-                            span(once-html="t.text")
-                        div(once-if="t.entities.media" class="col-lg-3")
-                            img(ng-repeat="i in t.entities.media" once-src="i.media_url")
-                        div(class="col-lg-12")
-                            div(class="col-lg-4 text-left")
-                                a(ng-repeat="url in t.entities.urls" href="{{url.expanded_url}}")
-                                    i(class="fa fa-link text-warning")
-                            div(class="col-lg-4 text-center")
-                                i(ng-if="t.geo" class="fa fa-map-marker")
-                            div(class="col-lg-4 text-info text-right"){{t.priority}}
-                //////||  Components  ||\\\\\
-                div(class="fuiColumn fuiColumnComponent" ng-if="column.components.length" ng-repeat="comp in column.components" ng-style="{height:comp.height+'%'}")
-                    div(class='isotope-item well well-sm' ng-repeat="(i,t) in comp.items | orderBy:'priority':true | limitTo:20 track by t.text")
-                        div(class='col-lg-1 text-left')
-                            //todo: convert to a ingle ng-class
-                            i(once-if="t.typ=='User'" class="fa fa-user")
-                            i(once-if="t.typ=='Link'" class="fa fa-link")
-                            i(once-if="t.typ=='Tag'" class="fa fa-tag")
-                            i(once-if="t.typ=='Mention'" class="fa fa-hand-o-right")
-                            i(once-if="t.typ=='Symbol'" class="fa fa-usd")
-                            i(once-if="t.typ=='Filter'" class="fa fa-filter")
-                        div(class='col-lg-9 text-center') {{t.text}}
-                        div(class='col-lg-2 text-info text-right'){{t.priority}}
-                        div(class='isotope-item-content')
+        div(class="row")
+            div(class="col-lg-12")
+                a(href='/auth/twitter') login to twitter. 
+                span(bs-modal="wmodal" data-template="wordsModal.html") words 
+                span(bs-modal="rmodal" data-template="reportModal.html") report 
+                span(bs-modal="nmodal" data-template="newModal.html") new 
+                span(bs-modal="lmodal" data-template="loadModal.html") load 
+                i(class="fa" ng-class="{'fa-pause':play, 'fa-play':!play}" ng-click="pause()")
+        div(class="body_wrap")
+            div(class="content container-fluid")
+                //////||  Horizontal Bar  ||\\\\\
+                div(class="row" style="width:100%;height:5px;overflow:hidden;")
+                    div(class="HbarSegment" ng-repeat="(index,column) in report.columns | orderBy:report.colSort:true" ng-style="{width:((column.priority/report.priority)*100).toFixed(0)+'%', background:column.color,'box-shadow':'0 2 20px '+column.color}")&nbsp;
+                //////||  columns  ||\\\\\
+                div(ng-repeat="(index,column) in report.columns | orderBy:report.colSort:true" once-if="column.width>0" id="{{index}}" class="isotope-container col-lg-{{column.width}}")
+                    div(class="panel panel-primary" bs-modal="cmodal" data-template="colModal.html" style="margin-bottom:0;") 
+                            div(ng-if="column.label!='none'" class="row panel-heading")
+                                div(class="col-lg-8 text-left") {{column.label}}
+                                div(class="col-lg-2 text-center") {{column.score}}
+                                div(class="col-lg-2 text-right text-info" ng-style="{color:column.color}") {{((column.priority/report.priority)*100).toFixed(0)}}%
+                    div(class="fuiColumn row" ng-style="{height:column.itemsheight+'%'}" ng-class="{'Slides':column.show=='Slides'}")    
+                        //////||  items  ||\\\\\
+                        div(class='widget-container isotope-item boxed-velvet' ng-animate=" 'animate' " ng-repeat="(i,t) in column.items | orderBy:column.sort:true | limitTo:column.limit track by t.text" ng-class="{'new':t.status<0,'updated':t.status>0}" bs-modal="imodal" data-template="itemModal.html")
+                            div(once-if="t.title!=undefined" class="col-lg-12 item-title"){{t.title}}
+                            div(class="row")
+                                div(once-class="{'col-lg-9':t.entities.media[0]}")
+                                    //todo: convert to a single ng-class
+                                    i(once-if="t.typ=='User'" class="fa fa-user")
+                                    i(once-if="t.typ=='Link'" class="fa fa-link")
+                                    i(once-if="t.typ=='Tag'" class="fa fa-tag")
+                                    i(once-if="t.typ=='Mention'" class="fa fa-hand-o-right")
+                                    i(once-if="t.typ=='Symbol'" class="fa fa-usd")
+                                    i(once-if="t.typ=='Filter'" class="fa fa-filter")
+                                    span(once-html="t.text")
+                                div(once-if="t.entities.media" class="col-lg-3")
+                                    img(ng-repeat="i in t.entities.media" once-src="i.media_url")
+                            div(class="row")
+                                div(class="col-lg-4 text-left")
+                                    a(ng-repeat="url in t.entities.urls" href="{{url.expanded_url}}")
+                                        i(class="fa fa-link text-warning")
+                                div(class="col-lg-4 text-center")
+                                    i(ng-if="t.geo" class="fa fa-map-marker")
+                                div(class="col-lg-4 text-info text-right"){{t.priority}}
+                    //////||  Components  ||\\\\\
+                    div(class="fuiColumn fuiColumnComponent" ng-if="column.components.length" ng-repeat="comp in column.components" ng-style="{height:comp.height+'%'}")
+                        div(class='isotope-item well well-sm' ng-repeat="(i,t) in comp.items | orderBy:'priority':true | limitTo:20 track by t.text")
+                            div(class='col-lg-1 text-left')
+                                //todo: convert to a ingle ng-class
+                                i(once-if="t.typ=='User'" class="fa fa-user")
+                                i(once-if="t.typ=='Link'" class="fa fa-link")
+                                i(once-if="t.typ=='Tag'" class="fa fa-tag")
+                                i(once-if="t.typ=='Mention'" class="fa fa-hand-o-right")
+                                i(once-if="t.typ=='Symbol'" class="fa fa-usd")
+                                i(once-if="t.typ=='Filter'" class="fa fa-filter")
+                            div(class='col-lg-9 text-center') {{t.text}}
+                            div(class='col-lg-2 text-info text-right'){{t.priority}}
+                            div(class='isotope-item-content')
