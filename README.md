@@ -52,6 +52,17 @@ Idea and task list in todo file.
 
 General Concepts
 ================
+
+Pages
+================
+- login: Self explanatory, login with passport if previously registered
+- register: Register with passport
+- home: Show existing reports, choose them for loading or publishing, create new ones
+- billing: subscribe for services
+- layout: live report page
+- view: previous report viwer with point in time data and notes. For anyone authorized for viewing (public or specified)
+- admin: for admins, to see usage statas and account management
+
 1. Reports
 ================
 - A report combines an overall concept, exploration or monitoring of a subject
