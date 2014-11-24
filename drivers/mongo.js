@@ -8,6 +8,7 @@
 //_________________________________________\\
 //----====|| Package Dependencies ||====----\\
 var mongodb = require('mongodb');
+var fs = require('fs');
 //________END Package Dependencies_________\\
 //##########################################\\
 
@@ -65,8 +66,9 @@ MongoDriver.prototype.init = function(program) {
             logger.log(logger.INFO, localization.mongo.seeding);
 
             var seeders = env_config.seeders;
-
+            
             for (var seeder in seeders) {
+                console.log('SEED: ', env_config.paths.seeders + seeders[seeder]);
                 MongoConn.collection(seeder).insert(JSON.parse(fs.readFileSync(env_config.paths.seeders + seeders[seeder])), function(){});
             }
         }
