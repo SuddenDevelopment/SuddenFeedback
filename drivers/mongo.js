@@ -44,11 +44,11 @@ var MongoDriver = function() {
 MongoDriver.prototype.init = function(program) {
 
     var self = this;
-    var MONGO_URL = env_config.drivers.mongo.conn_url;
-    var MongoClient = mongodb.MongoClient;
-    var MongoConn;
+    var mongo_url = env_config.drivers.mongo.conn_url;
+    var mongo_client = mongodb.MongoClient;
+    var mongo_conn;
 
-    MongoClient.connect(MONGO_URL, function(err, db, callback) {
+    mongo_client.connect(mongo_url, function(err, db, callback) {
           if (err) {
                 logger.log(logger.ERROR, localization.mongo.no_conn);
                 process.exit(-1);
@@ -56,20 +56,23 @@ MongoDriver.prototype.init = function(program) {
               logger.log(logger.INFO, localization.mongo.conn);
           }
 
-          MongoConn = db;
+          mongo_conn = db;
 
           for (var db_table in self.collections) {
-              self.collections[db_table] = MongoConn.collection(db_table);
+              self.collections[db_table] = mongo_conn.collection(db_table);
           }
 
         if (program.seed) {
             logger.log(logger.INFO, localization.mongo.seeding);
 
             var seeders = env_config.seeders;
-            
+
             for (var seeder in seeders) {
-                console.log('SEED: ', env_config.paths.seeders + seeders[seeder]);
-                MongoConn.collection(seeder).insert(JSON.parse(fs.readFileSync(env_config.paths.seeders + seeders[seeder])), function(){});
+                var seed_objects = JSON.parse(fs.readFileSync(env_config.paths.seeders + seeders[seeder]));
+
+                for (var i = 0; i < seed_objects.length; i += 1) {
+                    mongo_conn.collection(seeder).insert(seed_objects[i], function(){});
+                }
             }
         }
     });

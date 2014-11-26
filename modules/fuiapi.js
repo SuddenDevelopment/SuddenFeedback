@@ -46,6 +46,7 @@ FUIAPI.prototype.init = function(req, res, next) {
     if (objReport) {
         res.send(objReport);
     } else {
+        console.log('FUIAPI INIT: ', self.drivers.mongo);
         //console.log('load a default report');
         self.drivers.mongo.collections['reports'].findOne({}, function(err, report) {
             objReport = reportHandler.normalize(report);
@@ -85,8 +86,23 @@ FUIAPI.prototype.loadRoutes = function(app) {
       var action = req.param('a', null);
 
       if (self[action]) {
-          self[action](req, res, next);
+          try {
+              self[action](req, res, next);
+          } catch (e) {
+
+              logger.log(logger.ERROR, 'FUIAPI has thrown an error', e);
+
+              res.status(500);
+
+              if (e.safeMessage) {
+                  res.send({error: e.safeMessage});
+              } else {
+                  res.send('An error has occurred');
+              }
+          }
+
       } else {
+          res.status(400);
           res.send('error');
       }
     });
@@ -101,7 +117,9 @@ FUIAPI.prototype.authorize = function(req, data_type) {
     // @Todo - this currently does not authorize on a per action basis. It merely
     // checks that the user has authenticated in general with the data provider.
     if (!self.controllers[data_type].authorizeAction(req)) {
-        throw localization.not_authorized_for_type + ": " + data_type;
+        throw {
+            safeMessage: localization.common.not_authorized_for_type + ": " + data_type
+        };
     }
 };
 
