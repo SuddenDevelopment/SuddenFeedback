@@ -1,7 +1,9 @@
-{
-    "_id" : "System:ObamaThemes",
-    "type" : "twitter",
-    "user":"System",
-    "name" : "ObamaThemes",
-    "terms" : [ {"text":"Illuminati"}, {"text":"Hitler"}, {"text":"worst president"}, {"text":"Thanks Obama"} ]
-}
+[
+    {
+        "_id" : "System:ObamaThemes",
+        "type" : "twitter",
+        "user":"System",
+        "name" : "ObamaThemes",
+        "terms" : [ {"text":"Illuminati"}, {"text":"Hitler"}, {"text":"worst president"}, {"text":"Thanks Obama"} ]
+    }
+]
