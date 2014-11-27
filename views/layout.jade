@@ -15,21 +15,8 @@ html(ng-app="SuddenFeedbackApp")
         script(src='/js/ng-tags-input.min.js')
         script(src='/js/once.js')
         script(src='/js/engine.js',type='text/javascript')
-            /* 
-            link(rel='stylesheet', href='/css/bootstrap.css')
-            link(rel='stylesheet', href='/css/style.css')
-            link(href='/dark/css/bootstrap.css' media="screen" rel="stylesheet")
-             */
-            /* Bootstrap theme requirements */
-            /* TODO: uopdate and replace with angular native stuff */
-        
-        link(href='/dark/style.css' media="screen" rel="stylesheet")
-        script(src='/dark/js/libs/jquery-1.10.0.js' type='text/javascript')
-        script(src='/dark/js/libs/jquery-1.10.0.js' type='text/javascript')
-        script(src='/dark/js/libs/jquery-ui.min.js' type='text/javascript')
-        script(src='/dark/js/libs/bootstrap.min.js' type='text/javascript')
-        script(src='/dark/js/general.js' type='text/javascript')
-            /* End Bootstrap Theme */
+        link(rel='stylesheet' href='/css/bootstrap.css')
+        link(rel='stylesheet' href='/css/style.css')
     body(ng-controller='FUI' ng-init="init()")
         block content
         div(class="row")
