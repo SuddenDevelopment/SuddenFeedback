@@ -96,7 +96,6 @@ TwitterController.prototype.loadRoutes = function(app) {
     var self = this;
     app.get('/auth/twitter', self.authUser.bind(self));
     app.get('/auth/twitter/callback', self.authUserCallback.bind(self));
-    app.get('/home', self.home.bind(self));
 };
 
 // @Todo - this currently does not authorize on a per action basis. It merely
@@ -155,7 +154,7 @@ TwitterController.prototype.authUserCallback = function(req, res, next) {
                             logger.log(logger.ERROR, localization.twitter.auth_failure, err);
                         } else {
                             logger.log(logger.DEBUG, localization.twitter.auth_success, data);
-                            res.redirect('/home');
+                            res.redirect('/');
                         }
                     });
                 }
@@ -478,7 +477,6 @@ TwitterController.prototype.allTerms = function(arrNeedles, strHaystack) {
 
 //_________________________\\
 //----====|| MAIN ||====----\\
-TwitterController.prototype.home = function(req, res) { res.render('home', { title: 'SuddenFeedback' }); }
 TwitterController.prototype.index = function(req, res) {
     var self = this;
     //console.log(req.session.term);
@@ -486,10 +484,9 @@ TwitterController.prototype.index = function(req, res) {
     // The first time a user visits we give them a unique ID to track them with
     if (!req.session.uuid) {
         req.session.uuid = uuid.v4();
-        res.render('login', { title: 'SuddenFeedback' });
     }
 
-    
+    res.render('index', { title: 'SuddenFeedback' });
 
     var oauth = self.share.get('twitter_auth', req.session.uuid);
     var twitData = self.share.get('twitData', req.session.uuid);
