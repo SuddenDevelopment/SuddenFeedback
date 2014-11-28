@@ -14,13 +14,11 @@ html(ng-app="SuddenFeedbackApp")
         script(src='/js/angular-strap.tpl.min.js')
         script(src='/js/ng-tags-input.min.js')
         script(src='/js/engine.js',type='text/javascript')
-        link(rel='stylesheet' href='/css/bootstrap.css')
         link(rel='stylesheet' href='/css/style.css')
     body(ng-controller='FUI' ng-init="init()")
         block content
         div(class="row")
             div(class="col-lg-12")
-                a(href='/auth/twitter') login to twitter. 
                 span(bs-modal="wmodal" data-template="wordsModal.html") words 
                 span(bs-modal="rmodal" data-template="reportModal.html") report 
                 span(bs-modal="nmodal" data-template="newModal.html") new 
@@ -44,7 +42,6 @@ html(ng-app="SuddenFeedbackApp")
                             div(ng-if="::t.title!=undefined" class="col-lg-12 item-title"){{t.title}}
                             div(class="row")
                                 div(ng-class="::{'col-lg-9':t.entities.media[0]}")
-                                    //todo: convert to a single ng-class
                                     i(ng-if="::t.typ=='User'" class="fa fa-user")
                                     i(ng-if="::t.typ=='Link'" class="fa fa-link")
                                     i(ng-if="::t.typ=='Tag'" class="fa fa-tag")
@@ -56,16 +53,15 @@ html(ng-app="SuddenFeedbackApp")
                                     img(ng-repeat="i in t.entities.media" ng-src="{{::i.media_url}}")
                             div(class="row")
                                 div(class="col-lg-4 text-left")
-                                    a(ng-repeat="url in t.entities.urls" href="{{url.expanded_url}}")
+                                    a(ng-repeat="url in t.entities.urls" href="{{::url.expanded_url}}")
                                         i(class="fa fa-link text-warning")
                                 div(class="col-lg-4 text-center")
-                                    i(ng-if="t.geo" class="fa fa-map-marker")
+                                    i(ng-if="::t.geo" class="fa fa-map-marker")
                                 div(class="col-lg-4 text-info text-right"){{t.priority}}
                     //////||  Components  ||\\\\\
                     div(class="fuiColumn fuiColumnComponent" ng-if="column.components.length" ng-repeat="comp in column.components" ng-style="{height:comp.height+'%'}")
                         div(class='isotope-item well well-sm' ng-repeat="(i,t) in comp.items | orderBy:'priority':true | limitTo:20 track by t.text")
                             div(class='col-lg-1 text-left')
-                                //todo: convert to a ingle ng-class
                                 i(ng-if="::t.typ=='User'" class="fa fa-user")
                                 i(ng-if="::t.typ=='Link'" class="fa fa-link")
                                 i(ng-if="::t.typ=='Tag'" class="fa fa-tag")
