@@ -21,7 +21,6 @@ var app = angular.module('SuddenFeedbackApp', [
     'ngSanitize',
     'ngResource',
     'ngTagsInput',
-    'once',
     'ngAnimate'
 ]);
 

@@ -1,1 +1,18 @@
-login.jade
+doctype 5
+html
+	head
+		link(rel='stylesheet', href='/css/bootstrap.css')
+		link(rel='stylesheet', href='/css/font-awesome.min.css')
+		script(src='/js/lodash.min.js')
+		link(rel='stylesheet' href='/css/style.css')
+	body
+		div(class="container-fluid body_wrap")
+			h1(class="text-center") 
+				&lt;
+				i(class="fa fa-bolt") &gt; Sudden Feedback
+			div.row
+				div(class="col-lg-4 col-lg-offset-4 widget")
+					div(class="inner text-center")
+						a(href='/auth/twitter') Login
+				div(class="col-lg-4 col-lg-offset-4 widget")
+					div(class="inner text-center") Register
