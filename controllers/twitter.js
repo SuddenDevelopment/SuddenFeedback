@@ -246,6 +246,7 @@ TwitterController.prototype.connectStream = function(req, res) {
                     //go through columns in order, col order matters for sorting, some items will pass through and add to multiple columns, default is to stop when a col is found
                     var intColIndex = false;
                     for (i = 0; i < objReport.columns.length; i += 1) {
+                        //the notes column is a special one when someone adds notes to items, those items show up in notes
                         if (objReport.columns[i].show.toLowerCase() === 'notes'
                             && objItem.analysis.filtered
                         ) {
