@@ -102,6 +102,9 @@ TwitterController.prototype.loadRoutes = function(app) {
 // checks that the user has authenticated in general with the data provider.
 TwitterController.prototype.authorizeAction = function(req) {
     var self = this;
+
+    // @Todo - don't restrict actions for now
+    return true;
     return self.share.get('twitter_auth', req.session.uuid);
 };
 
