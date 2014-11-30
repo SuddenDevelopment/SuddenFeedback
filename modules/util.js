@@ -44,7 +44,7 @@ Util.prototype.normalizeItem = function(objItem){
     if (objItem.text) { objItem.text = this.cleanText(objItem.text, {}); }
 
     if (!objItem.created_at) { objItem.created_at = (new Date).getTime(); }
-
+    if (!objItem.updated_at) { objItem.updated_at = (new Date).getTime(); }
     if (!objItem.analysis) { objItem.analysis = {}; };
 
     // Reduce to only needed properties

@@ -310,22 +310,27 @@ TwitterController.prototype.connectStream = function(req, res) {
                 //__________________________________\\
                 //----====|| STORE LOCALLY ||====----\\
                     var torfRT = false;
-
+                    var intNow = (new Date).getTime();
                     if (objItem.column) {
 
-                        _.forEach(objReport.columns[intColIndex]['items'], function(objI) {
+                        _.forEach(objReport.columns[intColIndex]['items'], function(objI,k) {
 
                             if (objI.text === objItem.text) {
-
+                                objI.updated_at = intNow;
                                 //cumulative priority
                                 if (objItem.priority < 2 || objItem.priority <= objI.priority) {
                                     objI.priority += 1;
+
                                 }
                                 else { //replacing priority
                                     objI.priority = objItem.priority;
                                 }
 
                                 torfRT = true;
+                            }else{
+                                //don't keep everything forever, not all data is sacred. Drop by age, order, frequency etc.
+                                //if it hasnt been updated in an hour, and is below the priority threshold
+                                if(objI.priority < 2 && intNow-objI.updated_at > 3600000){ objReport.columns[intColIndex]['items'].splice(k,1); }
                             }
                         });
 
@@ -336,10 +341,12 @@ TwitterController.prototype.connectStream = function(req, res) {
                             //sort the column
                             objReport.columns[intColIndex]['items'] = util.sortArray(objReport.columns[intColIndex]['items'], objReport.columns[intColIndex].sort);
 
-                            //make sure it's high enough sort order to sed to browser
+                            //make sure it's high enough sort order to send to browser
                             if (util.getIndex(objReport.columns[intColIndex]['items'], 'id', objItem.id) > objReport.columns[intColIndex].limit) {
                                 torfSend = false;
                             }
+
+
                         }
                     }
                     //when this is triggered no column was assigned, if it happens too often something is wrong
