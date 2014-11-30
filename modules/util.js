@@ -41,7 +41,7 @@ Util.prototype.normalizeItem = function(objItem){
     //this is a generc normaile, not specific to any feed coming in
     if (!objItem.typ) { objItem.typ = 'item'; }
 
-    if (objItem.text) { objItem.text = this.cleanText(objItem.text, {}); }
+    if (objItem.text) { objItem.text = this.cleanText(objItem.text, {}); }else{ objItem.text=''; }
 
     if (!objItem.created_at) { objItem.created_at = (new Date).getTime(); }
     if (!objItem.updated_at) { objItem.updated_at = (new Date).getTime(); }
