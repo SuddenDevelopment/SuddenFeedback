@@ -1,13 +1,41 @@
 doctype 5
-html
+html(ng-app="SuddenFeedbackApp")
 	head
 		link(rel='stylesheet', href='/css/bootstrap.css')
 		link(rel='stylesheet', href='/css/font-awesome.min.css')
-		script(src='/js/lodash.min.js')
+		link(rel='stylesheet', href='/css/ng-tags-input.min.css')
 		link(rel='stylesheet' href='/css/style.css')
-	body
-		div() Profile
-		div() Usage Dashboard
-		div() Publish Reports
-		div() Run report
-		div() New Report
+		script(src='/js/lodash.min.js')
+		script(src='/js/angular.min.js')
+		script(src='/js/angular-animate.min.js')
+		script(src='/js/angular-resource.js')
+		script(src='/js/angular-sanitize.js')
+		script(src='/js/angular-strap.min.js')
+		script(src='/js/angular-strap.tpl.min.js')
+		script(src='/js/ng-tags-input.min.js')
+		script(src='/js/engine.js',type='text/javascript')
+	body(ng-controller='FUI')
+		div(class="body_wrap" ng-init="listReports()")
+			div(class="content container-fluid")
+				div.row
+					h2.text-center Manage Reports
+					div.col-lg-10.col-lg-offset-1.widget
+						div.row
+							div.col-lg-4.text-center Report Name
+							div.col-lg-2.text-center Created
+							div.col-lg-2.text-center Updated
+							div.col-lg-2.text-center Items
+							div.col-lg-2.text-center Actions
+						div(class="row" ng-repeat="report in reportList")
+							div(class="col-lg-10") {{report._id}}
+							div(class="col-lg-2 text-center") 
+								i(class="fa fa-wrench" title='Edit Settings') &nbsp;
+								i(class="fa fa-cloud-download" title='Load with Data' ng-click="loadReport(report._id);$hide()") &nbsp;
+								i(class="fa fa-refresh" title='Load without Data') &nbsp;
+								i(class="fa fa-cloud-upload" title='Publish to Viewer') &nbsp;
+								i(class="fa fa-times" title='Delete' ng-click="delReport(report._id)")
+						div.row.modal-footer
+							span.btn.btn-black
+								button(type="button" class="gradient") New
+
+				

@@ -106,7 +106,8 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     $scope.colSorts = [
         {k: 'Analysis', v: 'score'},
         {k: 'Priority', v: 'priority'},
-        {k: 'ID', v: 'id'}
+        {k: 'ID', v: 'id'},
+        {k: 'Rotate', v: 'rotate'}
     ];
 
     $scope.templates = [

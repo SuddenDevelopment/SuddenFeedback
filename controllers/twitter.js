@@ -96,6 +96,7 @@ TwitterController.prototype.loadRoutes = function(app) {
     var self = this;
     app.get('/auth/twitter', self.authUser.bind(self));
     app.get('/auth/twitter/callback', self.authUserCallback.bind(self));
+    app.get('/home', self.home.bind(self));
 };
 
 // @Todo - this currently does not authorize on a per action basis. It merely
@@ -311,6 +312,7 @@ TwitterController.prototype.connectStream = function(req, res) {
                 //----====|| STORE LOCALLY ||====----\\
                     var torfRT = false;
                     var intNow = (new Date).getTime();
+                    var arrDelete = [];
                     if (objItem.column) {
 
                         _.forEach(objReport.columns[intColIndex]['items'], function(objI,k) {
@@ -330,8 +332,13 @@ TwitterController.prototype.connectStream = function(req, res) {
                             }else{
                                 //don't keep everything forever, not all data is sacred. Drop by age, order, frequency etc.
                                 //if it hasnt been updated in an hour, and is below the priority threshold
-                                if(objI.priority < 2 && intNow-objI.updated_at > 3600000){ objReport.columns[intColIndex]['items'].splice(k,1); }
+                                if(objI.priority < 2 && intNow-objI.updated_at > 3600000){  arrDelete.push(k);  }
                             }
+                        });
+                        
+                        //need to do this outside the loop so that items aren't removed during the loop
+                        _.forEach( arrDelete,function(k){
+                            objReport.columns[intColIndex]['items'].splice(k,1);
                         });
 
                         if (torfRT === false) {
@@ -488,6 +495,10 @@ TwitterController.prototype.allTerms = function(arrNeedles, strHaystack) {
 
 //_________________________\\
 //----====|| MAIN ||====----\\
+TwitterController.prototype.home = function(req, res) {
+    var self = this;
+    res.render('home', { title: 'SuddenFeedback' }); //the page for mamaging reports without running them
+}
 TwitterController.prototype.index = function(req, res) {
     var self = this;
     //console.log(req.session.term);
@@ -498,6 +509,7 @@ TwitterController.prototype.index = function(req, res) {
     }
 
     res.render('index', { title: 'SuddenFeedback' });
+
 
     var oauth = self.share.get('twitter_auth', req.session.uuid);
     var twitData = self.share.get('twitData', req.session.uuid);
