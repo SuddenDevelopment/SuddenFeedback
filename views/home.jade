@@ -21,14 +21,19 @@ html(ng-app="SuddenFeedbackApp")
 					h2.text-center Manage Reports
 					div.col-lg-10.col-lg-offset-1.widget
 						div.row
-							div.col-lg-4.text-center Report Name
+							div.col-lg-3.text-center Report Name
 							div.col-lg-2.text-center Created
 							div.col-lg-2.text-center Updated
+							div.col-lg-1.text-center Columns
 							div.col-lg-2.text-center Items
 							div.col-lg-2.text-center Actions
 						div(class="row" ng-repeat="report in reportList")
-							div(class="col-lg-10") {{report._id}}
-							div(class="col-lg-2 text-center") 
+							div.col-lg-3 {{report._id}}
+							div.col-lg-2 {{report.created_at}}
+							div.col-lg-2 {{report.updated_at}}
+							div.col-lg-1 {{report.colCount}}
+							div.col-lg-2 {{report.itemCount}}
+							div.col-lg-2.text-center 
 								i(class="fa fa-wrench" title='Edit Settings') &nbsp;
 								i(class="fa fa-cloud-download" title='Load with Data' ng-click="loadReport(report._id);$hide()") &nbsp;
 								i(class="fa fa-refresh" title='Load without Data') &nbsp;

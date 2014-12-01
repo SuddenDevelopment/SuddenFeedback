@@ -194,7 +194,7 @@ FUIAPI.prototype.saveReport = function(req, res, next) {
     self.authorize(req, data_type);
 
     self.drivers.mongo.collections['reports'].update({ _id: d._id }
-        , { columns: d.columns, terms: d.terms, name: d.name, colSort: d.colSort, titles: d.titles}
+        , { columns: d.columns, terms: d.terms, name: d.name, colSort: d.colSort, titles: d.titles, created_at:d.created_at, updated_at:d.updated_at, colCount:d.colCount}
         , { upsert: true, safe: true }
         , function(err, data) {
             if (err) {

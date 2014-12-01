@@ -287,6 +287,9 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     $scope.listReports = function() {
         FUIAPI.post({ a: 'listReports', t: $scope.selectedDataType },
             function(response) {
+                _.forEach(response.reportList,function(){
+
+                });
                 $scope.reportList = response.reportList;
                 console.log(response);
             }
@@ -314,10 +317,10 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
 
     $scope.saveReport = function(withData) {
         //the id will eventually be more complex than the name, for now this will do.
-        if (!$scope.report._id || $scope.report._id !== $scope.report.name) {
-            $scope.report._id = $scope.report.name;
-        }
-
+        if (!$scope.report._id || $scope.report._id !== $scope.report.name){$scope.report._id = $scope.report.name;}
+        $scope.report.colCount = $scope.report.columns.length; //get the column count
+        $scope.report.updated_at = (new Date).getTime();  //set the last update time
+        if(!$scope.report.created_at){ $scope.report.created_at = (new Date).getTime(); }
         FUIAPI.post({ a: 'saveReport', q: $scope.report, t: $scope.selectedDataType },
             function(response) {}
         );
