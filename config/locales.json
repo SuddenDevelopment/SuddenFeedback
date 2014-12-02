@@ -1,5 +1,8 @@
 {
     "en-us": {
+        "auth": {
+            "param_instructions": "Whose access credentials to use for OAuth single sign on"
+        },
         "common": {
             "host_ip": "Host IP",
             "disabled": "Disabled",
@@ -18,6 +21,7 @@
             "seeding": "Seeding mongo"
         },
         "oauth": {
+            "param_instructions": "Whose access credentials to use for OAuth single sign on",
             "no_request_token": "Yeah no. didn't work.",
             "unauthorized": "You're not supposed to be here, mijo.",
             "access_token_error": "OAuth access token error"

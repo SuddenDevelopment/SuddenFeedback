@@ -42,11 +42,13 @@ Getting Started
 
 6) Start the app:
     cd <project directory>
-    node app.js --seed --twitter=anthony
+    node app.js --seed --auth=anthony // If you want to seed the app and use the default auth credentials for single sign on
+    node app.js --auth=gonzo // If you want to use a different set of auth credentials
+    node app.js // No seeding. Uses the default auth credentials
 
-7) Point to the app from a browser: http://localhost:3000
+7) Point to the app from a browser: http://localhost:3000/login
 
-8) Use the "login to twitter" link in the app to login to your Twitter account.
+8) Use the "Enter" link on the login page ('/login') to do single sign on via your Twitter account.
 
 Idea and task list in todo file.
 

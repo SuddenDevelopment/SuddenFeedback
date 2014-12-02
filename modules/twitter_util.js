@@ -45,13 +45,18 @@ TwitterUtil.prototype.getCredentials = function(api_account, callback){
     } else {
         logger.log(logger.INFO, localization.twitter.using_credentials + api_account);
 
-        var twConfig = JSON.parse(fs.readFileSync(env_config.data_providers.twitter.config_path));
+        var authConfig = JSON.parse(fs.readFileSync(env_config.auth.config_path));
+        //var twConfig = JSON.parse(fs.readFileSync(env_config.data_providers.twitter.config_path));
 
-        if (!_.has(twConfig, api_account)) {
+        if (!_.has(authConfig, 'twitter') && !_.has(authConfig['twitter'], api_account)) {
             exception.throw(localization.twitter.config_does_not_exist);
         }
 
-        callback(twConfig[api_account]);
+        //if (!_.has(twConfig, api_account)) {
+        //    exception.throw(localization.twitter.config_does_not_exist);
+        //}
+
+        callback(authConfig['twitter'][api_account]);
     }
 
 };

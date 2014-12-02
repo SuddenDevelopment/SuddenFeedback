@@ -67,7 +67,7 @@ TwitterController.prototype.init = function(program, app, share) {
 
     self.loadRoutes(app);
 
-    twitter_util.getCredentials('anthony', function (creds) {
+    twitter_util.getCredentials((program.auth || env_config.auth.default), function (creds) {
         self.credentials = creds;
 
         // @Todo - Does this need to be segregated by user?
@@ -81,13 +81,17 @@ TwitterController.prototype.init = function(program, app, share) {
             access_token_secret: '2N3WH09m2la6q7xMKzKc34ZWq9ySgypqbxreGnYPGTJ5J'
          */
         self.auth = new OAuth(
-            env_config.data_providers.twitter.auth.request_token_url,
-            env_config.data_providers.twitter.auth.access_token_url,
+            //env_config.data_providers.twitter.auth.request_token_url,
+            //env_config.data_providers.twitter.auth.access_token_url,
+            env_config.auth.request_token_url,
+            env_config.auth.access_token_url,
             self.credentials.api_key,
             self.credentials.api_secret,
-            env_config.data_providers.twitter.auth.version,
+            //env_config.data_providers.twitter.auth.version,
+            env_config.auth.version,
             protocol + "://" + host_ip + ":"+ port + '/auth/twitter/callback',
-            env_config.data_providers.twitter.auth.mac_type
+            //env_config.data_providers.twitter.auth.mac_type
+            env_config.auth.mac_type
         );
     });
 };
@@ -122,7 +126,8 @@ TwitterController.prototype.authUser = function(req, res) {
                 "oauth_token_secret": oauth_token_secret
             }, 'twitter_auth', req.session.uuid);
 
-            res.redirect(env_config.data_providers.twitter.auth.url_prefix + oauth_token)
+            //res.redirect(env_config.data_providers.twitter.auth.url_prefix + oauth_token);
+            res.redirect(env_config.auth.url_prefix + oauth_token);
         }
     });
 };
@@ -335,7 +340,7 @@ TwitterController.prototype.connectStream = function(req, res) {
                                 if(objI.priority < 2 && intNow-objI.updated_at > 3600000){  arrDelete.push(k);  }
                             }
                         });
-                        
+
                         //need to do this outside the loop so that items aren't removed during the loop
                         _.forEach( arrDelete,function(k){
                             objReport.columns[intColIndex]['items'].splice(k,1);

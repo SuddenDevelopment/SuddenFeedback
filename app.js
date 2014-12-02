@@ -41,6 +41,7 @@ var debug = env_config.debug;
 program
   .version(app_config.version)
   .option('-s, --seed', localization.mongo.param_instructions)
+  .option('-a, --auth [user]', localization.auth.param_instructions)
   .option('-p, --protocol [http|https]', localization.protocol.param_instructions)
   .parse(process.argv);
 //________END Program Startup_________\\
