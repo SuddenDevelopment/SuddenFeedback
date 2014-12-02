@@ -10,6 +10,7 @@ var path = require('path');
 var express = require('express');
 var http = require('http');
 var async = require('async');
+var uuid = require('node-uuid');
 //________END Package Dependencies_________\\
 //##########################################\\
 
@@ -123,6 +124,17 @@ async.parallel(loadedDrivers, function(err, drivers) {
 });
 //________END Load Drivers________\\
 //#################################\\
+
+
+app.get('/login', function(req, res) {
+
+    // The first time a user visits we give them a unique ID to track them with
+    if (!req.session.uuid) {
+        req.session.uuid = uuid.v4();
+    }
+
+    res.render('login');
+});
 
 
 //_________________________________________________\\
