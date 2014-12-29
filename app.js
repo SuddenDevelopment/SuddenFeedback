@@ -111,7 +111,7 @@ async.parallel(loadedDrivers, function(err, drivers) {
             continue; }
 
         controller = require('./controllers/' + provider);
-        controller.init(program, app, share);
+        controller.init(program, app, share, drivers);
         controllers[provider] = controller;
     }
     //________END Load Controllers________\\
@@ -132,16 +132,17 @@ app.get('/login', function(req, res) {
     // The first time a user visits we give them a unique ID to track them with
     if (!req.session.uuid) {
         req.session.uuid = uuid.v4();
+        console.log('Setting session uuid: ', req.session.uuid );
     }
 
     res.render('login');
 });
 
 
-//_________________________________________________\\
-//---====|| THIS JUST GOT REEEEEEEEEEEEEL! ||====---\\
+//__________________________________\\
+//---====|| START LISTENING ||====---\\
 http.createServer(app).listen(app.get('port'), function() {
     logger.log(logger.INFO, localization.express.listening + app.get('port'));
 });
-//__________YOU JUST GOT SERVED!!!!!!! NaNah-NaNah!_________\\
-//###########################################################\\
+//______________________________________\\
+//#######################################\\

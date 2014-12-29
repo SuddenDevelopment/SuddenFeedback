@@ -55,15 +55,17 @@ var strNeedle = null;
  */
 var TwitterController = function() {
     this.share = null;
+    this.drivers = {};
     this.auth = null;
     this.credentials = {};
 };
 
-TwitterController.prototype.init = function(program, app, share) {
+TwitterController.prototype.init = function(program, app, share, drivers) {
     var self = this;
     var protocol = program.protocol || env_config.protocol;
 
     self.share = share;
+    self.drivers = drivers;
 
     self.loadRoutes(app);
 
@@ -141,7 +143,6 @@ TwitterController.prototype.authUserCallback = function(req, res, next) {
 
         self.auth.getOAuthAccessToken(oauth.oauth_token, oauth.oauth_token_secret, oauth.oauth_verifier,
             function(error, oauth_access_token, oauth_access_token_secret, results) {
-                console.log(results);
 
                 if (error) {
                     console.log(error);
@@ -158,11 +159,49 @@ TwitterController.prototype.authUserCallback = function(req, res, next) {
                         access_token_secret: oauth.access_token_secret
                     });
 
-                    twit.verifyCredentials(function(err, data) {
+                    twit.verifyCredentials(function(err, twitterUser) {
                         if (err) {
                             logger.log(logger.ERROR, localization.twitter.auth_failure, err);
                         } else {
-                            logger.log(logger.DEBUG, localization.twitter.auth_success, data);
+                            logger.log(logger.DEBUG, localization.twitter.auth_success, twitterUser);
+
+                            var query = {
+                                _id: 'twitter_' + twitterUser.id
+                            };
+
+                            // Grab the local user account that's associated with the Twitter result
+                            self.drivers.mongo.collections['users'].findOne({_id: 'twitter_' + twitterUser.id}, function(err, user) {
+                                if (err) {
+                                    logger.log(logger.ERROR, err);
+                                }
+
+                                if (user) {
+                                    self.share.set(user, 'user', req.session.uuid);
+                                } else {
+                                    var newUser = {
+                                        _id: 'twitter_' + twitterUser.id,
+                                        vendor_id: twitterUser.id,
+                                        vendor_type: 'twitter',
+                                        name: twitterUser.name,
+                                        screen_name: twitterUser.screen_name,
+                                        url: twitterUser.url,
+                                        lang: twitterUser.lang,
+                                        utc_offset: twitterUser.utc_offset,
+                                        time_zone: twitterUser.time_zone
+                                    };
+
+                                    self.drivers.mongo.collections['users'].save(newUser, function(err, newRecord) {
+                                        if (err) {
+                                            logger.log(logger.ERROR, err);
+                                        }
+
+                                        if (newRecord) {
+                                            self.share.set(newUser, 'user', req.session.uuid);
+                                        }
+                                    });
+                                }
+                            });
+
                             res.redirect('/');
                         }
                     });
@@ -174,7 +213,7 @@ TwitterController.prototype.authUserCallback = function(req, res, next) {
     }
 };
 
-TwitterController.prototype.connectStream = function(req, res) {
+TwitterController.prototype.connectStream = function(req, res, user) {
     var self = this;
     var oauth = self.share.get('twitter_auth', req.session.uuid);
     var twitData = self.share.get('twitData', req.session.uuid);
@@ -212,7 +251,7 @@ TwitterController.prototype.connectStream = function(req, res) {
             self.share.set(stream,'stream', req.session.uuid);
 
             stream.on('error', function(error, code) {
-                console.log("Stream error: " + error + ": " + code);
+                logger.log(logger.ERROR, "Stream error: " + error + ": " + code);
             });
 
             stream.on('data', function (objItem) {
@@ -513,12 +552,13 @@ TwitterController.prototype.index = function(req, res) {
         req.session.uuid = uuid.v4();
     }
 
-    res.render('index', { title: 'SuddenFeedback' });
-
-
     var oauth = self.share.get('twitter_auth', req.session.uuid);
     var twitData = self.share.get('twitData', req.session.uuid);
     var twit = self.share.get('twit', req.session.uuid);
+
+    if (!oauth) {
+        res.redirect('/login');
+    }
 
     if (oauth && !twitData && !twit) {
         //console.log('no twitData, getting it', oauth);
@@ -531,15 +571,26 @@ TwitterController.prototype.index = function(req, res) {
         });
 
         twit.verifyCredentials(function (err, data) {
-            if (err) { console.log('getting twitData failed!', err); }
-            else {
+            if (err) {
+                logger.log(logger.ERROR, 'getting twitData failed!', err);
+                res.redirect('/login');
+            } else {
                 twitData = data.id;
                 self.share.set(twitData,'twitData', req.session.uuid);
                 self.share.set(twit,'twit', req.session.uuid);
 
-                self.connectStream(req, res);
+                var user = self.share.get('user', req.session.uuid);
+                
+                if (!user) {
+                    res.redirect('/login');
+                }
+
+                res.render('index', { title: 'SuddenFeedback' });
+                self.connectStream(req, res, user);
             }
         });
+    } else {
+        res.render('index', { title: 'SuddenFeedback' });
     }
 };
 //________END MAIN_________\\
