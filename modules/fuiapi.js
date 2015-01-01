@@ -41,18 +41,38 @@ var FUIAPI = function() {
 FUIAPI.prototype.init = function(req, res, next) {
     var self = this;
     //get the report settings, if multiple grab the users most recent
-    var objReport = self.share.get('report');
+    var objReport = self.share.get('report', req.session.uuid);
+    var user = self.share.get('user', req.session.uuid);
 
     if (objReport) {
-        res.send(objReport);
-    } else {
-        console.log('FUIAPI INIT: ', self.drivers.mongo);
-        //console.log('load a default report');
-        self.drivers.mongo.collections['reports'].findOne({}, function(err, report) {
-            objReport = reportHandler.normalize(report);
-            self.share.set(objReport, 'report');
-            res.send(objReport);
+        res.send({
+            report: objReport,
+            session_uuid: req.session.uuid
         });
+    } else {
+        //console.log('load a default report');
+
+        for (var i = 0; i < user.reports.length; i += 1) {
+            if (user.reports[i]._id === user.default_report_id) {
+                objReport = reportHandler.normalize(user.reports[i]);
+                self.share.set(objReport, 'report', req.session.uuid);
+                res.send({
+                    report: objReport,
+                    session_uuid: req.session.uuid
+                });
+                return;
+            }
+        }
+
+        if (!objReport) {
+            objReport = reportHandler.normalize(user.reports[0]);
+            self.share.set(objReport, 'report', req.session.uuid);
+            res.send({
+                report: objReport,
+                session_uuid: req.session.uuid
+            });
+        }
+
         //get the word sets used
    }
 };
@@ -75,7 +95,6 @@ FUIAPI.prototype.loadRoutes = function(app) {
         var data_type = req.param('t', null);
 
         if (!data_type) {
-            console.log('Data type not specified. This is okay when the page first loads.');
             data_type = env_config.default_data_provider;
         }
 
@@ -131,6 +150,7 @@ FUIAPI.prototype.playStream = function(req, res, next) {
     self.authorize(req, data_type);
 
     self.controllers[data_type].connectStream(req, res, next);
+    res.send('success');
 };
 
 // DELETE stream
@@ -140,7 +160,15 @@ FUIAPI.prototype.pauseStream = function(req, res, next) {
 
     self.authorize(req, data_type);
 
-    self.controllers[data_type].destroyStream(req, res, next);
+    self.controllers[data_type].destroyStream(req, res);
+};
+
+FUIAPI.prototype.destroyStreams = function(req, res, suppressResponse) {
+    var self = this;
+
+    for (var dataType in self.controllers) {
+        self.controllers[dataType].destroyStream(req, res, suppressResponse);
+    }
 };
 
 // GET many reports
@@ -166,7 +194,7 @@ FUIAPI.prototype.loadReport = function(req, res, next) {
     var d = req.param('q', null); //console.log(d);
     self.drivers.mongo.collections['reports'].findOne({ _id: d }, function(err, report) {
         report = reportHandler.normalize(report);
-        self.share.set(report, 'report');
+        self.share.set(report, 'report', req.session.uuid);
         res.send(report);
     });
 };
@@ -205,7 +233,7 @@ FUIAPI.prototype.saveReport = function(req, res, next) {
         }
     );
 
-    self.share.set(d, 'report');
+    self.share.set(d, 'report', req.session.uuid);
     //todo: save to session for server side use
 };
 

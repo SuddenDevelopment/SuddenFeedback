@@ -68,6 +68,10 @@ UsersController.prototype.authUserCallback = function(req, res, next) {
     var self = this;
 };
 
+UsersController.prototype.destroyStream = function(req, res) {
+    var self = this;
+};
+
 //_________________________\\
 //----====|| MAIN ||====----\\
 UsersController.prototype.index = function(req, res) {

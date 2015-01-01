@@ -2,6 +2,8 @@
 
 	{
 		"_id" : "National Divide",
+		"owner" : "suddenfeedback",
+		"visibility" : "public",
 		"columns" : [
 			{
 				"label" : "Conservative",
@@ -70,6 +72,8 @@
 
 	{
 		"_id" : "Porn",
+		"owner" : "suddenfeedback",
+		"visibility" : "public",
 		"columns" : [
 			{
 				"id" : 1,
@@ -187,6 +191,8 @@
 
 	{
 		"_id" : "Celebrity",
+		"owner" : "suddenfeedback",
+		"visibility" : "public",
 		"columns" : [
 			{
 				"id" : 1,
@@ -382,6 +388,8 @@
 
 	{
 		"_id" : "Development",
+		"owner" : "suddenfeedback",
+		"visibility" : "public",
 		"columns" : [
 			{
 				"id" : 1,
@@ -470,6 +478,8 @@
 
 	{
 		"_id" : "Malware",
+		"owner" : "suddenfeedback",
+		"visibility" : "public", 
 		"columns" : [
 			{
 				"label" : "passwords",

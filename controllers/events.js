@@ -68,6 +68,10 @@ EventsController.prototype.authUserCallback = function(req, res, next) {
     var self = this;
 };
 
+EventsController.prototype.destroyStream = function(req, res) {
+    var self = this;
+};
+
 //_________________________\\
 //----====|| MAIN ||====----\\
 EventsController.prototype.index = function(req, res) {

@@ -92,7 +92,7 @@ for (var driver_name in env_config.drivers) {
         if (!env_config.drivers[driver_name].enabled) { return; }
 
         var driver = require('./drivers/' + driver_name);
-        driver.init(program);
+        driver.init(program, share);
 
         callback(null, driver);
     };
@@ -132,10 +132,25 @@ app.get('/login', function(req, res) {
     // The first time a user visits we give them a unique ID to track them with
     if (!req.session.uuid) {
         req.session.uuid = uuid.v4();
-        console.log('Setting session uuid: ', req.session.uuid );
     }
 
     res.render('login');
+});
+
+app.get('/logout', function(req, res) {
+
+    if (req.session.uuid) {
+        fuiapi.destroyStreams(req, res, true);
+        share.set(null, 'user', req.session.uuid);
+        share.set(null, 'report', req.session.uuid);
+        share.set(null, 'twitter_auth', req.session.uuid);
+        share.set(null, 'twitData', req.session.uuid);
+        share.set(null, 'twit', req.session.uuid);
+        req.session.uuid = null;
+        req.session = null;
+    }
+
+    res.redirect('login');
 });
 
 

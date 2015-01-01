@@ -144,8 +144,13 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
 
         //get the column
         var idxColumn = getIndex($scope.report.columns, 'id', objItem.column);
+        var propArray;
 
-        var propArray = $scope.report.columns[idxColumn].items;
+        try {
+            propArray = $scope.report.columns[idxColumn].items;
+        } catch(e) {
+            return;
+        }
 
         //decide which collection within a column to work on
         if (objItem.typ !== 'item'
@@ -255,7 +260,8 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     $scope.loadOptions = function() {
         FUIAPI.post({ a: 'init', t: $scope.selectedDataType },
             function(response) {
-                $scope.report = response; //load any menu options and configs set in the DB that sit outside the report doc, system level
+                //load any menu options and configs set in the DB that sit outside the report doc, system level
+                $scope.report = response.report;
 
                 if (!$scope.report.priority) {
                     $scope.report.priority = 0;
@@ -266,7 +272,11 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
                 }
 
                 $scope.layout(); //calculate the panel sizes based on column components
-                console.log(response);
+
+                $scope.session_uuid = response.session_uuid;
+
+                // We have to wait for the session uuid to be set before starting the feed
+                $scope.feed();
             }
         );
     };
@@ -291,18 +301,24 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
 
                 });
                 $scope.reportList = response.reportList;
-                console.log(response);
             }
         );
     };
 
     $scope.loadReport = function(strReport, withData) {
-        FUIAPI.post({ a: 'loadReport', q: strReport, t: $scope.selectedDataType },
-            function(response) {
-                $scope.report = response;
-                console.log(response);
-            }
-        );
+        $scope.play = false;
+
+        FUIAPI.post({ a: 'pauseStream', t: $scope.selectedDataType }, function() {
+            FUIAPI.post({ a: 'loadReport', q: strReport, t: $scope.selectedDataType },
+                function(response) {
+                    $scope.report = response;
+            
+                    FUIAPI.post({ a: 'playStream', t: $scope.selectedDataType }, function () {
+                        $scope.play = true;
+                    });
+                }
+            );
+        });
     };
 
     $scope.delReport = function(strReport, withData) {
@@ -462,7 +478,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
 
     // Stream the data feed, I think ??
     $scope.feed = function() {
-        var socket = io.connect('http://localhost:3001'); //connect to the websocket
+        var socket = io.connect('http://localhost:3001/' + $scope.session_uuid); //connect to the websocket
         socket.on('newItems', function (arrItems) {
             if ($scope.play) {
                 _.forEach(arrItems, function(objItem) { $scope.addItem(objItem); });
@@ -475,7 +491,6 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     // Let's get this party started
     $scope.init = function(){
         $scope.loadOptions();
-        $scope.feed();
     };
 
     //$scope.modalItem = function(objItem){ itemModal.show(); }

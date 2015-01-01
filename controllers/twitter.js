@@ -44,6 +44,7 @@ var port = process.env.PORT || env_config.ports.app;
 //__________________________________\\
 //----====|| Instance Vars ||====----\\
 var io = socket_io.listen(env_config.ports.socket, { log: false });
+
 var torfSentiment = false;
 var strNeedle = null;
 //________END Instance Vars_________\\
@@ -165,44 +166,37 @@ TwitterController.prototype.authUserCallback = function(req, res, next) {
                         } else {
                             logger.log(logger.DEBUG, localization.twitter.auth_success, twitterUser);
 
-                            var query = {
-                                _id: 'twitter_' + twitterUser.id
+                            var userQuery = {
+                                vendor_id: twitterUser.id,
+                                vendor_type: 'twitter'
                             };
 
-                            // Grab the local user account that's associated with the Twitter result
-                            self.drivers.mongo.collections['users'].findOne({_id: 'twitter_' + twitterUser.id}, function(err, user) {
-                                if (err) {
-                                    logger.log(logger.ERROR, err);
-                                }
+                            var newUser = {
+                                vendor_id: twitterUser.id,
+                                vendor_type: 'twitter',
+                                name: twitterUser.name,
+                                screen_name: twitterUser.screen_name,
+                                url: twitterUser.url,
+                                lang: twitterUser.lang,
+                                utc_offset: twitterUser.utc_offset,
+                                time_zone: twitterUser.time_zone,
+                                reports: [],
+                                default_report_id: null
+                            };
 
-                                if (user) {
-                                    self.share.set(user, 'user', req.session.uuid);
-                                } else {
-                                    var newUser = {
-                                        _id: 'twitter_' + twitterUser.id,
-                                        vendor_id: twitterUser.id,
-                                        vendor_type: 'twitter',
-                                        name: twitterUser.name,
-                                        screen_name: twitterUser.screen_name,
-                                        url: twitterUser.url,
-                                        lang: twitterUser.lang,
-                                        utc_offset: twitterUser.utc_offset,
-                                        time_zone: twitterUser.time_zone
-                                    };
+                            self.drivers.mongo.loadUser(req, userQuery, newUser, function() {
 
-                                    self.drivers.mongo.collections['users'].save(newUser, function(err, newRecord) {
-                                        if (err) {
-                                            logger.log(logger.ERROR, err);
-                                        }
+                                var socketNamespace = '/' + req.session.uuid;
 
-                                        if (newRecord) {
-                                            self.share.set(newUser, 'user', req.session.uuid);
-                                        }
-                                    });
-                                }
+                                var userSocketChannel = io.of(socketNamespace)
+                                  .on('connection', function (socket) {
+
+                                  });
+
+                                self.share.set(userSocketChannel, 'socket_channel', req.session.uuid);
+
+                                res.redirect('/');
                             });
-
-                            res.redirect('/');
                         }
                     });
                 }
@@ -218,25 +212,39 @@ TwitterController.prototype.connectStream = function(req, res, user) {
     var oauth = self.share.get('twitter_auth', req.session.uuid);
     var twitData = self.share.get('twitData', req.session.uuid);
     var twit = self.share.get('twit', req.session.uuid);
+    var userSocketChannel = self.share.get('socket_channel', req.session.uuid);
 
     var arrItems = [];
-    var objReport = self.share.get('report');
+    var objReport = self.share.get('report', req.session.uuid);
+
+    //
+    if (!objReport) {
+        // Grab their most recent from the database
+    }
 
     if (twit && objReport) {
-        //get the terms from the report used to track. Set in the report, will concat all terms that havf Fn==Find
+
+        // Get the terms from the report used to track.
+        // Set in the report, will concat all terms that havf Fn==Find
+
         var terms2Track = [];
         //var userTerms = self.share.get('terms',req.session.uuid);
 
         //clean up the terms, the ttag module in the UI repaces spaces with -
         _.forEach(objReport.terms, function(objSet) {
+
+            // Concat all terms that havf Fn==Find
             if (objSet.fn === 'Find') {
+
                 _.forEach(objSet.terms, function(objTerm) {
+
                     terms2Track.push(objTerm.text.replace('-',' '));
                 });
             }
         });
 
-        //determine if sentiment analysis is needed, probably will be an array of analysis to run instead f individual torfs
+        //determine if sentiment analysis is needed,
+        // probably will be an array of analysis to run instead of individual torfs
         _.forEach(objReport.columns, function(objCol) {
             if (!torfSentiment
                 && objCol.analysis
@@ -248,7 +256,8 @@ TwitterController.prototype.connectStream = function(req, res, user) {
 
         // console.log(terms2Track);
         twit.stream('statuses/filter', { track: terms2Track }, function (stream) {
-            self.share.set(stream,'stream', req.session.uuid);
+
+            self.share.set(stream, 'stream', req.session.uuid);
 
             stream.on('error', function(error, code) {
                 logger.log(logger.ERROR, "Stream error: " + error + ": " + code);
@@ -448,19 +457,25 @@ TwitterController.prototype.connectStream = function(req, res, user) {
                         console.log('column: ' + objItem.column + "\n" + objItem.text);
                     }
 
-                    var torfSent = socket_util.sendMessage(arrItems, io);
+                    var torfSent = _.debounce(function(arrItems, io) {
+                        if (arrItems.length > 0) {
+                            userSocketChannel.emit('newItems', arrItems);
+                            return true;
+                        }
+                    }, 100, { 'maxWait': 500 })(arrItems, io);
 
                     //clear the queue on success
                     if (torfSent) {
                         arrItems = [];
                     }
                 }
-            });
+            }); //end on-data listener
+
         }); //end stream
     }
 };
 
-TwitterController.prototype.destroyStream = function(req, res) {
+TwitterController.prototype.destroyStream = function(req, res, suppressResponse) {
     var self = this;
     var stream = self.share.get('stream', req.session.uuid);
 
@@ -471,8 +486,11 @@ TwitterController.prototype.destroyStream = function(req, res) {
     }
 
     stream.destroy();
+    self.share.set(null, 'stream', req.session.uuid);
 
-    res.send('success');
+    if (!suppressResponse) {
+        res.send('success');
+    }
 };
 
 TwitterController.prototype.twitter2Item = function(objItem, objOptions) {
@@ -576,11 +594,11 @@ TwitterController.prototype.index = function(req, res) {
                 res.redirect('/login');
             } else {
                 twitData = data.id;
-                self.share.set(twitData,'twitData', req.session.uuid);
-                self.share.set(twit,'twit', req.session.uuid);
+                self.share.set(twitData, 'twitData', req.session.uuid);
+                self.share.set(twit, 'twit', req.session.uuid);
 
                 var user = self.share.get('user', req.session.uuid);
-                
+
                 if (!user) {
                     res.redirect('/login');
                 }

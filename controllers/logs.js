@@ -68,6 +68,10 @@ LogsController.prototype.authUserCallback = function(req, res, next) {
     var self = this;
 };
 
+LogsController.prototype.destroyStream = function(req, res) {
+    var self = this;
+};
+
 //_________________________\\
 //----====|| MAIN ||====----\\
 LogsController.prototype.index = function(req, res) {
