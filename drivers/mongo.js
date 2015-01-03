@@ -8,8 +8,8 @@
 //_________________________________________\\
 //----====|| Package Dependencies ||====----\\
 var mongodb = require('mongodb');
-var ObjectID = mongodb.ObjectID;
 var fs = require('fs');
+var async = require('async');
 //________END Package Dependencies_________\\
 //##########################################\\
 
@@ -45,42 +45,81 @@ var MongoDriver = function() {
     this.share = null;
 };
 
-MongoDriver.prototype.init = function(program, share) {
+MongoDriver.prototype.init = function(share, seed) {
 
     var self = this;
     self.share = share;
 
-    var mongo_url = env_config.drivers.mongo.conn_url;
-    var mongo_client = mongodb.MongoClient;
-    var mongo_conn;
+    var mongoUrl = env_config.drivers.mongo.conn_url;
+    var mongoClient = mongodb.MongoClient;
 
-    mongo_client.connect(mongo_url, function(err, db, callback) {
-          if (err) {
-                logger.log(logger.ERROR, localization.mongo.no_conn);
-                process.exit(-1);
-          } else {
-              logger.log(logger.INFO, localization.mongo.conn);
-          }
+    mongoClient.connect(mongoUrl, function(err, db) {
 
-          mongo_conn = db;
+        if (err) {
+            logger.log(logger.ERROR, localization.mongo.no_conn);
+            process.exit(1);
+        } else {
+            logger.log(logger.INFO, localization.mongo.conn);
+        }
 
-          for (var db_table in self.collections) {
-              self.collections[db_table] = mongo_conn.collection(db_table);
-          }
+        var collectionFuncs = {};
 
-        if (program.seed) {
-            logger.log(logger.INFO, localization.mongo.seeding);
+        for (var key in self.collections) {
+            (function(collectionName) {
+                collectionFuncs[collectionName] = function(callback) {
 
-            var seeders = env_config.seeders;
+                    self.collections[collectionName] = db.collection(collectionName);
 
-            for (var seeder in seeders) {
-                var seed_objects = JSON.parse(fs.readFileSync(env_config.paths.seeders + seeders[seeder]));
+                    // Ensure that
+                    if ('users' === collectionName) {
 
-                for (var i = 0; i < seed_objects.length; i += 1) {
-                    mongo_conn.collection(seeder).insert(seed_objects[i], function(){});
+                        // Index on the unique id provided by a particular vendor
+                        // Ex. {
+                        //     vendor_id: 25764310,
+                        //     vendor_type: 'twitter'
+                        // }
+                        self.collections[collectionName].ensureIndex({
+                                vendor_id:1,
+                                vendor_type:1
+                            }
+                            , {unique:true, background:true, w:1}
+                            , function(err, indexAuthId) {
+
+                                // Index on the user screen name
+                                self.collections[collectionName].ensureIndex({
+                                        screen_name:1
+                                    }
+                                    , {unique:true, background:true, w:1}
+                                    , function(err, indexScreenName) {
+                                        callback(null, self.collections[collectionName]);
+                                    }
+                                );
+                            }
+                        );
+                    } else {
+                        callback(null, self.collections[collectionName]);
+                    }
+                };
+            })(key);
+        }
+
+        async.parallel(collectionFuncs, function(err, collections) {
+            if (seed) {
+                var seeders = env_config.seeders;
+                console.log('SEEDING:', seeders);
+                console.log('collections: ', self.collections);
+
+
+                for (var collectionToSeed in seeders) {
+                    console.log('ATTEMPT TO SEED: ', collectionToSeed);
+                    var seedObjects = JSON.parse(fs.readFileSync(env_config.paths.seeders + seeders[collectionToSeed]));
+
+                    for (var i = 0; i < seedObjects.length; i += 1) {
+                        self.collections[collectionToSeed].insert(seedObjects[i], function(){});
+                    }
                 }
             }
-        }
+        });
     });
 };
 
@@ -95,40 +134,19 @@ MongoDriver.prototype.loadUser = function(req, userQuery, newUser, callback) {
         }
 
         if (user) {
-            console.log('User found: ', user);
-
             if (user.reports === [] || !user.default_report_id) {
-
                 self.addDefaultReportsToUser(req, user, function() {
                     self.share.set(user, 'user', req.session.uuid);
                     callback();
                 });
-
-                /*
-                self.collections['reports'].find({name: "Celebrity"}, function(errReport, report) {
-                    if (errReport) {
-                        logger.log(logger.ERROR, errReport);
-                    } else {
-                        report = reportHandler.normalize(report);
-
-                        user.reports = [];
-                        user.default_report_id = report._id;
-                        user.reports.push(report);
-
-                        self.collections['users'].save(user);
-                        self.share.set(report, 'report', req.session.uuid);
-                    }
-                });*/
             } else {
                 for (var i = 0; i < user.reports.length; i += 1) {
                     if (user.reports[i]._id === user.default_report_id) {
-                        console.log('SETTING REPORT FOR USER TO: ', user.reports[i]);
                         self.share.set(user.reports[i], 'report', req.session.uuid);
                     }
                 }
 
                 self.share.set(user, 'user', req.session.uuid);
-
                 callback();
             }
 
@@ -140,32 +158,12 @@ MongoDriver.prototype.loadUser = function(req, userQuery, newUser, callback) {
                     return;
                 }
 
-                console.log('New User created: ', newUser);
                 self.share.set(newUser, 'user', req.session.uuid);
 
                 self.addDefaultReportsToUser(req, newUser, function() {
                     self.share.set(newUser, 'user', req.session.uuid);
                     callback();
                 });
-
-                /*
-                self.drivers.mongo.collections['reports'].find({_id: "Celebrity"}, function(errReport, report) {
-                    if (errReport) {
-                        logger.log(logger.ERROR, errReport);
-                    } else {
-                        report = reportHandler.normalize(report);
-
-                        newUser.reports = [];
-                        newUser.default_report_id = report._id;
-                        newUser.reports.push(report);
-
-                        self.collections['users'].save(newUser);
-                        self.share.set(report, 'report');
-                    }
-                });
-                */
-
-                //callback();
             });
         }
     });
@@ -173,8 +171,6 @@ MongoDriver.prototype.loadUser = function(req, userQuery, newUser, callback) {
 
 MongoDriver.prototype.addDefaultReportsToUser = function(req, user, callback) {
     var self = this;
-
-    console.log('Adding default reports to user: ', user);
 
     self.collections['reports'].find({visibility: "public", owner: "suddenfeedback"}).toArray(function(errReport, reports) {
 
@@ -194,7 +190,6 @@ MongoDriver.prototype.addDefaultReportsToUser = function(req, user, callback) {
                 user.reports.push(report);
 
                 if (env_config.default_report_id === report._id) {
-                    console.log('REPORT ID MATCHES CONFIGURED DEFAULT: ', report._id);
                     user.default_report_id = report._id;
                     self.share.set(report, 'report', req.session.uuid);
                 }
@@ -202,7 +197,6 @@ MongoDriver.prototype.addDefaultReportsToUser = function(req, user, callback) {
 
             if (!user.default_report_id && user.reports.length > 0) {
                 user.default_report_id = user.reports[0]._id;
-                console.log('SETTING REPORT in last ditch');
                 self.share.set(user.reports[0], 'report', req.session.uuid);
             }
 

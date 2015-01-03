@@ -23,6 +23,7 @@ var share = require('./modules/share'); //utility Wes wrote for data betwen node
 var logger = require('./modules/logger');
 var ip_util = require('./modules/ip_util');
 var fuiapi = require('./modules/fuiapi');
+var routeLoader = require('./modules/route_loader');
 //________END Local Dependencies_________\\
 //########################################\\
 
@@ -40,9 +41,9 @@ var debug = env_config.debug;
 //----====|| Program Startup ||====----\\
 program
   .version(app_config.version)
-  .option('-s, --seed', localization.mongo.param_instructions)
-  .option('-a, --auth [user]', localization.auth.param_instructions)
-  .option('-p, --protocol [http|https]', localization.protocol.param_instructions)
+  .option('-s, --seed', "Signals drivers to seed their datastores where applicable")
+  .option('-a, --auth [user]', "Whose access credentials to use for OAuth single sign on")
+  .option('-p, --protocol [http|https]', "What protocol to use. Should be http or https")
   .parse(process.argv);
 //________END Program Startup_________\\
 //#####################################\\
@@ -50,8 +51,7 @@ program
 
 //________________________________\\
 //----====|| Log Host IP ||====----\\
-var host_ip = ip_util.getIpAddress();
-logger.log(logger.INFO, localization.common.host_ip + ": " + host_ip);
+logger.log(logger.INFO, "Host IP: " + ip_util.getIpAddress());
 //________END Log Host IP_________\\
 //#################################\\
 
@@ -85,14 +85,14 @@ if ('development' === app.get('env')) {
 //----====|| Load Drivers ||====----\\
 var loadedDrivers = {};
 
-for (var driver_name in env_config.drivers) {
+for (var driverName in env_config.drivers) {
 
-    loadedDrivers[driver_name] = function(callback) {
+    loadedDrivers[driverName] = function(callback) {
 
-        if (!env_config.drivers[driver_name].enabled) { return; }
+        if (!env_config.drivers[driverName].enabled) { return; }
 
-        var driver = require('./drivers/' + driver_name);
-        driver.init(program, share);
+        var driver = require('./drivers/' + driverName);
+        driver.init(share, program.seed);
 
         callback(null, driver);
     };
@@ -107,8 +107,7 @@ async.parallel(loadedDrivers, function(err, drivers) {
 
     for (var provider in env_config.data_providers) {
 
-        if (!env_config.data_providers[provider].enabled) {
-            continue; }
+        if (!env_config.data_providers[provider].enabled) { continue; }
 
         controller = require('./controllers/' + provider);
         controller.init(program, app, share, drivers);
@@ -122,36 +121,15 @@ async.parallel(loadedDrivers, function(err, drivers) {
     fuiapi.config(app, share, drivers, controllers);
     //____________________________________\\
     //----====|| END Load FUIAPI ||====----\\
+
+    //_______________________________________\\
+    //----====|| Load Common Routes ||====----\\
+    routeLoader.load(app, share, fuiapi);
+    //___________________________________________\\
+    //----====|| END Load Common Routes ||====----\\
 });
 //________END Load Drivers________\\
 //#################################\\
-
-
-app.get('/login', function(req, res) {
-
-    // The first time a user visits we give them a unique ID to track them with
-    if (!req.session.uuid) {
-        req.session.uuid = uuid.v4();
-    }
-
-    res.render('login');
-});
-
-app.get('/logout', function(req, res) {
-
-    if (req.session.uuid) {
-        fuiapi.destroyStreams(req, res, true);
-        share.set(null, 'user', req.session.uuid);
-        share.set(null, 'report', req.session.uuid);
-        share.set(null, 'twitter_auth', req.session.uuid);
-        share.set(null, 'twitData', req.session.uuid);
-        share.set(null, 'twit', req.session.uuid);
-        req.session.uuid = null;
-        req.session = null;
-    }
-
-    res.redirect('login');
-});
 
 
 //__________________________________\\

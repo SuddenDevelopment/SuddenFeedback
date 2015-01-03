@@ -35,10 +35,6 @@ app.factory('FUIAPI', function($resource) {
 
 app.controller('FUI', function($scope, $modal, FUIAPI) {
 
-    $scope.selectedDataType = 'twitter';
-
-    $scope.supportedDataTypes = ['twitter', 'logs', 'events'];
-
     $scope.play = true;
 
     $scope.widths = [
@@ -258,7 +254,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
 
     //menu options, initial setup, either loaded from a previous setup, or defaults
     $scope.loadOptions = function() {
-        FUIAPI.post({ a: 'init', t: $scope.selectedDataType },
+        FUIAPI.post({ a: 'init' },
             function(response) {
                 //load any menu options and configs set in the DB that sit outside the report doc, system level
                 $scope.report = response.report;
@@ -295,7 +291,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     };
 
     $scope.listReports = function() {
-        FUIAPI.post({ a: 'listReports', t: $scope.selectedDataType },
+        FUIAPI.post({ a: 'listReports' },
             function(response) {
                 _.forEach(response.reportList,function(){
 
@@ -308,12 +304,12 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     $scope.loadReport = function(strReport, withData) {
         $scope.play = false;
 
-        FUIAPI.post({ a: 'pauseStream', t: $scope.selectedDataType }, function() {
-            FUIAPI.post({ a: 'loadReport', q: strReport, t: $scope.selectedDataType },
+        FUIAPI.post({ a: 'pauseStream' }, function() {
+            FUIAPI.post({ a: 'loadReport', q: strReport },
                 function(response) {
                     $scope.report = response;
-            
-                    FUIAPI.post({ a: 'playStream', t: $scope.selectedDataType }, function () {
+
+                    FUIAPI.post({ a: 'playStream' }, function () {
                         $scope.play = true;
                     });
                 }
@@ -322,7 +318,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     };
 
     $scope.delReport = function(strReport, withData) {
-        FUIAPI.post({ a: 'delReport', q: strReport, t: $scope.selectedDataType },
+        FUIAPI.post({ a: 'delReport', q: strReport },
             function(response) {
                 if (response === 'report deleted') {
                     $scope.reportList.splice(getIndex($scope.reportList, '_id', strReport), 1);
@@ -337,7 +333,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         $scope.report.colCount = $scope.report.columns.length; //get the column count
         $scope.report.updated_at = (new Date).getTime();  //set the last update time
         if(!$scope.report.created_at){ $scope.report.created_at = (new Date).getTime(); }
-        FUIAPI.post({ a: 'saveReport', q: $scope.report, t: $scope.selectedDataType },
+        FUIAPI.post({ a: 'saveReport', q: $scope.report },
             function(response) {}
         );
         //FUIAPI.put({a: 'saveReport', data_type: '', q: $scope.report},function(response){ });
@@ -450,29 +446,29 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
 
     // what the hell is a set?
     $scope.saveSet = function() {
-        FUIAPI.post({ a: 'saveTerms', q: $scope.report.terms, t: $scope.selectedDataType }, function(response) {
+        FUIAPI.post({ a: 'saveTerms', q: $scope.report.terms }, function(response) {
             console.log(response,'response');
         });
     };
 
     // what the hell is a set?
     $scope.loadSet = function() {
-        FUIAPI.post({ t: $scope.selectedDataType }, function(response){});
+        FUIAPI.post({}, function(response){});
     };
 
     // what the hell is a set?
     $scope.delSet = function() {
-        FUIAPI.post({ t: $scope.selectedDataType }, function(response){});
+        FUIAPI.post({}, function(response){});
     };
 
     // Pause the data feed
     $scope.pause = function() {
         if ($scope.play) {
             $scope.play = false;
-            FUIAPI.post({ a: 'pauseStream', t: $scope.selectedDataType });
+            FUIAPI.post({ a: 'pauseStream' });
         } else {
             $scope.play = true;
-            FUIAPI.post({ a: 'playStream', t: $scope.selectedDataType });
+            FUIAPI.post({ a: 'playStream' });
         }
     };
 

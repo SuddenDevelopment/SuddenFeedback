@@ -25,7 +25,6 @@ var logger = require('../modules/logger');
 var util = require('../modules/util');
 var ip_util = require('../modules/ip_util');
 var twitter_util = require('../modules/twitter_util');
-var socket_util = require('../modules/socket_util');
 //________END Local Dependencies_________\\
 //########################################\\
 
@@ -44,7 +43,6 @@ var port = process.env.PORT || env_config.ports.app;
 //__________________________________\\
 //----====|| Instance Vars ||====----\\
 var io = socket_io.listen(env_config.ports.socket, { log: false });
-
 var torfSentiment = false;
 var strNeedle = null;
 //________END Instance Vars_________\\
@@ -84,16 +82,12 @@ TwitterController.prototype.init = function(program, app, share, drivers) {
             access_token_secret: '2N3WH09m2la6q7xMKzKc34ZWq9ySgypqbxreGnYPGTJ5J'
          */
         self.auth = new OAuth(
-            //env_config.data_providers.twitter.auth.request_token_url,
-            //env_config.data_providers.twitter.auth.access_token_url,
             env_config.auth.request_token_url,
             env_config.auth.access_token_url,
             self.credentials.api_key,
             self.credentials.api_secret,
-            //env_config.data_providers.twitter.auth.version,
             env_config.auth.version,
             protocol + "://" + host_ip + ":"+ port + '/auth/twitter/callback',
-            //env_config.data_providers.twitter.auth.mac_type
             env_config.auth.mac_type
         );
     });
@@ -103,7 +97,6 @@ TwitterController.prototype.loadRoutes = function(app) {
     var self = this;
     app.get('/auth/twitter', self.authUser.bind(self));
     app.get('/auth/twitter/callback', self.authUserCallback.bind(self));
-    app.get('/home', self.home.bind(self));
 };
 
 // @Todo - this currently does not authorize on a per action basis. It merely
@@ -113,6 +106,7 @@ TwitterController.prototype.authorizeAction = function(req) {
 
     // @Todo - don't restrict actions for now
     return true;
+
     return self.share.get('twitter_auth', req.session.uuid);
 };
 
@@ -129,7 +123,6 @@ TwitterController.prototype.authUser = function(req, res) {
                 "oauth_token_secret": oauth_token_secret
             }, 'twitter_auth', req.session.uuid);
 
-            //res.redirect(env_config.data_providers.twitter.auth.url_prefix + oauth_token);
             res.redirect(env_config.auth.url_prefix + oauth_token);
         }
     });
@@ -267,208 +260,221 @@ TwitterController.prototype.connectStream = function(req, res, user) {
                 var torfSend = true;
                 var filtered = false;
 
-                if (objReport) {
-                    var objOptions = {};
+                if (!objReport) {
+                    return;
+                }
 
-                    if (objReport.titles) {
-                        objOptions.titles = objReport.titles;
+                var objOptions = {};
+
+                if (objReport.titles) {
+                    objOptions.titles = objReport.titles;
+                }
+
+                objItem = self.twitter2Item(objItem, objOptions); //feed specific transform to an item
+                objItem = util.normalizeItem(objItem); //Normalize the Item
+
+             //_________________________________________\\
+            //----====|| ADD ANALYSIS TO MESSAGE ||====----\\
+                //add sentiment analysis
+                if (torfSentiment) {
+                    objItem.analysis.sentiment = sentiment(objItem.text).score;
+                }
+             //END ANALYSIS\\
+            //##############\\
+
+                //loop through the root level term groups used
+                //Global Filter
+                _.forEach(objReport.terms, function(objSet) {
+                    if (filtered === false && objSet.fn === 'Filter') {
+                        var strMatch = self.firstTerm(objSet.terms, objItem.text);
+
+                        if (strMatch) {
+                            filtered = true;
+                            objItem.analysis.filtered = strMatch;
+                        };
                     }
-
-                    objItem = self.twitter2Item(objItem, objOptions); //feed specific transform to an item
-                    objItem = util.normalizeItem(objItem); //Normalize the Item
-
-                 //_________________________________________\\
-                //----====|| ADD ANALYSIS TO MESSAGE ||====----\\
-                    //add sentiment analysis
-                    if (torfSentiment) {
-                        objItem.analysis.sentiment = sentiment(objItem.text).score;
+                });
+             //_____________________________________\\
+            //----====|| SORT INTO COLUMNS ||====----\\
+                //go through columns in order, col order matters for sorting, some items will pass through and add to multiple columns, default is to stop when a col is found
+                var intColIndex = false;
+                for (i = 0; i < objReport.columns.length; i += 1) {
+                    //the notes column is a special one when someone adds notes to items, those items show up in notes
+                    if (objReport.columns[i].show.toLowerCase() === 'notes'
+                        && objItem.analysis.filtered
+                    ) {
+                        arrItems.push({ column: objReport.columns[i].id, typ: 'Filter', text: objItem.analysis.filtered });
                     }
-                 //END ANALYSIS\\
-                //##############\\
+                    else if (objReport.columns[i].analysis === 'sentiment=positive'
+                        && !objItem.analysis.filtered
+                        && objItem.analysis.sentiment > 0
+                    ) {
+                        objItem.column = objReport.columns[i].id;
+                    }
+                    else if (objReport.columns[i].analysis === 'sentiment=negative'
+                        && !objItem.analysis.filtered
+                        && objItem.analysis.sentiment < 0
+                    ) {
+                        objItem.column = objReport.columns[i].id;
+                    }
+                    else if (objReport.columns[i].analysis ==='sentiment=neutral'
+                        && !objItem.analysis.filtered
+                        && objItem.analysis.sentiment === 0
+                    ) {
+                        objItem.column = objReport.columns[i].id;
+                    }
+                    else if (objReport.columns[i].show === 'ColumnTitle') {
 
-                    //loop through the root level term groups used
-                    //Global Filter
-                    _.forEach(objReport.terms, function(objSet) {
-                        if (filtered === false && objSet.fn === 'Filter') {
-                            var strMatch = self.firstTerm(objSet.terms, objItem.text);
+                        strNeedle = objReport.columns[i].label.toLowerCase();
 
-                            if (strMatch) {
-                                filtered = true;
-                                objItem.analysis.filtered = strMatch;
-                            };
-                        }
-                    });
-                 //_____________________________________\\
-                //----====|| SORT INTO COLUMNS ||====----\\
-                    //go through columns in order, col order matters for sorting, some items will pass through and add to multiple columns, default is to stop when a col is found
-                    var intColIndex = false;
-                    for (i = 0; i < objReport.columns.length; i += 1) {
-                        //the notes column is a special one when someone adds notes to items, those items show up in notes
-                        if (objReport.columns[i].show.toLowerCase() === 'notes'
-                            && objItem.analysis.filtered
-                        ) {
-                            arrItems.push({ column: objReport.columns[i].id, typ: 'Filter', text: objItem.analysis.filtered });
-                        }
-                        else if (objReport.columns[i].analysis === 'sentiment=positive'
-                            && !objItem.analysis.filtered
-                            && objItem.analysis.sentiment > 0
-                        ) {
+                        if (objItem.text.toLowerCase().indexOf(strNeedle) !== -1) {
                             objItem.column = objReport.columns[i].id;
                         }
-                        else if (objReport.columns[i].analysis === 'sentiment=negative'
-                            && !objItem.analysis.filtered
-                            && objItem.analysis.sentiment < 0
-                        ) {
+                        else if (_.find(objReport.columns[i].hashtags, { 'text': strNeedle })) {
                             objItem.column = objReport.columns[i].id;
                         }
-                        else if (objReport.columns[i].analysis ==='sentiment=neutral'
-                            && !objItem.analysis.filtered
-                            && objItem.analysis.sentiment === 0
-                        ) {
+                        else if (_.find(objReport.columns[i].user_mentions, { 'screen_name': strNeedle })) {
                             objItem.column = objReport.columns[i].id;
                         }
-                        else if (objReport.columns[i].show === 'ColumnTitle') {
-
-                            strNeedle = objReport.columns[i].label.toLowerCase();
-
-                            if (objItem.text.toLowerCase().indexOf(strNeedle) !== -1) {
-                                objItem.column = objReport.columns[i].id;
-                            }
-                            else if (_.find(objReport.columns[i].hashtags, { 'text': strNeedle })) {
-                                objItem.column = objReport.columns[i].id;
-                            }
-                            else if (_.find(objReport.columns[i].user_mentions, { 'screen_name': strNeedle })) {
-                                objItem.column = objReport.columns[i].id;
-                            }
-                        }
-
-                        if (objItem.column && objItem.analysis.filtered) {
-                            arrItems.push({ column: objItem.column, typ: 'Filter', text: objItem.analysis.filtered });
-                        } //add a per colum tag for filtered items
-
-                        if (objItem.column && !intColIndex) {
-                            intColIndex = i;
-                        }
                     }
 
-                    if (!objItem.column) {
+                    if (objItem.column && objItem.analysis.filtered) {
+                        arrItems.push({ column: objItem.column, typ: 'Filter', text: objItem.analysis.filtered });
+                    } //add a per colum tag for filtered items
 
-                        intColIndex = util.getIndex(objReport.columns,'show','Orphans'); //special column to show items that dont have a home.
-
-                        if (intColIndex) {
-                            objItem.column = objReport.columns[intColIndex].id;
-                        }
-                    }
-                 //END COLUMN SORTING\\
-                //####################\\
-                //__________________________________\\
-                //----====|| STORE LOCALLY ||====----\\
-                    var torfRT = false;
-                    var intNow = (new Date).getTime();
-                    var arrDelete = [];
-                    if (objItem.column) {
-
-                        _.forEach(objReport.columns[intColIndex]['items'], function(objI,k) {
-
-                            if (objI.text === objItem.text) {
-                                objI.updated_at = intNow;
-                                //cumulative priority
-                                if (objItem.priority < 2 || objItem.priority <= objI.priority) {
-                                    objI.priority += 1;
-
-                                }
-                                else { //replacing priority
-                                    objI.priority = objItem.priority;
-                                }
-
-                                torfRT = true;
-                            }else{
-                                //don't keep everything forever, not all data is sacred. Drop by age, order, frequency etc.
-                                //if it hasnt been updated in an hour, and is below the priority threshold
-                                if(objI.priority < 2 && intNow-objI.updated_at > 3600000){  arrDelete.push(k);  }
-                            }
-                        });
-
-                        //need to do this outside the loop so that items aren't removed during the loop
-                        _.forEach( arrDelete,function(k){
-                            objReport.columns[intColIndex]['items'].splice(k,1);
-                        });
-
-                        if (torfRT === false) {
-                            //add
-                            objReport.columns[intColIndex]['items'].unshift(objItem);
-
-                            //sort the column
-                            objReport.columns[intColIndex]['items'] = util.sortArray(objReport.columns[intColIndex]['items'], objReport.columns[intColIndex].sort);
-
-                            //make sure it's high enough sort order to send to browser
-                            if (util.getIndex(objReport.columns[intColIndex]['items'], 'id', objItem.id) > objReport.columns[intColIndex].limit) {
-                                torfSend = false;
-                            }
-
-
-                        }
-                    }
-                    //when this is triggered no column was assigned, if it happens too often something is wrong
-                    else if (debug === true) {
-                        console.log('column: ' + objItem.column + "\n" + objItem.text + "\n \n");
-                    }
-                //END LOCAL STORAGE\\
-                //##################\\
-
-                    //SEND IT TO THE Browser WEBSOCKET
-                    if (torfSend && objItem.column > 0) {
-
-                        if (!objItem.analysis.filtered) {
-                            arrItems.push(objItem);
-                        }
-
-                        //add stats
-                        if ( _.find(objReport.columns[intColIndex].components, {'typ': 'Stats'})
-                            || _.find(objReport.columns[intColIndex].components, {'typ': 'Link'})
-                        ) {
-                            for (var i = 0; i < objItem.entities.urls.length; i += 1) {
-                                arrItems.push({ column: objItem.column, typ: 'Link', text: objItem.entities.urls[i].expanded_url.toLowerCase() });
-                            }
-                        }
-                        if ( _.find(objReport.columns[intColIndex].components, {'typ':'Stats'})
-                            || _.find(objReport.columns[intColIndex].components, {'typ':'Mention'})
-                        ) {
-                            for (var i = 0; i < objItem.entities.user_mentions.length; i += 1){
-                                arrItems.push({ column: objItem.column, typ: 'Mention', text: objItem.entities.user_mentions[i].screen_name.toLowerCase() });
-                            }
-                        }
-
-                        if ( _.find(objReport.columns[intColIndex].components, {'typ': 'Stats'})
-                            || _.find(objReport.columns[intColIndex].components, {'typ': 'User'})
-                        ) {
-                            arrItems.push({ column: objItem.column, typ:'User', text: objItem.user.screen_name });
-                        }
-
-                        if ( _.find(objReport.columns[intColIndex].components, {'typ':'Stats'})
-                            || _.find(objReport.columns[intColIndex].components, {'typ':'Tag'})
-                        ) {
-                            for (var i = 0; i < objItem.entities.hashtags.length; i += 1) {
-                                arrItems.push({ column: objItem.column, typ: 'Tag', text: objItem.entities.hashtags[i].text.toLowerCase() });
-                            }
-                        }
-                    }
-                    else if (debug === true) {
-                        console.log('column: ' + objItem.column + "\n" + objItem.text);
-                    }
-
-                    var torfSent = _.debounce(function(arrItems, io) {
-                        if (arrItems.length > 0) {
-                            userSocketChannel.emit('newItems', arrItems);
-                            return true;
-                        }
-                    }, 100, { 'maxWait': 500 })(arrItems, io);
-
-                    //clear the queue on success
-                    if (torfSent) {
-                        arrItems = [];
+                    if (objItem.column && !intColIndex) {
+                        intColIndex = i;
                     }
                 }
+
+                if (!objItem.column) {
+
+                    intColIndex = util.getIndex(objReport.columns,'show','Orphans'); //special column to show items that dont have a home.
+
+                    if (intColIndex) {
+                        objItem.column = objReport.columns[intColIndex].id;
+                    }
+                }
+             //END COLUMN SORTING\\
+            //####################\\
+            //__________________________________\\
+            //----====|| STORE LOCALLY ||====----\\
+                var torfRT = false;
+                var intNow = (new Date).getTime();
+                var arrDelete = [];
+                if (objItem.column) {
+
+                    _.forEach(objReport.columns[intColIndex]['items'], function(objI,k) {
+
+                        if (objI.text === objItem.text) {
+                            objI.updated_at = intNow;
+                            //cumulative priority
+                            if (objItem.priority < 2 || objItem.priority <= objI.priority) {
+                                objI.priority += 1;
+
+                            }
+                            else { //replacing priority
+                                objI.priority = objItem.priority;
+                            }
+
+                            torfRT = true;
+                        }else{
+                            //don't keep everything forever, not all data is sacred. Drop by age, order, frequency etc.
+                            //if it hasnt been updated in an hour, and is below the priority threshold
+                            if(objI.priority < 2 && intNow-objI.updated_at > 3600000){  arrDelete.push(k);  }
+                        }
+                    });
+
+                    //need to do this outside the loop so that items aren't removed during the loop
+                    _.forEach( arrDelete,function(k){
+                        objReport.columns[intColIndex]['items'].splice(k,1);
+                    });
+
+                    if (torfRT === false) {
+                        //add
+                        objReport.columns[intColIndex]['items'].unshift(objItem);
+
+                        //sort the column
+                        objReport.columns[intColIndex]['items'] = util.sortArray(objReport.columns[intColIndex]['items'], objReport.columns[intColIndex].sort);
+
+                        //make sure it's high enough sort order to send to browser
+                        if (util.getIndex(objReport.columns[intColIndex]['items'], 'id', objItem.id) > objReport.columns[intColIndex].limit) {
+                            torfSend = false;
+                        }
+
+
+                    }
+                }
+                //when this is triggered no column was assigned, if it happens too often something is wrong
+                else if (debug === true) {
+                    console.log('column: ' + objItem.column + "\n" + objItem.text + "\n \n");
+                }
+            //END LOCAL STORAGE\\
+            //##################\\
+
+                //SEND IT TO THE Browser WEBSOCKET
+                if (torfSend && objItem.column > 0) {
+
+                    if (!objItem.analysis.filtered) {
+                        arrItems.push(objItem);
+                    }
+
+                    //add stats
+                    if ( _.find(objReport.columns[intColIndex].components, {'typ': 'Stats'})
+                        || _.find(objReport.columns[intColIndex].components, {'typ': 'Link'})
+                    ) {
+                        for (var i = 0; i < objItem.entities.urls.length; i += 1) {
+                            arrItems.push({ column: objItem.column, typ: 'Link', text: objItem.entities.urls[i].expanded_url.toLowerCase() });
+                        }
+                    }
+                    if ( _.find(objReport.columns[intColIndex].components, {'typ':'Stats'})
+                        || _.find(objReport.columns[intColIndex].components, {'typ':'Mention'})
+                    ) {
+                        for (var i = 0; i < objItem.entities.user_mentions.length; i += 1){
+                            arrItems.push({ column: objItem.column, typ: 'Mention', text: objItem.entities.user_mentions[i].screen_name.toLowerCase() });
+                        }
+                    }
+
+                    if ( _.find(objReport.columns[intColIndex].components, {'typ': 'Stats'})
+                        || _.find(objReport.columns[intColIndex].components, {'typ': 'User'})
+                    ) {
+                        arrItems.push({ column: objItem.column, typ:'User', text: objItem.user.screen_name });
+                    }
+
+                    if ( _.find(objReport.columns[intColIndex].components, {'typ':'Stats'})
+                        || _.find(objReport.columns[intColIndex].components, {'typ':'Tag'})
+                    ) {
+                        for (var i = 0; i < objItem.entities.hashtags.length; i += 1) {
+                            arrItems.push({ column: objItem.column, typ: 'Tag', text: objItem.entities.hashtags[i].text.toLowerCase() });
+                        }
+                    }
+                }
+                else if (debug === true) {
+                    console.log('column: ' + objItem.column + "\n" + objItem.text);
+                }
+
+
+                // @TODO - determine whether performance is better with or without debouncing / throttling
+
+                /*
+                var torfSent = _.debounce(function(items, io) {
+                    if (items.length > 0) {
+                        userSocketChannel.emit('newItems', items);
+                        return true;
+                    }
+                }, 100, { 'maxWait': 500 })(arrItems, io);
+
+                //clear the queue on success
+                if (torfSent) {
+                    arrItems = [];
+                }
+                */
+
+                if (arrItems.length > 0) {
+                    userSocketChannel.emit('newItems', arrItems);
+                    arrItems = [];
+                }
+                
             }); //end on-data listener
 
         }); //end stream
@@ -557,10 +563,6 @@ TwitterController.prototype.allTerms = function(arrNeedles, strHaystack) {
 
 //_________________________\\
 //----====|| MAIN ||====----\\
-TwitterController.prototype.home = function(req, res) {
-    var self = this;
-    res.render('home', { title: 'SuddenFeedback' }); //the page for mamaging reports without running them
-}
 TwitterController.prototype.index = function(req, res) {
     var self = this;
     //console.log(req.session.term);

@@ -38,27 +38,20 @@ var TwitterUtil = function() {};
  * Returns the Twitter credentials for the user account passed in
  * by the --twitter -t argument
  */
-TwitterUtil.prototype.getCredentials = function(api_account, callback){
-
-    if('undefined' === typeof(api_account)){
+TwitterUtil.prototype.getCredentials = function(apiAccount, callback) {
+    if ('undefined' === typeof apiAccount) {
         exception.throw(localization.twitter.parameter_not_present);
     } else {
-        logger.log(logger.INFO, localization.twitter.using_credentials + api_account);
+        logger.log(logger.INFO, localization.twitter.using_credentials + apiAccount);
 
         var authConfig = JSON.parse(fs.readFileSync(env_config.auth.config_path));
-        //var twConfig = JSON.parse(fs.readFileSync(env_config.data_providers.twitter.config_path));
 
-        if (!_.has(authConfig, 'twitter') && !_.has(authConfig['twitter'], api_account)) {
+        if (!_.has(authConfig, 'twitter') && !_.has(authConfig['twitter'], apiAccount)) {
             exception.throw(localization.twitter.config_does_not_exist);
         }
 
-        //if (!_.has(twConfig, api_account)) {
-        //    exception.throw(localization.twitter.config_does_not_exist);
-        //}
-
-        callback(authConfig['twitter'][api_account]);
+        callback(authConfig['twitter'][apiAccount]);
     }
-
 };
 
 module.exports = new TwitterUtil();
