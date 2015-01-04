@@ -106,12 +106,8 @@ MongoDriver.prototype.init = function(share, seed) {
         async.parallel(collectionFuncs, function(err, collections) {
             if (seed) {
                 var seeders = env_config.seeders;
-                console.log('SEEDING:', seeders);
-                console.log('collections: ', self.collections);
-
 
                 for (var collectionToSeed in seeders) {
-                    console.log('ATTEMPT TO SEED: ', collectionToSeed);
                     var seedObjects = JSON.parse(fs.readFileSync(env_config.paths.seeders + seeders[collectionToSeed]));
 
                     for (var i = 0; i < seedObjects.length; i += 1) {
@@ -123,7 +119,7 @@ MongoDriver.prototype.init = function(share, seed) {
     });
 };
 
-MongoDriver.prototype.loadUser = function(req, userQuery, newUser, callback) {
+MongoDriver.prototype.loadUser = function(req, userQuery, userData, callback) {
     var self = this;
 
     self.collections['users'].findOne(userQuery, function(err, user) {
@@ -134,23 +130,52 @@ MongoDriver.prototype.loadUser = function(req, userQuery, newUser, callback) {
         }
 
         if (user) {
-            if (user.reports === [] || !user.default_report_id) {
-                self.addDefaultReportsToUser(req, user, function() {
+
+            // Update the user account with data that may have changed from the
+            // 3rd party OAuth provider
+            user.screen_name = userData.screen_name,
+            user.url = userData.url,
+            user.lang = userData.lang,
+            user.utc_offset = userData.utc_offset,
+            user.time_zone = userData.time_zone,
+
+            self.collections['users'].save(user, {w: 1}, function(err, newRecord) {
+
+                // @TODO - What if a user deletes all the default reports?
+                // @TODO - This code would cause the default reports to be re-added again.
+                // Add default reports to the user if they have no user records
+                if (user.reports === [] || !user.default_report_id) {
+                    self.addDefaultReportsToUser(req, user, function() {
+                        self.share.set(user, 'user', req.session.uuid);
+                        callback();
+                    });
+                } else {
+
+                    for (var i = 0; i < user.reports.length; i += 1) {
+                        if (user.reports[i]._id === user.default_report_id) {
+                            self.share.set(user.reports[i], 'report', req.session.uuid);
+                        }
+                    }
+
                     self.share.set(user, 'user', req.session.uuid);
                     callback();
-                });
-            } else {
-                for (var i = 0; i < user.reports.length; i += 1) {
-                    if (user.reports[i]._id === user.default_report_id) {
-                        self.share.set(user.reports[i], 'report', req.session.uuid);
-                    }
                 }
-
-                self.share.set(user, 'user', req.session.uuid);
-                callback();
-            }
-
+            });
         } else {
+
+            var newUser = {
+                vendor_id: userData.id,
+                vendor_type: userData.vendor_type,
+                name: userData.name,
+                screen_name: userData.screen_name,
+                url: userData.url,
+                lang: userData.lang,
+                utc_offset: userData.utc_offset,
+                time_zone: userData.time_zone,
+                reports: [],
+                default_report_id: null
+            };
+
             self.collections['users'].save(newUser, {w: 1}, function(err, newRecord) {
                 if (err) {
                     logger.log(logger.ERROR, err);

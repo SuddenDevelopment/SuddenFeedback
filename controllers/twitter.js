@@ -12,7 +12,7 @@ var OAuth = require('oauth').OAuth;
 var sentiment = require('sentiment');
 var uuid = require('node-uuid');
 var _ = require('lodash');
-var socket_io = require('socket.io')
+var socket_io = require('socket.io');
 //________END Package Dependencies_________\\
 //##########################################\\
 
@@ -22,9 +22,10 @@ var socket_io = require('socket.io')
 var app_config = require('../config/app.json');
 var locales = require('../config/locales.json');
 var logger = require('../modules/logger');
-var util = require('../modules/util');
+var report_item_util = require('../modules/report_item_util');
 var ip_util = require('../modules/ip_util');
 var twitter_util = require('../modules/twitter_util');
+var stats = require('../modules/stats');
 //________END Local Dependencies_________\\
 //########################################\\
 
@@ -57,6 +58,37 @@ var TwitterController = function() {
     this.drivers = {};
     this.auth = null;
     this.credentials = {};
+    this.statTotalItemsProcessed = 0;
+    this.stats = {
+        10: {
+            label: "10 seconds",
+            items_processed_in_period: 0
+        },
+        60: {
+            label: "1 minute",
+            items_processed_in_period: 0
+        },
+        1800: {
+            label: "30 minutes",
+            items_processed_in_period: 0
+        },
+        3600: {
+            label: "1 hour",
+            items_processed_in_period: 0
+        },
+        21600: {
+            label: "6 hours",
+            items_processed_in_period: 0
+        },
+        43200: {
+            label: "12 hours",
+            items_processed_in_period: 0
+        },
+        86400: {
+            label: "24 hours",
+            items_processed_in_period: 0
+        }
+    };
 };
 
 TwitterController.prototype.init = function(program, app, share, drivers) {
@@ -164,20 +196,9 @@ TwitterController.prototype.authUserCallback = function(req, res, next) {
                                 vendor_type: 'twitter'
                             };
 
-                            var newUser = {
-                                vendor_id: twitterUser.id,
-                                vendor_type: 'twitter',
-                                name: twitterUser.name,
-                                screen_name: twitterUser.screen_name,
-                                url: twitterUser.url,
-                                lang: twitterUser.lang,
-                                utc_offset: twitterUser.utc_offset,
-                                time_zone: twitterUser.time_zone,
-                                reports: [],
-                                default_report_id: null
-                            };
+                            twitterUser.vendor_type = 'twitter';
 
-                            self.drivers.mongo.loadUser(req, userQuery, newUser, function() {
+                            self.drivers.mongo.loadUser(req, userQuery, twitterUser, /*newUser,*/ function() {
 
                                 var socketNamespace = '/' + req.session.uuid;
 
@@ -264,6 +285,12 @@ TwitterController.prototype.connectStream = function(req, res, user) {
                     return;
                 }
 
+                self.statTotalItemsProcessed += 1;
+
+                for (var statPeriod in self.stats) {
+                    self.stats[statPeriod].items_processed_in_period += 1;
+                }
+
                 var objOptions = {};
 
                 if (objReport.titles) {
@@ -271,7 +298,7 @@ TwitterController.prototype.connectStream = function(req, res, user) {
                 }
 
                 objItem = self.twitter2Item(objItem, objOptions); //feed specific transform to an item
-                objItem = util.normalizeItem(objItem); //Normalize the Item
+                objItem = report_item_util.normalizeItem(objItem); //Normalize the Item
 
              //_________________________________________\\
             //----====|| ADD ANALYSIS TO MESSAGE ||====----\\
@@ -349,7 +376,7 @@ TwitterController.prototype.connectStream = function(req, res, user) {
 
                 if (!objItem.column) {
 
-                    intColIndex = util.getIndex(objReport.columns,'show','Orphans'); //special column to show items that dont have a home.
+                    intColIndex = report_item_util.getIndex(objReport.columns,'show','Orphans'); //special column to show items that dont have a home.
 
                     if (intColIndex) {
                         objItem.column = objReport.columns[intColIndex].id;
@@ -395,10 +422,10 @@ TwitterController.prototype.connectStream = function(req, res, user) {
                         objReport.columns[intColIndex]['items'].unshift(objItem);
 
                         //sort the column
-                        objReport.columns[intColIndex]['items'] = util.sortArray(objReport.columns[intColIndex]['items'], objReport.columns[intColIndex].sort);
+                        objReport.columns[intColIndex]['items'] = report_item_util.sortArray(objReport.columns[intColIndex]['items'], objReport.columns[intColIndex].sort);
 
                         //make sure it's high enough sort order to send to browser
-                        if (util.getIndex(objReport.columns[intColIndex]['items'], 'id', objItem.id) > objReport.columns[intColIndex].limit) {
+                        if (report_item_util.getIndex(objReport.columns[intColIndex]['items'], 'id', objItem.id) > objReport.columns[intColIndex].limit) {
                             torfSend = false;
                         }
 
@@ -474,8 +501,10 @@ TwitterController.prototype.connectStream = function(req, res, user) {
                     userSocketChannel.emit('newItems', arrItems);
                     arrItems = [];
                 }
-                
+
             }); //end on-data listener
+
+            stats.load('twitter', self);
 
         }); //end stream
     }

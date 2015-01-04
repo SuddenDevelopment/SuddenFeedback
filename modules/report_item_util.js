@@ -2,9 +2,7 @@
 /**
  * Module: Util
  *
- * Description: Miscellaneous utility methods. These should be split up into
- * utility classes that have actual semantic meaning, i.e. utils/array.js,
- * utils/normalize.js, etc.
+ * Description:
  */
 
 //_________________________________________\\
@@ -15,11 +13,11 @@ var _ = require('lodash');
 
 
 /**
- * Class Util
+ * Class ReportItemUtil
  */
-function Util() {}
+function ReportItemUtil() {}
 
-Util.prototype.getIndex = function(arr, key, value) {
+ReportItemUtil.prototype.getIndex = function(arr, key, value) {
     for (i = 0; i < arr.length; i += 1) {
         if (arr[i][key] === value) {
             delete arr; // What is happening here? This triggers an error in strict mode.
@@ -30,13 +28,13 @@ Util.prototype.getIndex = function(arr, key, value) {
     return false;
 };
 
-Util.prototype.sortArray = function(arrItems, strProp) {
+ReportItemUtil.prototype.sortArray = function(arrItems, strProp) {
     return _.sortBy(arrItems, function (obj) {
         return obj[strProp];
     });
 };
 
-Util.prototype.normalizeItem = function(objItem){
+ReportItemUtil.prototype.normalizeItem = function(objItem){
 
     //this is a generc normaile, not specific to any feed coming in
     if (!objItem.typ) { objItem.typ = 'item'; }
@@ -54,7 +52,7 @@ Util.prototype.normalizeItem = function(objItem){
 };
 
 
-Util.prototype.cleanText = function(strSubject, objOptions) {
+ReportItemUtil.prototype.cleanText = function(strSubject, objOptions) {
 
     //REMOVE THE 1ST RT
     if (strSubject.substr(0,2) == 'RT') {
@@ -71,4 +69,4 @@ Util.prototype.cleanText = function(strSubject, objOptions) {
 };
 
 
-module.exports = new Util();
+module.exports = new ReportItemUtil();

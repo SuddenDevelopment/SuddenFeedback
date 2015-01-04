@@ -17,7 +17,6 @@ var uuid = require('node-uuid');
 var app_config = require('../config/app.json');
 var locales = require('../config/locales.json');
 var logger = require('../modules/logger');
-var util = require('../modules/util');
 //________END Local Dependencies_________\\
 //########################################\\
 

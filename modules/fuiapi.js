@@ -177,7 +177,7 @@ FUIAPI.prototype.destroyStreams = function(req, res, suppressResponse) {
     var self = this;
 
     for (var dataProvider in self.controllers) {
-        self.controllers[dataType].destroyStream(req, res, suppressResponse);
+        self.controllers[dataProvider].destroyStream(req, res, suppressResponse);
     }
 };
 
