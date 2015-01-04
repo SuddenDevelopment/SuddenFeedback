@@ -194,7 +194,7 @@ MongoDriver.prototype.addDefaultReportsToUser = function(req, user, callback) {
                     self.share.set(report, 'report', req.session.uuid);
                 }
             }
-
+            if(!user.reports){user.reports=[];}
             if (!user.default_report_id && user.reports.length > 0) {
                 user.default_report_id = user.reports[0]._id;
                 self.share.set(user.reports[0], 'report', req.session.uuid);
