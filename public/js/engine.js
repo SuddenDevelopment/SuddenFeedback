@@ -237,6 +237,14 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
                 $scope.addSlide(objItem);
             }
         } //add
+        //Sort the columns (even if it's being done by angluar as well) to find the position add up the widths and figure out which ones are going to be off screen or set to 0 width
+        fnSortArr($scope.report.columns,$scope.report.colSort);
+        var intTotalColumnWidth=0;iCol=0;
+        _.forEach($scope.report.columns,function(objColumn){
+            if(intTotalColumnWidth+objColumn.width <= 12){ intTotalColumnWidth=intTotalColumnWidth+objColumn.width; $scope.columns[iCol].show=true; }
+            else{ $scope.columns[iCol].show=false; }
+            iCol+=1;
+        });
     };
 
     $scope.addSlide = function(objItem) {
@@ -417,6 +425,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             limit: 100,
             sort: 'priority',
             width: 1,
+            show:true,
             items: [],
             stats: [],
             priority: 1,
