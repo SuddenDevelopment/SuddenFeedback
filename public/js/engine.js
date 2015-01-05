@@ -241,8 +241,8 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         fnSortArr($scope.report.columns,$scope.report.colSort);
         var intTotalColumnWidth=0;iCol=0;
         _.forEach($scope.report.columns,function(objColumn){
-            if(intTotalColumnWidth+objColumn.width <= 12){ intTotalColumnWidth=intTotalColumnWidth+objColumn.width; $scope.columns[iCol].show=true; }
-            else{ $scope.columns[iCol].show=false; }
+            if(intTotalColumnWidth+objColumn.width <= 12){ intTotalColumnWidth=intTotalColumnWidth+objColumn.width; $scope.report.columns[iCol].show=true; }
+            else{ $scope.report.columns[iCol].show=false; }
             iCol+=1;
         });
     };
