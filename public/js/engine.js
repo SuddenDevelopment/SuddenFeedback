@@ -149,9 +149,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         }
 
         //decide which collection within a column to work on
-        if (objItem.typ !== 'item'
-            && $scope.report.columns[idxColumn].components.length > 0
-        ) {
+        if (objItem.typ !== 'item' && $scope.report.columns[idxColumn].components.length > 0){
             _.forEach($scope.report.columns[idxColumn].components, function(objComp, i) {
                 if (objComp.typ === 'Stats'
                     || objComp.typ === objItem.typ
@@ -241,8 +239,9 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         fnSortArr($scope.report.columns,$scope.report.colSort);
         var intTotalColumnWidth=0;iCol=0;
         _.forEach($scope.report.columns,function(objColumn){
-            if(intTotalColumnWidth+objColumn.width <= 12){ intTotalColumnWidth=intTotalColumnWidth+objColumn.width; $scope.report.columns[iCol].show=true; }
-            else{ $scope.report.columns[iCol].show=false; }
+            $scope.report.columns[iCol].currentOrder=iCol;
+            if(intTotalColumnWidth+objColumn.width <= 12){ intTotalColumnWidth=intTotalColumnWidth+objColumn.width; $scope.report.columns[iCol].visible=true; }
+            else{ $scope.report.columns[iCol].visible=false; }
             iCol+=1;
         });
     };
