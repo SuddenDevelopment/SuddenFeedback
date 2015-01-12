@@ -364,6 +364,21 @@ TwitterController.prototype.connectStream = function(req, res, user) {
                             objItem.column = objReport.columns[i].id;
                         }
                     }
+                    else if (objReport.columns[i].show === 'TermSet') {
+                        //find the term set index that applies
+                        var intNeedle = 0;
+                        intNeedle = report_item_util.getIndex(objReport.terms,'name',objReport.columns[i].label);
+                        if(intNeedle>0 && !objItem.column){
+                            var arrNeedle = objReport.terms[intNeedle].terms;
+                            _.forEach(arrNeedle,function(objTerm,k){
+                                var strTerm=objTerm.text.toLowerCase();
+                                if (objItem.text.toLowerCase().indexOf(strTerm) !== -1) {
+                                    objItem.column = objReport.columns[i].id;
+                                }
+                            });
+                        }
+                        
+                    }
 
                     if (objItem.column && objItem.analysis.filtered) {
                         arrItems.push({ column: objItem.column, typ: 'Filter', text: objItem.analysis.filtered });
