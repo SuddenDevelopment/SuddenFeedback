@@ -327,9 +327,14 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     $scope.delReport = function(strReport, withData) {
         FUIAPI.post({ a: 'delReport', q: strReport },
             function(response) {
-                if (response === 'report deleted') {
-                    $scope.reportList.splice(getIndex($scope.reportList, '_id', strReport), 1);
-                }
+                FUIAPI.post({ a: 'listReports' },
+                    function(response) {
+                        _.forEach(response.reportList,function(){
+
+                        });
+                        $scope.reportList = response.reportList;
+                    }
+                );
             }
         );
     };
@@ -407,6 +412,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     // what the hell is a comp? ...comparison?
     $scope.addComp = function(idCol) {
         var intCol = getIndex($scope.report.columns, 'id', idCol);
+        if(!$scope.report.columns[intCol].components){$scope.report.columns[intCol].components=[];}
         $scope.report.columns[intCol].components.push({ typ: 'Stats', height: '25' });
     };
 
@@ -428,6 +434,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             items: [],
             stats: [],
             priority: 1,
+            visible:true,
             id: Math.floor( ( Math.random() * 100 ) + 1 )
         });
     };

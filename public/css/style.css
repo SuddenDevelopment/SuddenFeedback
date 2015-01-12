@@ -75,7 +75,8 @@ button{background:transparent;border:none;margin:0;padding:0;}
 }
 div.modal-menu-row{ margin-bottom:14px;}
 div.modal-menu-row div:first-child{ border-bottom: 1px solid #1c1e22; height:30px;}
-input, div.tags, select{background: rgba(0,0,0,0.26); color:#c8c8c8; border:1px solid #111; height:30px; width:300px; border-radius:4px; padding-left:10px;}
+input, select{background: rgba(0,0,0,0.26); color:#c8c8c8; border:1px solid #111; height:30px; width:300px; border-radius:4px; padding-left:10px;}
+div.tags{background: rgba(0,0,0,0.26); color:#c8c8c8; border:1px solid #111; border-radius:4px; padding-left:10px;}
 .panel-heading{ background-image:linear-gradient(#484e55, #3a3f44 60%, #313539); }
 div.HbarSegment{display:inline-block;overflow:hidden;}
 div.isotope-container{ height:100%; }

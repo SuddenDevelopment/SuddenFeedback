@@ -1,6 +1,6 @@
 tags-input .host{position:relative;margin-top:5px;margin-bottom:5px}
 tags-input .host:active{outline:0}
-tags-input .tags{padding:1px;overflow:hidden;word-wrap:break-word;cursor:text;background-color:#fff;}
+tags-input .tags{padding:1px;overflow:hidden;word-wrap:break-word;cursor:text;background-color:#fff;width:100%;}
 tags-input .tags.focused{outline:0;-webkit-box-shadow:0 0 3px 1px rgba(5,139,242,.6);-moz-box-shadow:0 0 3px 1px rgba(5,139,242,.6);box-shadow:0 0 3px 1px rgba(5,139,242,.6)}
 tags-input .tags .tag-list{color: #c8c8c8;margin:0;padding:0;list-style-type:none}
 tags-input .tags .tag-item{margin:2px;padding:0 5px;display:inline-block;float:left;font:14px "Helvetica Neue",Helvetica,Arial,sans-serif;height:26px;line-height:25px;border:1px solid #666;border-radius:3px;linear-gradient(#020202, #101112 40%, #191b1d);}
