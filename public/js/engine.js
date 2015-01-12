@@ -353,7 +353,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
 
     $scope.addReport = function() {
         $scope.report = { _id: "blank", name: "blank" };
-        $scope.report.terms = [{ name: "Template", fn: "Find", terms: [{ "text": "WTF" }] }];
+        $scope.report.terms = [{ name: "Template", fn: "Find", terms: [{ "text": "random" }] }];
         $scope.report.columns = [{
             "id" : 1,
             "label" : "New",
