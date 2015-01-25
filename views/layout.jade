@@ -79,6 +79,7 @@ html(ng-app="SuddenFeedbackApp")
                                 i(ng-if="::t.typ=='Symbol'" class="fa fa-usd")
                                 i(ng-if="::t.typ=='Filter'" class="fa fa-filter")
                                 i(ng-if="::t.typ=='Tracked'" class="fa fa-eye-open")
+                                i(ng-if="::t.typ=='Total'" class="fa fa-star")
                             div(class='col-lg-9 text-center') {{t.text}}
                             div(class='col-lg-2 text-info text-right'){{t.priority}}
                             div(class='isotope-item-content')

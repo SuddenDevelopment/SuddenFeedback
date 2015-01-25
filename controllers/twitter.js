@@ -421,8 +421,9 @@ TwitterController.prototype.connectStream = function(req, res, user) {
 
                     _.forEach(objReport.columns[intColIndex]['items'], function(objI,k) {
 
-                        if (objI.text === objItem.text) {
+                        if (objI.text == =objItem.text) {
                             objI.updated_at = intNow;
+                            arrItems.push({ column: objItem.column, typ: 'Total', text: 'Total Repeats', priority:1 }); //start keeping aggregate stats real time
                             //cumulative priority
                             if (objItem.priority < 2 || objItem.priority <= objI.priority) {
                                 objI.priority += 1;
@@ -438,6 +439,7 @@ TwitterController.prototype.connectStream = function(req, res, user) {
                             //if it hasnt been updated in an hour, and is below the priority threshold
                             if(objI.priority < 2 && intNow-objI.updated_at > 3600000){  arrDelete.push(k);  }
                         }
+                        if(torfRT===false && objI.typ=='item'){ arrItems.push({ column: objItem.column, typ: 'Total', text: 'Total New', priority:1 }); }
                     });
 
                     //need to do this outside the loop so that items aren't removed during the loop
