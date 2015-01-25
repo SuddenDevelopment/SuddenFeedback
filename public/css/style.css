@@ -131,9 +131,9 @@ div.isotope-item-priority{margin-left:3px; bottom:3px;}
 .itemMenu{z-index:99;}
 .isotope-item{z-index:1;}
 .row{margin-left: -2px; margin-right: -2px;}
-.fuiColumn{height:100%; overflow:scroll;}
+.fuiColumn{height:100%; overflow:hidden;}
 .fuiColumn.component{height:75%; overflow:scroll; margin-bottom:5px;}
-.fuiColumnComponent{overflow:scroll; border-top: 3px double #5bc0de;}
+.fuiColumnComponent{overflow:hidden; border-top: 3px double #5bc0de;}
 div.fuiColumn.Slides{ font-size: 40px; }
 
 .item-title{  
