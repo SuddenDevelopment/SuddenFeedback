@@ -35,7 +35,9 @@ Report.prototype.normalize = function(objReport) {
         if (!objCol.score) { //set an initial analysis score if it doesnt exist
             objReport.columns[i].score = 0;
         }
-
+        if (!objCol.stats) {
+            objReport.columns[i].stats = {items_new:0,items_repeated:0};
+        }
         if (!objCol.priority || objCol.priority < 1) {
             objReport.columns[i].priority = 1;
         }

@@ -17,7 +17,8 @@ var app = angular.module('SuddenFeedbackApp', [
     'ngSanitize',
     'ngResource',
     'ngTagsInput',
-    'ngAnimate'
+    'ngAnimate',
+    'nvd3'
 ]);
 
 //api page / reroute for saving and loading non-streaming data
@@ -145,7 +146,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             return;
         }
 
-        //decide which collection within a column to work on
+        //decide which collection/component within a column to work on
         if (objItem.typ !== 'item' && $scope.report.columns[idxColumn].components.length > 0){
             _.forEach($scope.report.columns[idxColumn].components, function(objComp, i) {
                 if (objComp.typ === 'Stats'
@@ -155,8 +156,8 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
                 }
             });
         }
-
-        var intLength = propArray.length;
+        var intLength = 0;
+        if(propArray){intLength = propArray.length;}
 
         var arrDelete = [];
 
@@ -250,7 +251,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     $scope.sortColumns = function(){
         //Sort the columns (even if it's being done by angluar as well) to find the position add up the widths and figure out which ones are going to be off screen or set to 0 width
         $scope.report.columns=fnRSortArr($scope.report.columns,$scope.report.colSort);
-    if($scope.report.colSort=='currentOrder'){ _.forEach($scope.report.columns,function(objCol,k){console.log(objCol.label+' : '+objCol.currentOrder);}); }else{console.log($scope.report.colSort);}
+    //if($scope.report.colSort=='currentOrder'){ _.forEach($scope.report.columns,function(objCol,k){console.log(objCol.label+' : '+objCol.currentOrder);}); }else{console.log($scope.report.colSort);}
 
         var intTotalColumnWidth=0;iCol=1;$scope.torfHiddenColumns=false; //add bootstrap column widths together
         _.forEach($scope.report.columns,function(objColumn,k){
@@ -429,6 +430,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         var intCol = getIndex($scope.report.columns, 'id', idCol);
         if(!$scope.report.columns[intCol].components){$scope.report.columns[intCol].components=[];}
         $scope.report.columns[intCol].components.push({ typ: 'Stats', height: '25' });
+        $scope.layout(); //recalc heights
     };
 
     // what the hell is a comp? ...comparison?
