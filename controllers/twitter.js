@@ -421,7 +421,7 @@ TwitterController.prototype.connectStream = function(req, res, user) {
 
                     _.forEach(objReport.columns[intColIndex]['items'], function(objI,k) {
 
-                        if (objI.text == =objItem.text) {
+                        if (objI.text ===objItem.text) {
                             objI.updated_at = intNow;
                             arrItems.push({ column: objItem.column, typ: 'Total', text: 'Total Repeats', priority:1 }); //start keeping aggregate stats real time
                             //cumulative priority

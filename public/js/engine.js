@@ -171,7 +171,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
 
         var torfRT = false; //set default priority, much of the system requires priority for realtime sorting
 
-        _.forEach(propArray, function(objI) {
+        _.forEach(propArray, function(objI,k) {
 
             //status decay, connected to border colors
             if (objI.status > 0) {
@@ -206,7 +206,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             if (intLength > $scope.report.columns[idxColumn].limit
                 && objI.position > $scope.report.columns[idxColumn].limit
             ) {
-                propArray.splice(i--, 1); // @Todo - where is "i" var coming from?
+                propArray.splice(k--, 1);
                 intLength--;
             }
         });
