@@ -401,11 +401,12 @@ TwitterController.prototype.connectStream = function(req, res, user) {
               //####################\\
              //__________________________________\\
             //----====|| HIGHLIGHT TEXT ||====----\\
-                if(report_item_util.getIndex(objReport.terms, 'fn', 'Track')){
+                if(intColIndex && report_item_util.getIndex(objReport.terms, 'fn', 'Track')){
                     var arrTrack = objReport.terms[report_item_util.getIndex(objReport.terms, 'fn', 'Track')].terms; //get the tracking terms
                     _.forEach(arrTrack,function(objTerm,k){
                         if(objItem.text.search(objTerm.text) > 0){ 
                             objItem.text=objItem.text.replace(objTerm.text,'<span class="tracked">'+objTerm.text+'</span>');
+                            arrItems.push({ column: objItem.column, typ: 'Tracked', text: objTerm.text });
                         }
                     });
                 }

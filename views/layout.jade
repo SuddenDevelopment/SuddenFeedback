@@ -54,6 +54,7 @@ html(ng-app="SuddenFeedbackApp")
                                     i(ng-if="::t.typ=='Mention'" class="fa fa-hand-o-right")
                                     i(ng-if="::t.typ=='Symbol'" class="fa fa-usd")
                                     i(ng-if="::t.typ=='Filter'" class="fa fa-filter")
+                                    i(ng-if="::t.typ=='Tracked'" class="fa fa-eye-open")
                                     span(ng-bind-html="::t.text")
                                 //////||  Images  ||\\\\\
                                 div(ng-if="::column.show!='Slides' && t.entities.media" class="col-lg-3")
@@ -77,6 +78,7 @@ html(ng-app="SuddenFeedbackApp")
                                 i(ng-if="::t.typ=='Mention'" class="fa fa-hand-o-right")
                                 i(ng-if="::t.typ=='Symbol'" class="fa fa-usd")
                                 i(ng-if="::t.typ=='Filter'" class="fa fa-filter")
+                                i(ng-if="::t.typ=='Tracked'" class="fa fa-eye-open")
                             div(class='col-lg-9 text-center') {{t.text}}
                             div(class='col-lg-2 text-info text-right'){{t.priority}}
                             div(class='isotope-item-content')
