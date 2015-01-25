@@ -244,7 +244,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             //console.log(objCol.currentOrder);
         });
         $scope.report.columns=fnRSortArr($scope.report.columns,'currentOrder');
-        _.forEach($scope.report.columns,function(objCol,k){console.log(objCol.label+' : '+objCol.currentOrder)});;
+        //_.forEach($scope.report.columns,function(objCol,k){console.log(objCol.label+' : '+objCol.currentOrder)});;
     };
 
     $scope.sortColumns = function(){
@@ -440,6 +440,8 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     // i assume this means a fucking column ??
     // LOL, I love constructive comments like this
     $scope.addCol = function() {
+        var intColId=0
+        if($scope.report.columns.length){intColId=$scope.report.columns.length;}
         $scope.report.columns.push({
              label: 'new'
             ,limit: 100
@@ -450,8 +452,8 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             ,stats: []
             ,priority: 1
             ,visible:true
-            ,id: Math.floor( ( Math.random() * 100 ) + 1 )
-            ,currentOrder: $scope.report.columns.length+1
+            ,id: intColId
+            ,currentOrder: intColId
         });
     };
 
