@@ -237,11 +237,11 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         } //add
         //Sort the columns (even if it's being done by angluar as well) to find the position add up the widths and figure out which ones are going to be off screen or set to 0 width
         fnSortArr($scope.report.columns,$scope.report.colSort);
-        var intTotalColumnWidth=0;iCol=0;
+        var intTotalColumnWidth=0;iCol=0;$scope.torfHiddenColumns=false;
         _.forEach($scope.report.columns,function(objColumn){
             $scope.report.columns[iCol].currentOrder=iCol;
             if(intTotalColumnWidth+objColumn.width <= 12){ intTotalColumnWidth=intTotalColumnWidth+objColumn.width; $scope.report.columns[iCol].visible=true; }
-            else{ $scope.report.columns[iCol].visible=false; }
+            else{ $scope.report.columns[iCol].visible=false; $scope.torfHiddenColumns=true}
             iCol+=1;
         });
     };
