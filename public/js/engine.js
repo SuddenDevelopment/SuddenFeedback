@@ -9,12 +9,8 @@ function getIndex(arr, key, value) {
     }
 }
 
-function fnSortArr(arrItems, strProp) {
-    return _.sortBy(arrItems, function(obj) {
-        return obj[strProp];
-    });
-}
-
+function fnSortArr(arrItems, strProp) { return arrItems.sort(function(a,b){return a[strProp]-b[strProp]}); }
+function fnRSortArr(arrItems, strProp) { return arrItems.sort(function(a,b){return b[strProp]-a[strProp]}); }
 
 var app = angular.module('SuddenFeedbackApp', [
     'mgcrea.ngStrap',
@@ -103,7 +99,8 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         {k: 'Analysis', v: 'score'},
         {k: 'Priority', v: 'priority'},
         {k: 'ID', v: 'id'},
-        {k: 'Rotate', v: 'rotate'}
+        {k: 'Rotate', v: 'rotate'},
+        {k: 'Static', v: 'currentOrder'}
     ];
 
     $scope.templates = [
@@ -235,16 +232,34 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
                 $scope.addSlide(objItem);
             }
         } //add
+        $scope.sortColumns();
+    };
+
+    $scope.nextColumn=function(){
+        $scope.pause();
+        $scope.report.colSort='currentOrder';
+        _.forEach($scope.report.columns,function(objCol,k){
+            if(objCol.currentOrder == $scope.report.columns.length-1){ $scope.report.columns[k].currentOrder=0;} //wrap 1st to the last, this is reverse ordered
+            else{$scope.report.columns[k].currentOrder=$scope.report.columns[k].currentOrder+1;}
+            //console.log(objCol.currentOrder);
+        });
+        $scope.report.columns=fnRSortArr($scope.report.columns,'currentOrder');
+        _.forEach($scope.report.columns,function(objCol,k){console.log(objCol.label+' : '+objCol.currentOrder)});;
+    };
+
+    $scope.sortColumns = function(){
         //Sort the columns (even if it's being done by angluar as well) to find the position add up the widths and figure out which ones are going to be off screen or set to 0 width
-        fnSortArr($scope.report.columns,$scope.report.colSort);
-        var intTotalColumnWidth=0;iCol=0;$scope.torfHiddenColumns=false;
-        _.forEach($scope.report.columns,function(objColumn){
-            $scope.report.columns[iCol].currentOrder=iCol;
-            if(intTotalColumnWidth+objColumn.width <= 12){ intTotalColumnWidth=intTotalColumnWidth+objColumn.width; $scope.report.columns[iCol].visible=true; }
-            else{ $scope.report.columns[iCol].visible=false; $scope.torfHiddenColumns=true}
+        $scope.report.columns=fnRSortArr($scope.report.columns,$scope.report.colSort);
+    if($scope.report.colSort=='currentOrder'){ _.forEach($scope.report.columns,function(objCol,k){console.log(objCol.label+' : '+objCol.currentOrder);}); }else{console.log($scope.report.colSort);}
+
+        var intTotalColumnWidth=0;iCol=1;$scope.torfHiddenColumns=false; //add bootstrap column widths together
+        _.forEach($scope.report.columns,function(objColumn,k){
+            $scope.report.columns[k].currentOrder= $scope.report.columns.length-iCol; //reverses order by index
+            if(intTotalColumnWidth+objColumn.width <= 12){ intTotalColumnWidth=intTotalColumnWidth+objColumn.width; $scope.report.columns[k].visible=true; }
+            else{ $scope.report.columns[k].visible=false; $scope.torfHiddenColumns=true}
             iCol+=1;
         });
-    };
+    }
 
     $scope.addSlide = function(objItem) {
 
@@ -426,16 +441,17 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     // LOL, I love constructive comments like this
     $scope.addCol = function() {
         $scope.report.columns.push({
-            label: 'new',
-            limit: 100,
-            sort: 'priority',
-            width: 1,
-            show:true,
-            items: [],
-            stats: [],
-            priority: 1,
-            visible:true,
-            id: Math.floor( ( Math.random() * 100 ) + 1 )
+             label: 'new'
+            ,limit: 100
+            ,sort: 'priority'
+            ,width: 1
+            ,show:true
+            ,items: []
+            ,stats: []
+            ,priority: 1
+            ,visible:true
+            ,id: Math.floor( ( Math.random() * 100 ) + 1 )
+            ,currentOrder: $scope.report.columns.length+1
         });
     };
 
