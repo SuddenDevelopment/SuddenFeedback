@@ -358,14 +358,34 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     };
 
     $scope.saveReport = function(withData) {
+        $scope.pause();
         //the id will eventually be more complex than the name, for now this will do.
         if (!$scope.report._id || $scope.report._id !== $scope.report.name){$scope.report._id = $scope.report.name;}
         $scope.report.colCount = $scope.report.columns.length; //get the column count
         $scope.report.updated_at = (new Date).getTime();  //set the last update time
         if(!$scope.report.created_at){ $scope.report.created_at = (new Date).getTime(); }
-        FUIAPI.post({ a: 'saveReport', q: $scope.report },
-            function(response) {}
-        );
+        //save stats to history array and reset
+        _.forEach($scope.report.columns,function(objCol,iCol){
+            if(objCol.components){
+                _.forEach(objCol.components,function(objCom,iCom){
+                    _.forEach(objCom.items,function(objItem,iItem){
+                        if(objItem.save===true){
+                            if(objItem.history){ $scope.report.columns[iCol].components[iCom].items[iItem].history.push(objItem.priority); }
+                            else{ $scope.report.columns[iCol].components[iCom].items[iItem].history=[objItem.priority]; } //1st item in history
+                            objItem.history=$scope.report.columns[iCol].components[iCom].items[iItem].history;
+                            //@TODO : If an optimization is needed, doing all stats in one loop would be moe efficient
+                            $scope.report.columns[iCol].components[iCom].items[iItem].stats={min:0,max:0,avg:0,entries:0}
+                            $scope.report.columns[iCol].components[iCom].items[iItem].stats.entries=objItem.history.length;
+                            $scope.report.columns[iCol].components[iCom].items[iItem].stats.min=_.min(objItem.history);
+                            $scope.report.columns[iCol].components[iCom].items[iItem].stats.max=_.max(objItem.history);
+                            $scope.report.columns[iCol].components[iCom].items[iItem].stats.avg=_.max(objItem.history)/objItem.history.length;
+                            $scope.report.columns[iCol].components[iCom].items[iItem].priority=0;
+                        }
+                    });
+                });
+            }
+        });
+        FUIAPI.post({ a: 'saveReport', q: $scope.report }, function(response) { $scope.pause(); } );
         //FUIAPI.put({a: 'saveReport', data_type: '', q: $scope.report},function(response){ });
     };
 

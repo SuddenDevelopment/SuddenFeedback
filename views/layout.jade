@@ -65,7 +65,7 @@ html(ng-app="SuddenFeedbackApp")
                     div(class="fuiColumn fuiColumnComponent row" ng-if="column.components.length" ng-repeat="comp in column.components" ng-style="{height:comp.height+'%'}")
                         div(class='isotope-item well well-sm' ng-repeat="(i,t) in comp.items | orderBy:'priority':true | limitTo:20 track by t.text")
                             div(class='col-lg-1 text-left')
-                                i(ng-click="t.save=!t.save" ng-if="::t.typ!='item'" class="fa" ng-class="::{'tracked':t.save, 'fa-user':t.typ=='User', 'fa-link':t.typ=='Link', 'fa-tag':t.typ=='Tag', 'fa-hand-o-right':t.typ=='Mention', 'fa-usd':t.typ=='Symbol', 'fa-filter':t.typ=='Filter', 'fa-eye-open':t.typ=='Tracked', 'fa-star':t.typ=='Total'}")
+                                i(ng-click="t.save=!t.save" ng-if="::t.typ!='item'" title="Click to save values to compare in future runs" class="fa" ng-class="::{'tracked':t.save, 'fa-user':t.typ=='User', 'fa-link':t.typ=='Link', 'fa-tag':t.typ=='Tag', 'fa-hand-o-right':t.typ=='Mention', 'fa-usd':t.typ=='Symbol', 'fa-filter':t.typ=='Filter', 'fa-eye-open':t.typ=='Tracked', 'fa-star':t.typ=='Total'}")
                             div(class='col-lg-9 text-center') {{t.text}}
                             div(class='col-lg-2 text-info text-right'){{t.priority}}
                             div(class='isotope-item-content')
