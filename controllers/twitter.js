@@ -397,9 +397,21 @@ TwitterController.prototype.connectStream = function(req, res, user) {
                         objItem.column = objReport.columns[intColIndex].id;
                     }
                 }
-             //END COLUMN SORTING\\
-            //####################\\
-            //__________________________________\\
+               //END COLUMN SORTING\\
+              //####################\\
+             //__________________________________\\
+            //----====|| HIGHLIGHT TEXT ||====----\\
+                if(report_item_util.getIndex(objReport.terms, 'fn', 'Track')){
+                    var arrTrack = objReport.terms[report_item_util.getIndex(objReport.terms, 'fn', 'Track')].terms; //get the tracking terms
+                    _.forEach(arrTrack,function(objTerm,k){
+                        if(objItem.text.search(objTerm.text) > 0){ 
+                            objItem.text=objItem.text.replace(objTerm.text,'<span class="tracked">'+objTerm.text+'</span>');
+                        }
+                    });
+                }
+               //END HIGHLIGHT TEXT\\
+              //####################\\
+             //_________________________________\\
             //----====|| STORE LOCALLY ||====----\\
                 var torfRT = false;
                 var intNow = (new Date).getTime();

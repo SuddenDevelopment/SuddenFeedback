@@ -51,7 +51,7 @@ html(ng-app="SuddenFeedbackApp")
                                     i(ng-if="::t.typ=='Mention'" class="fa fa-hand-o-right")
                                     i(ng-if="::t.typ=='Symbol'" class="fa fa-usd")
                                     i(ng-if="::t.typ=='Filter'" class="fa fa-filter")
-                                    span {{::t.text}}
+                                    span(ng-bind-html="::t.text")
                                 //////||  Images  ||\\\\\
                                 div(ng-if="::column.show!='Slides' && t.entities.media" class="col-lg-3")
                                     img(ng-repeat="i in t.entities.media" ng-src="{{::i.media_url}}")

@@ -8,7 +8,7 @@ html,body, div.content {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-
+span.tracked{ background-color: #669; }
 
 .widget-row{ padding:8px; border-top: 1px solid #61686f;
 border-bottom: 1px solid #000; }
