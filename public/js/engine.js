@@ -147,14 +147,16 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         }
 
         //decide which collection/component within a column to work on
-        if (objItem.typ !== 'item' && $scope.report.columns[idxColumn].components.length > 0){
-            _.forEach($scope.report.columns[idxColumn].components, function(objComp, i) {
-                if (objComp.typ === 'Stats'
-                    || objComp.typ === objItem.typ
-                ) {
-                    propArray = $scope.report.columns[idxColumn].components[i].items;
-                }
-            });
+        if (objItem.typ !== 'item'){
+            if($scope.report.columns[idxColumn].components.length > 0){
+                _.forEach($scope.report.columns[idxColumn].components, function(objComp, i) {
+                    if (objComp.typ === 'Stats'
+                        || objComp.typ === objItem.typ
+                    ) {
+                        propArray = $scope.report.columns[idxColumn].components[i].items;
+                    }
+                });
+            }else{return;} //dont put stats in main items
         }
         var intLength = 0;
         if(propArray){intLength = propArray.length;}
