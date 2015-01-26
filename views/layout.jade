@@ -68,4 +68,5 @@ html(ng-app="SuddenFeedbackApp")
                                 i(ng-click="t.save=!t.save" ng-if="::t.typ!='item'" title="Click to save values to compare in future runs" class="fa" ng-class="::{'tracked':t.save, 'fa-user':t.typ=='User', 'fa-link':t.typ=='Link', 'fa-tag':t.typ=='Tag', 'fa-hand-o-right':t.typ=='Mention', 'fa-usd':t.typ=='Symbol', 'fa-filter':t.typ=='Filter', 'fa-eye-open':t.typ=='Tracked', 'fa-star':t.typ=='Total'}")
                             div(class='col-lg-9 text-center') {{t.text}}
                             div(class='col-lg-2 text-info text-right'){{t.priority}}
-                            div(class='isotope-item-content')
+                            div(ng-if="::t.stats" class='col-lg-12')
+                                nvd3(options="cfgBulletChart" data="t.chart")

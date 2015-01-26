@@ -130,6 +130,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         {v: 'user'}
     ];
 
+    $scope.cfgBulletChart={ chart:{type:'bulletChart',transitionDuration:500} }
     //create the master object
     //manage individual items from the websocket
     $scope.addItem = function(objItem){
@@ -200,6 +201,10 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
                 }
 
                 torfRT = true;
+                //update bulletchart if needed on this stats item
+                if(objI.save && objI.history.length>1){
+                    objI.chart={"ranges":[objI.stats.min,objI.stats.avg,objI.stats.max],"markers":[objI.stats.last],"measures":[objI.priority]};
+                }
             }
 
             //limit reached, start trimming
@@ -378,6 +383,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
                             $scope.report.columns[iCol].components[iCom].items[iItem].stats.entries=objItem.history.length;
                             $scope.report.columns[iCol].components[iCom].items[iItem].stats.min=_.min(objItem.history);
                             $scope.report.columns[iCol].components[iCom].items[iItem].stats.max=_.max(objItem.history);
+                            $scope.report.columns[iCol].components[iCom].items[iItem].stats.last=objItem.priority;
                             $scope.report.columns[iCol].components[iCom].items[iItem].stats.avg=_.max(objItem.history)/objItem.history.length;
                             $scope.report.columns[iCol].components[iCom].items[iItem].priority=0;
                         }
