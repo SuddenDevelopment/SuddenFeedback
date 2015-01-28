@@ -11,7 +11,7 @@ html,body, div.content {
 .tracked{ color:#FF0; font-weight:bold; }
 
 .bulletChart{ padding-top:8px; }
-
+.bulletChart svg {width:100%;}
 .nvd3.nv-bullet .nv-range{ fill: #babacc; fill-opacity: .4; }
 .nvd3.nv-bullet .nv-markerTriangle {stroke: #000; fill: #525B68; }
 

@@ -439,7 +439,7 @@ TwitterController.prototype.connectStream = function(req, res, user) {
                             //if it hasnt been updated in an hour, and is below the priority threshold
                             if(objI.priority < 2 && intNow-objI.updated_at > 3600000){  arrDelete.push(k);  }
                         }
-                        if(torfRT===false && objI.typ=='item'){ arrItems.push({ column: objItem.column, typ: 'Total', text: 'Total New', priority:1 }); }
+                        if(torfRT===false && objI.typ=='item'){ arrItems.push({ column: objItem.column, typ: 'Total', text: 'Total Distinct', priority:1 }); }
                     });
 
                     //need to do this outside the loop so that items aren't removed during the loop
