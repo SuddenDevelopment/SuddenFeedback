@@ -130,7 +130,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         {v: 'user'}
     ];
 
-    $scope.cfgBulletChart={ chart:{type:'bulletChart',transitionDuration:500} }
+    $scope.cfgBulletChart={ chart:{type:'bulletChart',width:230,height:30,tickFortmat:null,transitionDuration:100,margin:{top:0,right:0,bottom:0,left:0},tooltips:false}}
     //create the master object
     //manage individual items from the websocket
     $scope.addItem = function(objItem){
@@ -203,7 +203,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
                 torfRT = true;
                 //update bulletchart if needed on this stats item
                 if(objI.save && objI.history.length>1){
-                    objI.chart={"ranges":[objI.stats.min,objI.stats.avg,objI.stats.max],"markers":[objI.stats.last],"measures":[objI.priority]};
+                    objI.chart={"ranges":[objI.stats.min,objI.stats.avg,objI.stats.max],"markers":[objI.stats.last],"measures":[objI.priority],"color":"#ddf"};
                 }
             }
 
@@ -270,10 +270,8 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     }
 
     $scope.addSlide = function(objItem) {
-
         //find the slides column
         var idPresCol = getIndex($scope.report.columns, 'show', 'Slides');
-
         if (idPresCol) {
             //for some reason modifying the text for slide was causing it to mismatch and threw an ngrepeat error.
             //var arrBreakingCharacters = ['. ','? ','! ','; ',': ']; //add line breakes for slides

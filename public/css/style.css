@@ -10,6 +10,11 @@ html,body, div.content {
 
 .tracked{ color:#FF0; font-weight:bold; }
 
+.bulletChart{ padding-top:8px; }
+
+.nvd3.nv-bullet .nv-range{ fill: #babacc; fill-opacity: .4; }
+.nvd3.nv-bullet .nv-markerTriangle {stroke: #000; fill: #525B68; }
+
 .widget-row{ padding:8px; border-top: 1px solid #61686f;
 border-bottom: 1px solid #000; }
 
