@@ -21,7 +21,9 @@ Report.prototype.normalize = function(objReport) {
     if (!objReport.colSort) {
         objReport.colSort = 'priority';
     }
-
+    if (!objReport.autoSave) {
+        objReport.autoSave = 0;
+    }
     if (!objReport.titles) {
         objReport.titles = 'none';
     }

@@ -30,6 +30,10 @@
               <div class="col-lg-2">Column Order: </div>
               <div class="col-lg-6"><select ng-model="report.colSort" ng-options="arr.v as arr.k for arr in colSorts"></select></div>
             </div>
+            <div class="row modal-menu-row">
+              <div class="col-lg-2">Auto Save Frequency: </div>
+              <div class="col-lg-6"><select ng-model="report.autoSave" ng-options="arr.v as arr.k for arr in autoSaves"></select></div>
+            </div>
             
           <h2>Columns</h2>
           <div class="row" ng-repeat="(index,column) in report.columns">

@@ -130,6 +130,18 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         {v: 'user'}
     ];
 
+    $scope.autoSaves=[
+        {k:'off',v:0},
+        {k:'15 minutes',v:900000},
+        {k:'30 minutes',v:1800000},
+        {k:'hourly',v:3600000},
+        {k:'every 2 hours',v:7200000},
+        {k:'every 4 hours',v:14400000},
+        {k:'every 6 hours',v:28800000},
+        {k:'12 hours',v:43200000},
+        {k:'daily',v:86400000}
+    ];
+
     $scope.cfgBulletChart={ chart:{type:'bulletChart',height:30,tickFortmat:null,transitionDuration:100,margin:{top:0,right:0,bottom:0,left:0},tooltips:false}}
     //create the master object
     //manage individual items from the websocket
