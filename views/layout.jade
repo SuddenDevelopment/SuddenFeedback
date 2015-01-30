@@ -22,16 +22,20 @@ html(ng-app="SuddenFeedbackApp")
         block content
         div(class="body_wrap")
             div(class="content container-fluid")
-                div.row
-                    div.col-lg-12
-                        a(href='/logout') Logout
-                        a(href='home' target='_new') Manage
-                        span(bs-modal="wmodal" data-template="wordsModal.html") words
-                        span(bs-modal="rmodal" data-template="reportModal.html") report
-                        span(bs-modal="nmodal" data-template="newModal.html") new
-                        span(bs-modal="lmodal" data-template="loadModal.html") load
-                        i(class="fa" ng-class="{'fa-pause':play, 'fa-play':!play}" ng-click="pause()")
-                        i(ng-if="torfHiddenColumns" class="fa fa-arrow-right" ng-click="nextColumn()")
+                div.row.menu-row
+                    div.col-lg-6.col-lg-offset-1
+                        div.menu-item
+                            a(href='/logout') Logout
+                        div(class="menu-item" bs-modal="wmodal" data-template="wordsModal.html") Words
+                        div(class="menu-item" bs-modal="rmodal" data-template="reportModal.html") Report
+                        div(class="menu-item" bs-modal="nmodal" data-template="newModal.html") New
+                        div(class="menu-item" bs-modal="lmodal" data-template="loadModal.html") Load
+                        div.menu-item
+                            i(class="fa" ng-class="{'fa-pause':play, 'fa-play':!play}" ng-click="pause()")
+                        div(ng-if="torfHiddenColumns" class="menu-item")
+                            i(ng-if="torfHiddenColumns" class="fa fa-arrow-right" ng-click="nextColumn()")
+                    div.col-lg-5.text-center
+                        &lt;<i class="fa fa-bolt"></i>&gt;udden Feedback
                 //////||  Horizontal Bar  ||\\\\\
                 div(class="row" style="width:100%;height:5px;overflow:hidden;")
                     div(class="HbarSegment" ng-repeat="(index,column) in report.columns | orderBy:report.colSort:true" ng-style="{width:((column.priority/report.priority)*100).toFixed(0)+'%', background:column.color,'box-shadow':'0 2 20px '+column.color}")&nbsp;

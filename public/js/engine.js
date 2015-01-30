@@ -371,7 +371,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             }
         );
     };
-
+    
     $scope.saveReport = function(withData) {
         $scope.pause();
         //the id will eventually be more complex than the name, for now this will do.
