@@ -6,6 +6,7 @@
       </div>
       <div class="modal-body" >
         <h2>Report Settings</h2>
+        <hr></hr>
             <div class="row modal-menu-row">
               <div class="col-lg-2">Name:</div>
               <div class="col-lg-6"><input ng-model="report.name" /></div>
@@ -38,7 +39,7 @@
           <h2>Columns</h2>
           <div class="row" ng-repeat="(index,column) in report.columns">
                 <div class="col-lg-10">{{column.label}}</div>
-                <div class="col-lg-2" ng-click="delCol(column.id)"><i class="fa fa-times"></i></div>
+                <div class="col-lg-2 text-right" ng-click="delCol(column.id)"><i class="fa fa-times"></i></div>
           </div>
       </div>
       <div class="modal-footer">

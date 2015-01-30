@@ -5,6 +5,8 @@
         <button type="button" class="close" ng-click="$hide()">&times;</button>
       </div>
       <div class="modal-body" ng-init="addReport()">
+        <h2>Create a New Report</h2>
+        <hr></hr>
           <div style="width:100%;">
             <ul>
             <li>Template<select ng-model="report.template" ng-options="template.v as template.desc for template in templates"></select></li>

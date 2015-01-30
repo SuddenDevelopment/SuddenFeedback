@@ -5,6 +5,8 @@
         <button type="button" class="close" ng-click="$hide()">&times;</button>
       </div>
       <div class="modal-body" >
+        <h2>Load a Report</h2>
+        <hr></hr>
           <div style="height:300px;width:100%;" ng-init="listReports()">
               <div class="row" ng-repeat="report in reportList">
                 <div class="col-lg-10" ng-click="loadReport(report._id);$hide()">{{report._id}}</div>
