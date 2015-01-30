@@ -5,7 +5,7 @@
         <button type="button" class="close" ng-click="$hide()">&times;</button>
       </div>
       <div class="modal-body" >
-          <div style="height:300px;width:100%;overflow:scroll;">
+          <div style="height:300px;width:100%;">
               <div ng-repeat="termSet in report.terms">
                 <input ng-model="termSet.name"></input>
                 <select ng-model="termSet.fn" ng-options="arr.v as arr.v for arr in wordFns"></select></li>
