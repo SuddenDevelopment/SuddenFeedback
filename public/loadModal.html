@@ -6,9 +6,10 @@
       </div>
       <div class="modal-body" >
           <div style="height:300px;width:100%;" ng-init="listReports()">
-               <div class="row" ng-repeat="report in reportList">
+              <div class="row" ng-repeat="report in reportList">
                 <div class="col-lg-10" ng-click="loadReport(report._id);$hide()">{{report._id}}</div>
-                <div class="col-lg-2" ng-click="delReport(report._id)"><i class="fa fa-times"></i></div>
+                <div class="col-lg-2 text-right" ng-click="delReport(report._id)"><i class="fa fa-times"></i></div>
+                <hr></hr>
               </div>
           </div>
       </div>
