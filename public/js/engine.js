@@ -1,14 +1,6 @@
 
 //shim function to get the index by a key/value for when the index reported by angular doesnt match
-function getIndex(arr, key, value) {
-    for (i = 0; i < arr.length; i += 1) {
-        if (arr[i][key] === value) {
-            delete window.arr;
-            return i;
-        }
-    }
-}
-
+function getIndex(arr, key, value) {for (i = 0; i < arr.length; i += 1) {if (arr[i][key] === value) {delete window.arr; return i;}}}
 function fnSortArr(arrItems, strProp) { return arrItems.sort(function(a,b){return a[strProp]-b[strProp]}); }
 function fnRSortArr(arrItems, strProp) { return arrItems.sort(function(a,b){return b[strProp]-a[strProp]}); }
 
@@ -30,6 +22,8 @@ app.factory('FUIAPI', function($resource) {
     });
 });
 
+//_____________________________\\
+//----====|| SETTINGS ||====----\\
 app.controller('FUI', function($scope, $modal, FUIAPI) {
     $scope.dev=true;
     $scope.play = true;
@@ -88,7 +82,6 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         {v: 'Slides'}
     ];
 
-    //@Todo - these should load from the DB
     $scope.analysis = [
         {v: 'Sentiment'},
         {v: 'Simiarity'},
@@ -141,11 +134,13 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         {k:'12 hours',v:43200000},
         {k:'daily',v:86400000}
     ];
-    //this is just for stress testing try to resist the urge to format it nicely :)
-    
+
     $scope.cfgBulletChart={ chart:{type:'bulletChart',height:30,tickFortmat:null,transitionDuration:100,margin:{top:0,right:0,bottom:0,left:0},tooltips:false}}
 
-    //add items to columns or components
+       //________ END SETTINGS _________\\
+      //#################################\\    
+     //___________________________________\\
+    //----====|| ITEM MANAGEMENT ||====----\\
         $scope.addItem = function(objItem){
         $scope.intEvents++;
         if($scope.dev===true){var startTime = window.performance.now();}
@@ -217,7 +212,48 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         }
         return objItem;
     }
+    $scope.addSlide = function(objItem) {
+        //find the slides column
+        //this is for presentation mode only
+        var idPresCol = getIndex($scope.report.columns, 'show', 'Slides');
+        if (idPresCol) {
+            //for some reason modifying the text for slide was causing it to mismatch and threw an ngrepeat error.
+            //var arrBreakingCharacters = ['. ','? ','! ','; ',': ']; //add line breakes for slides
+            //_.forEach(arrBreakingCharacters,function(strChar){ objItem.text = objItem.text.replace(strChar,strChar+"<br/>"); })
+            $scope.report.columns[idPresCol].items[0] = objItem;
+        }
+    };
+    $scope.moveItem = function(objItem,newColumn) {};
 
+    $scope.updateNote = function(t) {
+        var intColumn = false;
+        _.forEach($scope.report.columns, function(objCol) {
+            if (objCol.show === 'Notes') {
+                intColumn = objCol.id;
+            }
+        });
+
+        if (intColumn) {
+            var objItem = {
+                column: intColumn,
+                text: 'item note: ' + t.notes,
+                priority: 1,
+                typ: 'item'
+            };
+
+            $scope.addItem(objItem);
+        }
+    };
+
+    $scope.delItem = function(idItem, idColumn) {
+        var intColumn = false;
+        intColumn = getIndex($scope.report.columns, 'id', idColumn);
+        $scope.report.columns[intColumn].items.splice(getIndex($scope.report.columns[intColumn].items, 'id', idItem), 1);
+    };
+       //________ END ITEM MANAGEMENT _________\\
+      //########################################\\    
+     //_____________________________________\\
+    //----====|| COLUMN MANAGEMENT ||====----\\
     //scroll the set of columns that are displayed
     $scope.nextColumn=function(){
         $scope.pause();
@@ -242,19 +278,46 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             iCol+=1;
         });
     }
-
-    //this is for presentation mode only
-    $scope.addSlide = function(objItem) {
-        //find the slides column
-        var idPresCol = getIndex($scope.report.columns, 'show', 'Slides');
-        if (idPresCol) {
-            //for some reason modifying the text for slide was causing it to mismatch and threw an ngrepeat error.
-            //var arrBreakingCharacters = ['. ','? ','! ','; ',': ']; //add line breakes for slides
-            //_.forEach(arrBreakingCharacters,function(strChar){ objItem.text = objItem.text.replace(strChar,strChar+"<br/>"); })
-            $scope.report.columns[idPresCol].items[0] = objItem;
-        }
+    $scope.addCol = function() {
+        var intColId=0
+        if($scope.report.columns.length){intColId=$scope.report.columns.length;}
+        $scope.report.columns.push({
+             label: 'new'
+            ,limit: 100
+            ,sort: 'priority'
+            ,width: 1
+            ,show:true
+            ,items: []
+            ,stats: []
+            ,priority: 1
+            ,visible:true
+            ,id: intColId
+            ,currentOrder: intColId
+        });
     };
 
+    $scope.delCol = function(idCol) {
+        $scope.report.columns.splice(getIndex($scope.report.columns, 'id', idCol), 1);
+    };
+
+    // Update the LAyout, decides how much height to give the items arry when components exist
+    $scope.layout = function() {
+        _.forEach($scope.report.columns, function(objCol, i) {
+            var intItemContainerHeight = 100;
+
+            if (objCol.components.length > 0) {
+                _.forEach(objCol.components, function(objComp) {
+                    intItemContainerHeight -= objComp.height;
+                });
+            }
+
+            $scope.report.columns[i].itemsheight=intItemContainerHeight;
+        });
+    };
+       //________ END COLUMN MANAGEMENT _________\\
+      //##########################################\\    
+     //___________________________________\\
+    //----====|| REPORT MANAGEMENT ||====----\\
     //menu options, initial setup, either loaded from a previous setup, or defaults
     $scope.loadOptions = function() {
         FUIAPI.post({ a: 'init' },
@@ -386,37 +449,10 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             "stats" : []
         }];
     };
-
-    //manage already loaded item
-    $scope.moveItem = function(objItem,newColumn) {};
-
-    $scope.updateNote = function(t) {
-        var intColumn = false;
-        _.forEach($scope.report.columns, function(objCol) {
-            if (objCol.show === 'Notes') {
-                intColumn = objCol.id;
-            }
-        });
-
-        if (intColumn) {
-            var objItem = {
-                column: intColumn,
-                text: 'item note: ' + t.notes,
-                priority: 1,
-                typ: 'item'
-            };
-
-            $scope.addItem(objItem);
-        }
-    };
-
-    $scope.delItem = function(idItem, idColumn) {
-        var intColumn = false;
-        intColumn = getIndex($scope.report.columns, 'id', idColumn);
-        $scope.report.columns[intColumn].items.splice(getIndex($scope.report.columns[intColumn].items, 'id', idItem), 1);
-    };
-
-    //manage wordsets
+       //________ END REPORT MANAGEMENT _________\\
+      //##########################################\\    
+     //____________________________________\\
+    //----====|| TERMS MANAGEMENT ||====----\\
     $scope.addSet = function() {
 
         //@Todo: replace System with Users name
@@ -425,58 +461,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         $scope.report.terms.push(newSet);
         //FUIAPI.query({}, function(response) {});
     };
-
-    $scope.addComp = function(idCol) {
-        var intCol = getIndex($scope.report.columns, 'id', idCol);
-        if(!$scope.report.columns[intCol].components){$scope.report.columns[intCol].components=[];}
-        $scope.report.columns[intCol].components.push({ typ: 'Stats', height: '25' });
-        $scope.layout(); //recalc heights
-    };
-
-    $scope.delComp = function(idCol, i) {
-        var intCol = getIndex($scope.report.columns, 'id', idCol);
-        $scope.report.columns[intCol].components.splice(i, 1);
-    };
-
-    $scope.addCol = function() {
-        var intColId=0
-        if($scope.report.columns.length){intColId=$scope.report.columns.length;}
-        $scope.report.columns.push({
-             label: 'new'
-            ,limit: 100
-            ,sort: 'priority'
-            ,width: 1
-            ,show:true
-            ,items: []
-            ,stats: []
-            ,priority: 1
-            ,visible:true
-            ,id: intColId
-            ,currentOrder: intColId
-        });
-    };
-
-    $scope.delCol = function(idCol) {
-        $scope.report.columns.splice(getIndex($scope.report.columns, 'id', idCol), 1);
-    };
-
-    // Update the LAyout, decides how much height to give the items arry when components exist
-    $scope.layout = function() {
-        _.forEach($scope.report.columns, function(objCol, i) {
-            var intItemContainerHeight = 100;
-
-            if (objCol.components.length > 0) {
-                _.forEach(objCol.components, function(objComp) {
-                    intItemContainerHeight -= objComp.height;
-                });
-            }
-
-            $scope.report.columns[i].itemsheight=intItemContainerHeight;
-        });
-    };
-
-   
-    $scope.saveSet = function() {
+        $scope.saveSet = function() {
         FUIAPI.post({ a: 'saveTerms', q: $scope.report.terms }, function(response) {
             console.log(response,'response');
         });
@@ -491,7 +476,25 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     $scope.delSet = function() {
         FUIAPI.post({}, function(response){});
     };
+       //________ END TERMS MANAGEMENT _________\\
+      //#########################################\\    
+     //________________________________________\\
+    //----====|| COMPONENT MANAGEMENT ||====----\\
+    $scope.addComp = function(idCol) {
+        var intCol = getIndex($scope.report.columns, 'id', idCol);
+        if(!$scope.report.columns[intCol].components){$scope.report.columns[intCol].components=[];}
+        $scope.report.columns[intCol].components.push({ typ: 'Stats', height: '25' });
+        $scope.layout(); //recalc heights
+    };
 
+    $scope.delComp = function(idCol, i) {
+        var intCol = getIndex($scope.report.columns, 'id', idCol);
+        $scope.report.columns[intCol].components.splice(i, 1);
+    };
+       //________ END COMPONENT MANAGEMENT _________\\
+      //#########################################\\    
+     //____________________________________\\
+    //----====|| FEED MANAGEMENT ||====----\\
     // Pause the data feed
     $scope.pause = function() {
         if ($scope.play) {
@@ -514,7 +517,8 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             }
         });
     };
-
+       //________ END FEED MANAGEMENT _________\\
+      //#########################################\\ 
     // Let's get this party started
     $scope.init = function(){
         $scope.loadOptions();
