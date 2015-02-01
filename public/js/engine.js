@@ -182,11 +182,11 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             }
             
         });
-        if(objMatch===false){ propArray.unshift($scope.procItem(objItem,objMatch)); }
+        if(objMatch===false){ propArray.unshift($scope.procItem(objItem,objMatch)); } //add the new item
 
         $scope.updateColumn(objItem,idxColumn,objMatch);//column priority, report priority used for column %
         $scope.sortColumns();
-
+        $scope.report.priority++;
         //performance measurement
         if($scope.dev===true && ($scope.intEvents % 1000) == 0){
             endTime = window.performance.now();
@@ -197,11 +197,10 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     //given an item and anything it matches to, return the item with updated properties to update or add
     $scope.procItem=function(objItem,objMatch){
         //manage status for the borders that show updated and new
-        if (!objItem.priority) { objItem.priority = 1; } //set default priority, much of the system requires priority for realtime sorting
+        if (!objItem.priority || objItem.priority<1) { objItem.priority = 1; } //set default priority, much of the system requires priority for realtime sorting
         if(objMatch===false && !objItem.k){objItem.status= -5;} //new item status count
         else if (objItem.status > 0) { objItem.status -= 1;} //degrade from update status
-        else if (objItem.status < 0) { objItem.status += 1;}  //degrade from new status
-        
+        else if (objItem.status < 0) { objItem.status += 1;}  //degrade from new status   
         else if (objMatch!==false && objMatch.status===0){ objItem.status = 10;} // it exists and has decayed to 0 already, so it's an update
         if (objMatch !== false){
             if (objItem.priority < 2 || objItem.priority <= objMatch.priority) { objItem.priority=objMatch.priority += 1; } //cumulative priority
@@ -376,7 +375,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             FUIAPI.post({ a: 'loadReport', q: strReport },
                 function(response) {
                     $scope.report = response;
-
+                    if(!$scope.report.priority){$scope.report.priority=1;}
                     FUIAPI.post({ a: 'playStream' }, function () {
                         $scope.play = true;
                     });
