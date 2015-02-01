@@ -144,124 +144,81 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     //this is just for stress testing try to resist the urge to format it nicely :)
     
     $scope.cfgBulletChart={ chart:{type:'bulletChart',height:30,tickFortmat:null,transitionDuration:100,margin:{top:0,right:0,bottom:0,left:0},tooltips:false}}
-    //create the master object
-    //manage individual items from the websocket
 
-    $scope.addItem = function(objItem){
+    //add items to columns or components
+        $scope.addItem = function(objItem){
         $scope.intEvents++;
         if($scope.dev===true){var startTime = window.performance.now();}
-        //console.log(objItem.column);
 
         //get the column
         var idxColumn = getIndex($scope.report.columns, 'id', objItem.column);
         var propArray;
 
-        try {
-            propArray = $scope.report.columns[idxColumn].items;
-        } catch(e) {
-            return;
-        }
+        try { propArray = $scope.report.columns[idxColumn].items;} 
+        catch(e) { return; }
 
         //decide which collection/component within a column to work on
         if (objItem.typ !== 'item'){
             if($scope.report.columns[idxColumn].components.length > 0){
                 _.forEach($scope.report.columns[idxColumn].components, function(objComp, i) {
-                    if (objComp.typ === 'Stats'
-                        || objComp.typ === objItem.typ
-                    ) {
-                        propArray = $scope.report.columns[idxColumn].components[i].items;
-                    }
+                    if (objComp.typ === 'Stats'|| objComp.typ === objItem.typ) 
+                    { propArray = $scope.report.columns[idxColumn].components[i].items; }
                 });
             }else{return;} //dont put stats in main items
         }
-        var intLength = 0;
-        if(propArray){intLength = propArray.length;}
-
-        var arrDelete = [];
+        var intLength = 0; if(propArray){intLength = propArray.length;}
 
         //||||  COLUMN+ARRAY LOOP  ||||\\
         //this is a one time loop through a collection when touched, do everything possible in the 1 loop.
-        if (!objItem.priority) {
-            objItem.priority = 1;
-        }
+        if (!objItem.priority) {objItem.priority = 1; }
 
-        var torfRT = false; //set default priority, much of the system requires priority for realtime sorting
+        var objMatch = false; //set default priority, much of the system requires priority for realtime sorting
 
         _.forEach(propArray, function(objI,k) {
-
-            //status decay, connected to border colors
-            if (objI.status > 0) {
-                objI.status -= 1;
-            } else if (objI.status < 0) {
-                objI.status += 1;
-            } else {
-                objI.status = 0;
-            }
-
-            if (torfRT === false && objI.text === objItem.text) {
-
-                //cumulative priority
-                if (objItem.priority < 2
-                    || objItem.priority <= objI.priority
-                ) {
-                    objI.priority += 1;
-                }
-                else { //replacing priority
-                    objI.priority = objItem.priority;
-                }
-
-                // it exists and has decayed to 0 already, so it's an update
-                if (objI.status === 0) {
-                    objI.status = 10;
-                }
-
-                torfRT = true;
+            objI.k=k;
+            objI=$scope.procItem(objI,objMatch);
+            if (objMatch === false && objI.text === objItem.text) {
+                objMatch=objI;
+                objI=$scope.procItem(objItem,objMatch);
                 //update bulletchart if needed on this stats item
                 if(objI.save && objI.history.length>1){
                     objI.chart={"ranges":[objI.stats.min,objI.stats.avg,objI.stats.max],"markers":[objI.stats.last],"measures":[objI.priority],"color":"#333"};
                 }
             }
-
-            //limit reached, start trimming
-            if (intLength > $scope.report.columns[idxColumn].limit
-                && objI.position > $scope.report.columns[idxColumn].limit
-            ) {
-                propArray.splice(k--, 1);
-                intLength--;
-            }
+            
         });
+        if(objMatch===false){ propArray.unshift($scope.procItem(objItem,objMatch)); }
 
-        //column priority, report priority used for column %
-        if (objItem.typ === 'item') {
-            $scope.report.columns[idxColumn].priority += 1;
-            $scope.report.priority += 1;
-        }
-
-        //get the analysis type, the col analysis SHOUL have a matching analysis property
-        if (objItem.typ === 'item'
-            && objItem.analysis
-            && $scope.report.columns[idxColumn].analysis
-        ) {
-            var strAnalysis = $scope.report.columns[idxColumn].analysis.toLowerCase();
-        }
-
-        if(torfRT === false) {
-            objItem.status= -5; //new item status count
-
-            propArray.unshift(objItem);
-
-            if (objItem.typ === 'item' && objItem.analysis && strAnalysis !== ''){
-                $scope.report.columns[idxColumn].score += objItem.analysis[strAnalysis];
-                $scope.addSlide(objItem);
-            }
-        } //add
+        $scope.updateColumn(objItem,idxColumn,objMatch);//column priority, report priority used for column %
         $scope.sortColumns();
+
+        //performance measurement
         if($scope.dev===true && ($scope.intEvents % 1000) == 0){
             endTime = window.performance.now();
             console.log($scope.intEvents +' : '+ (endTime - startTime));
         }
     };
+    $scope.updateColumn=function(objItem,intColumn,objMatch){
+        $scope.report.columns[intColumn].priority += 1;
+        if(objMatch===false && objItem.analysis && $scope.report.columns[intColumn].analysis)
+        { $scope.report.columns[intColumn].score += objItem.analysis[$scope.report.columns[intColumn].analysis.toLowerCase()]; } //update analysis score for the column
+    }
 
+    //given an item and anything it matches to, return the item with updated properties to update or add
+    $scope.procItem=function(objItem,objMatch){
+        //manage status for the borders that show updated and new
+        if (!objItem.priority) { objItem.priority = 1; } //set default priority, much of the system requires priority for realtime sorting
+        if(objMatch===false && !objItem.k){objItem.status= -5;} //new item status count
+        else if (objItem.status > 0) { objItem.status -= 1;} //degrade from update status
+        else if (objItem.status < 0) { objItem.status += 1;}  //degrade from new status
+        else if (objMatch!==false ){ objItem.status = 10;} // it exists and has decayed to 0 already, so it's an update
+        if (objMatch !== false){
+            if (objItem.priority < 2 || objItem.priority <= objMatch.priority) { objItem.priority=objMatch.priority += 1; } //cumulative priority
+        }
+        return objItem;
+    }
+
+    //scroll the set of columns that are displayed
     $scope.nextColumn=function(){
         $scope.pause();
         $scope.report.colSort='currentOrder';
@@ -277,8 +234,6 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     $scope.sortColumns = function(){
         //Sort the columns (even if it's being done by angluar as well) to find the position add up the widths and figure out which ones are going to be off screen or set to 0 width
         $scope.report.columns=fnRSortArr($scope.report.columns,$scope.report.colSort);
-    //if($scope.report.colSort=='currentOrder'){ _.forEach($scope.report.columns,function(objCol,k){console.log(objCol.label+' : '+objCol.currentOrder);}); }else{console.log($scope.report.colSort);}
-
         var intTotalColumnWidth=0;iCol=1;$scope.torfHiddenColumns=false; //add bootstrap column widths together
         _.forEach($scope.report.columns,function(objColumn,k){
             $scope.report.columns[k].currentOrder= $scope.report.columns.length-iCol; //reverses order by index
@@ -288,6 +243,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         });
     }
 
+    //this is for presentation mode only
     $scope.addSlide = function(objItem) {
         //find the slides column
         var idPresCol = getIndex($scope.report.columns, 'show', 'Slides');
@@ -470,7 +426,6 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         //FUIAPI.query({}, function(response) {});
     };
 
-    // what the hell is a comp? ...comparison?
     $scope.addComp = function(idCol) {
         var intCol = getIndex($scope.report.columns, 'id', idCol);
         if(!$scope.report.columns[intCol].components){$scope.report.columns[intCol].components=[];}
@@ -478,14 +433,11 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         $scope.layout(); //recalc heights
     };
 
-    // what the hell is a comp? ...comparison?
     $scope.delComp = function(idCol, i) {
         var intCol = getIndex($scope.report.columns, 'id', idCol);
         $scope.report.columns[intCol].components.splice(i, 1);
     };
 
-    // i assume this means a fucking column ??
-    // LOL, I love constructive comments like this
     $scope.addCol = function() {
         var intColId=0
         if($scope.report.columns.length){intColId=$scope.report.columns.length;}
@@ -504,12 +456,11 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         });
     };
 
-    // i assume this means a fucking column ??
     $scope.delCol = function(idCol) {
         $scope.report.columns.splice(getIndex($scope.report.columns, 'id', idCol), 1);
     };
 
-    // what exactly constitutes "layout" here?
+    // Update the LAyout, decides how much height to give the items arry when components exist
     $scope.layout = function() {
         _.forEach($scope.report.columns, function(objCol, i) {
             var intItemContainerHeight = 100;
@@ -524,7 +475,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         });
     };
 
-    // what the hell is a set?
+   
     $scope.saveSet = function() {
         FUIAPI.post({ a: 'saveTerms', q: $scope.report.terms }, function(response) {
             console.log(response,'response');
