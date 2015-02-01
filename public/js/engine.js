@@ -31,9 +31,9 @@ app.factory('FUIAPI', function($resource) {
 });
 
 app.controller('FUI', function($scope, $modal, FUIAPI) {
-
+    $scope.dev=true;
     $scope.play = true;
-
+    $scope.intEvents=0;
     $scope.widths = [
         {k: 'skinny', v: 1},
         {k: '1/6 width', v: 2},
@@ -141,12 +141,15 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         {k:'12 hours',v:43200000},
         {k:'daily',v:86400000}
     ];
-
+    //this is just for stress testing try to resist the urge to format it nicely :)
+    
     $scope.cfgBulletChart={ chart:{type:'bulletChart',height:30,tickFortmat:null,transitionDuration:100,margin:{top:0,right:0,bottom:0,left:0},tooltips:false}}
     //create the master object
     //manage individual items from the websocket
-    $scope.addItem = function(objItem){
 
+    $scope.addItem = function(objItem){
+        $scope.intEvents++;
+        if($scope.dev===true){var startTime = window.performance.now();}
         //console.log(objItem.column);
 
         //get the column
@@ -253,6 +256,10 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             }
         } //add
         $scope.sortColumns();
+        if($scope.dev===true && ($scope.intEvents % 1000) == 0){
+            endTime = window.performance.now();
+            console.log($scope.intEvents +' : '+ (endTime - startTime));
+        }
     };
 
     $scope.nextColumn=function(){
