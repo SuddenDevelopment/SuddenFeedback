@@ -165,16 +165,16 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
 
         //||||  COLUMN+ARRAY LOOP  ||||\\
         //this is a one time loop through a collection when touched, do everything possible in the 1 loop.
-        if (!objItem.priority) {objItem.priority = 1; }
-
         var objMatch = false; //set default priority, much of the system requires priority for realtime sorting
-
         _.forEach(propArray, function(objI,k) {
             objI.k=k;
             objI=$scope.procItem(objI,objMatch);
             if (objMatch === false && objI.text === objItem.text) {
                 objMatch=objI;
-                objI=$scope.procItem(objItem,objMatch);
+                objItem=$scope.procItem(objItem,objMatch);
+                objI.status=objItem.status;
+                objI.priority=objItem.priority;
+                objMatch=true;
                 //update bulletchart if needed on this stats item
                 if(objI.save && objI.history.length>1){
                     objI.chart={"ranges":[objI.stats.min,objI.stats.avg,objI.stats.max],"markers":[objI.stats.last],"measures":[objI.priority],"color":"#333"};
@@ -193,11 +193,6 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             console.log($scope.intEvents +' : '+ (endTime - startTime));
         }
     };
-    $scope.updateColumn=function(objItem,intColumn,objMatch){
-        $scope.report.columns[intColumn].priority += 1;
-        if(objMatch===false && objItem.analysis && $scope.report.columns[intColumn].analysis)
-        { $scope.report.columns[intColumn].score += objItem.analysis[$scope.report.columns[intColumn].analysis.toLowerCase()]; } //update analysis score for the column
-    }
 
     //given an item and anything it matches to, return the item with updated properties to update or add
     $scope.procItem=function(objItem,objMatch){
@@ -206,7 +201,8 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         if(objMatch===false && !objItem.k){objItem.status= -5;} //new item status count
         else if (objItem.status > 0) { objItem.status -= 1;} //degrade from update status
         else if (objItem.status < 0) { objItem.status += 1;}  //degrade from new status
-        else if (objMatch!==false ){ objItem.status = 10;} // it exists and has decayed to 0 already, so it's an update
+        
+        else if (objMatch!==false && objMatch.status===0){ objItem.status = 10;} // it exists and has decayed to 0 already, so it's an update
         if (objMatch !== false){
             if (objItem.priority < 2 || objItem.priority <= objMatch.priority) { objItem.priority=objMatch.priority += 1; } //cumulative priority
         }
@@ -254,6 +250,12 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
       //########################################\\    
      //_____________________________________\\
     //----====|| COLUMN MANAGEMENT ||====----\\
+        //the little things that need to change in a column when an item is added.
+    $scope.updateColumn=function(objItem,intColumn,objMatch){
+        $scope.report.columns[intColumn].priority += 1;
+        if(objMatch===false && objItem.analysis && $scope.report.columns[intColumn].analysis)
+        { $scope.report.columns[intColumn].score += objItem.analysis[$scope.report.columns[intColumn].analysis.toLowerCase()]; } //update analysis score for the column
+    }
     //scroll the set of columns that are displayed
     $scope.nextColumn=function(){
         $scope.pause();
