@@ -138,7 +138,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     $scope.cfgBulletChart={ chart:{type:'bulletChart',height:30,tickFortmat:null,transitionDuration:100,margin:{top:0,right:0,bottom:0,left:0},tooltips:false}}
 
        //________ END SETTINGS _________\\
-      //#################################\\    
+      //#################################\\
      //___________________________________\\
     //----====|| ITEM MANAGEMENT ||====----\\
         $scope.addItem = function(objItem){
@@ -149,14 +149,14 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         var idxColumn = getIndex($scope.report.columns, 'id', objItem.column);
         var propArray;
 
-        try { propArray = $scope.report.columns[idxColumn].items;} 
+        try { propArray = $scope.report.columns[idxColumn].items;}
         catch(e) { return; }
 
         //decide which collection/component within a column to work on
         if (objItem.typ !== 'item'){
             if($scope.report.columns[idxColumn].components.length > 0){
                 _.forEach($scope.report.columns[idxColumn].components, function(objComp, i) {
-                    if (objComp.typ === 'Stats'|| objComp.typ === objItem.typ) 
+                    if (objComp.typ === 'Stats'|| objComp.typ === objItem.typ)
                     { propArray = $scope.report.columns[idxColumn].components[i].items; }
                 });
             }else{return;} //dont put stats in main items
@@ -180,7 +180,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
                     objI.chart={"ranges":[objI.stats.min,objI.stats.avg,objI.stats.max],"markers":[objI.stats.last],"measures":[objI.priority],"color":"#333"};
                 }
             }
-            
+
         });
         if(objMatch===false){ propArray.unshift($scope.procItem(objItem,objMatch)); } //add the new item
 
@@ -200,7 +200,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         if (!objItem.priority || objItem.priority<1) { objItem.priority = 1; } //set default priority, much of the system requires priority for realtime sorting
         if(objMatch===false && !objItem.k){objItem.status= -5;} //new item status count
         else if (objItem.status > 0) { objItem.status -= 1;} //degrade from update status
-        else if (objItem.status < 0) { objItem.status += 1;}  //degrade from new status   
+        else if (objItem.status < 0) { objItem.status += 1;}  //degrade from new status
         else if (objMatch!==false && objMatch.status===0){ objItem.status = 10;} // it exists and has decayed to 0 already, so it's an update
         if (objMatch !== false){
             if (objItem.priority < 2 || objItem.priority <= objMatch.priority) { objItem.priority=objMatch.priority += 1; } //cumulative priority
@@ -246,7 +246,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         $scope.report.columns[intColumn].items.splice(getIndex($scope.report.columns[intColumn].items, 'id', idItem), 1);
     };
        //________ END ITEM MANAGEMENT _________\\
-      //########################################\\    
+      //########################################\\
      //_____________________________________\\
     //----====|| COLUMN MANAGEMENT ||====----\\
         //the little things that need to change in a column when an item is added.
@@ -316,7 +316,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         });
     };
        //________ END COLUMN MANAGEMENT _________\\
-      //##########################################\\    
+      //##########################################\\
      //___________________________________\\
     //----====|| REPORT MANAGEMENT ||====----\\
     //menu options, initial setup, either loaded from a previous setup, or defaults
@@ -398,7 +398,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             }
         );
     };
-    
+
     $scope.saveReport = function(withData) {
         $scope.pause();
         //the id will eventually be more complex than the name, for now this will do.
@@ -451,7 +451,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         }];
     };
        //________ END REPORT MANAGEMENT _________\\
-      //##########################################\\    
+      //##########################################\\
      //____________________________________\\
     //----====|| TERMS MANAGEMENT ||====----\\
     $scope.addSet = function() {
@@ -468,17 +468,15 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         });
     };
 
-    // what the hell is a set?
     $scope.loadSet = function() {
         FUIAPI.post({}, function(response){});
     };
 
-    // what the hell is a set?
     $scope.delSet = function() {
         FUIAPI.post({}, function(response){});
     };
        //________ END TERMS MANAGEMENT _________\\
-      //#########################################\\    
+      //#########################################\\
      //________________________________________\\
     //----====|| COMPONENT MANAGEMENT ||====----\\
     $scope.addComp = function(idCol) {
@@ -493,7 +491,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         $scope.report.columns[intCol].components.splice(i, 1);
     };
        //________ END COMPONENT MANAGEMENT _________\\
-      //#########################################\\    
+      //#########################################\\
      //____________________________________\\
     //----====|| FEED MANAGEMENT ||====----\\
     // Pause the data feed
@@ -519,7 +517,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         });
     };
        //________ END FEED MANAGEMENT _________\\
-      //#########################################\\ 
+      //#########################################\\
     // Let's get this party started
     $scope.init = function(){
         $scope.loadOptions();
