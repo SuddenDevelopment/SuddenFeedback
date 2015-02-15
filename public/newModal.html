@@ -8,19 +8,18 @@
         <h2>Create a New Report</h2>
         <hr></hr>
           <div style="width:100%;">
-            <ul>
-            <li>Template<select ng-model="report.template" ng-options="template.v as template.desc for template in templates"></select></li>
-        		<li>Theme</li>
-        		<li>Column Order{{report.colSort}} <select ng-model="report.colSort" ng-options="arr.v as arr.k for arr in colSorts"></select></li>
-        		<li>Name <input ng-model="report.name" /></li>
-        		<li>Description <input ng-model="report.Description" /></li></li>
-        		<li>Started</li>
-        		<li>Updated</li>
-            <li>Item Count</li>
-            <li>Include by terms</li>
-            <li>Filter out terms</li>
-            <li>Count &amp; Highlight terms</li>
-        	</ul>
+            <div class="row modal-menu-row">
+              <div class="col-lg-2">Name:</div>
+              <div class="col-lg-6"><input ng-model="report.name" /></div>
+            </div>
+            <div style="height:300px;width:100%;">
+              <div ng-repeat="termSet in report.terms">
+                <input ng-model="termSet.name"></input>
+                Term Set Type={{::termSet.fn}}
+                <tags-input ng-model="termSet.terms" on-tag-added="newLayout()" on-tag-removed="newLayout()"></tags-input>
+                <hr/>
+              </div>
+            </div>
           </div>
       </div>
       <div class="modal-footer">

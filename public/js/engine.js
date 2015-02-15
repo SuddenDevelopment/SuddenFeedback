@@ -42,7 +42,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         {k: '11/12 width', v: 11},
         {k: 'full width', v: 12}
     ];
-
+    $scope.colors=['#f00','#0f0','#00f','#0ff','#f0f','#ff0','f66','6f6','66f','6ff','f6f','ff6'];
     $scope.heights = [
         {k: '1/8 height', v: '12.5'},
         {k: '1/4 height', v: '25'},
@@ -98,7 +98,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     ];
 
     $scope.templates = [
-        {k: 'Runoff, 3+terms, 1 column each', v: 'runoff'},
+        {k: 'Quick, Only define terms', v: 'runoff'},
         {k: 'VS, 2 columns, 1 slideshow', v: 'VS'},
         {k: 'Inspect, 1 term, several perspectives', v: 'inspect'},
         {k: 'Custom', v: 'Custom'}
@@ -390,13 +390,16 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             iCol+=1;
         });
     }
-    $scope.addCol = function() {
+    $scope.addCol = function(objCol) {
+        objCol = typeof objCol !== 'undefined' ? objCol : {}; //set default input
         var intColId=0
         if($scope.report.columns.length){intColId=$scope.report.columns.length;}
-        $scope.report.columns.push({
+        var objDefaults={
              label: 'new'
             ,limit: 100
             ,sort: 'priority'
+            ,show:'ColumnTitle'
+            ,analysis:'Sentiment'
             ,width: 1
             ,show:true
             ,items: []
@@ -405,7 +408,9 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             ,visible:true
             ,id: intColId
             ,currentOrder: intColId
-        });
+            ,color:$scope.colors[intColId]
+        };
+        $scope.report.columns.push(_.extend(objDefaults,objCol));
     };
 
     $scope.delCol = function(idCol) {
@@ -430,6 +435,35 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
       //##########################################\\
      //___________________________________\\
     //----====|| REPORT MANAGEMENT ||====----\\
+    
+    $scope.newLayout=function(){
+        //If 1-2 terms, presentation mode
+        //IF 3 or more terms normal mode
+          /*Choose Terms
+          Foreach Term
+            Create a column with column title==term
+            Include items by column title
+            Set all column widths to 2 if more than 4, if 4 widht=3, if 3width=4, if 2 or less mode= presentation 
+            Stats component for each column
+            Highlight all terms given
+            */
+        //Copy ther terms for tracking by default
+        $scope.report.terms[1]=$scope.report.terms[0];
+        $scope.report.terms[1].fn='Track';
+
+        //add the columns per term
+        $scope.report.columns=[];
+        var intTerms = $scope.report.terms[0].terms.length;
+        var intWidth=2; if(intTerms == 3){ intWidth=4; }
+        _.forEach($scope.report.terms[0].terms,function(objTerm,i){
+            $scope.addCol({
+                 label:objTerm.text
+                ,width:intWidth
+                ,components:[{typ:'Stats',height:'25',items:[]}]
+            });
+        });
+    }
+
     //menu options, initial setup, either loaded from a previous setup, or defaults
     $scope.loadOptions = function() {
         FUIAPI.post({ a: 'init' },
@@ -544,8 +578,9 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     };
 
     $scope.addReport = function() {
-        $scope.report = { _id: "blank", name: "blank" };
-        $scope.report.terms = [{ name: "Template", fn: "Find", terms: [{ "text": "random" }] }];
+        $scope.pause();
+        $scope.report = { _id: "blank", name: "default" };
+        $scope.report.terms = [{ name: "Default", fn: "Find", terms: [] }];
         $scope.report.columns = [{
             "id" : 1,
             "label" : "New",
@@ -554,7 +589,6 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             "sort" : "priority",
             "analysis" : "none",
             "show" : "ColumnTitle",
-            "exclusive" : true,
             "source" : "twitter",
             "limit" : 100,
             "items" : [],
