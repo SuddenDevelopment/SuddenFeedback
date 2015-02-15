@@ -84,3 +84,44 @@ Top Menu
   Pause / Play
   ===================
     Pause or resume the stream
+
+App logic
+
+Init
+  Connect to MongoDB
+
+Login
+  Load reports
+  Load default or current report
+  Connect to feed
+
+Data Stream
+  Get Data
+    Normalize the Data
+    Clean the Data
+    Run needed Analysis components if enabled for the report
+    Sort into the appropriate column based on column config, add the column property
+    If configured generate stats for stats components as separate items to add the queue
+    For Each item placed int he send queue
+      Determine if it's a duplicate
+        Yes: Increment stats in proper column and items for dupe.
+        No: Add Item
+          Sort Column / Component for added item
+          Determine if the item is high enough in the sort to send to the UI based on sort and limit
+            Yes: Send to the UI
+            No: Store on Server
+              Send an update for the Column stats without any items
+
+UI
+  Get Data
+    For Each item in the Queue
+      Determine the array (column+component) that the item belongs to, should be attached as properties of the item
+      	ForEach Item in the array that does NOT match the current item
+      	  Update the item status for new/updated
+	      Determine if the item is a dupe:
+	        Yes: Increment Item and column numbers
+	        No: Add the item
+	          Update the column numbers
+	          Sort the array
+	          trim items in the array over the UI limit
+	          Sort the columns
