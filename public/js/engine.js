@@ -141,13 +141,14 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
       //#################################\\
      //___________________________________\\
     //----====|| ITEM MANAGEMENT ||====----\\
-        $scope.addItem = function(objItem){
+    $scope.addItem = function(objItem){
         $scope.intEvents++;
         if($scope.dev===true){var startTime = window.performance.now();}
 
         //get the column
         var idxColumn = getIndex($scope.report.columns, 'id', objItem.column);
-        var propArray;
+        var intLimit = $scope.report.columns[idxColumn].limit;
+        var propArray; var intMin;var objMin; intMin=false; 
 
         try { propArray = $scope.report.columns[idxColumn].items;}catch(e) { return; }
 
@@ -170,26 +171,25 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             objI=$scope.procItem(objI,objMatch); //update all non-matched items
             if (objMatch === false && objI.text === objItem.text) {
                 objMatch=objI;
-                objItem=$scope.procItem(objItem,objMatch); //update the matched item
-                objI.status=objItem.status;
-                objI.priority=objItem.priority;
+                objItem=$scope.procItem(objItem,objMatch); //get the updated item knowing it's a match
+                objI.status=objItem.status; objI.priority=objItem.priority; //updated the existing item
                 objMatch=true;
                 //update bulletchart if needed on this stats item
                 if(objI.save && objI.history.length>1){
                     objI.chart={"ranges":[objI.stats.min,objI.stats.avg,objI.stats.max],"markers":[objI.stats.last],"measures":[objI.priority],"color":"#333"};
                 }
             }
-
+            if(objI[$scope.report.columns[idxColumn].sort] < intMin || intMin===false){intMin=objI[$scope.report.columns[idxColumn].sort]; objMin=objI;} //keep track of the last item
         });
         if(objMatch===false){ propArray.unshift($scope.procItem(objItem,objMatch)); } //add the new item
-
+        if(objMatch===false && intLength > intLimit){ propArray.splice(objMin.k+1,1); } //remove an item, keeping in mind an item was added to the beginning of the array
         $scope.updateColumn(objItem,idxColumn,objMatch);//column priority, report priority used for column %
         $scope.sortColumns();
         $scope.report.priority++;
         //performance measurement
         if($scope.dev===true && ($scope.intEvents % 1000) == 0){
             endTime = window.performance.now();
-            console.log($scope.intEvents +' : '+ (endTime - startTime));
+            console.log($scope.intEvents+' : '+(endTime-startTime)+' : '+intLength);
         }
     };
 
