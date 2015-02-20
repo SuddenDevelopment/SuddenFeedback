@@ -144,124 +144,12 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         $scope.addItem = function(objItem){
         $scope.intEvents++;
         if($scope.dev===true){var startTime = window.performance.now();}
-        //console.log(objItem.column);
 
         //get the column
         var idxColumn = getIndex($scope.report.columns, 'id', objItem.column);
         var propArray;
 
-        try {
-            propArray = $scope.report.columns[idxColumn].items;
-        } catch(e) {
-            return;
-        }
-
-        //decide which collection/component within a column to work on
-        if (objItem.typ !== 'item'){
-            if($scope.report.columns[idxColumn].components.length > 0){
-                _.forEach($scope.report.columns[idxColumn].components, function(objComp, i) {
-                    if (objComp.typ === 'Stats'
-                        || objComp.typ === objItem.typ
-                    ) {
-                        propArray = $scope.report.columns[idxColumn].components[i].items;
-                    }
-                });
-            }else{return;} //dont put stats in main items
-        }
-        var intLength = 0;
-        if(propArray){intLength = propArray.length;}
-
-        //||||  COLUMN+ARRAY LOOP  ||||\\
-        //this is a one time loop through a collection when touched, do everything possible in the 1 loop.
-        if (!objItem.priority || objItem.priority < 1) {objItem.priority = 1;}
-
-        var torfRT = false; //set default priority, much of the system requires priority for realtime sorting
-
-        _.forEach(propArray, function(objI,k) {
-
-            //status decay, connected to border colors
-            if (objI.status > 0) {
-                objI.status -= 1;
-            } else if (objI.status < 0) {
-                objI.status += 1;
-            } else {
-                objI.status = 0;
-            }
-
-            if (torfRT === false && objI.text === objItem.text) {
-
-                //cumulative priority
-                if (objItem.priority < 2
-                    || objItem.priority <= objI.priority
-                ) {
-                    objI.priority += 1;
-                }
-                else { //replacing priority
-                    objI.priority = objItem.priority;
-                }
-
-                // it exists and has decayed to 0 already, so it's an update
-                if (objI.status === 0) {
-                    objI.status = 10;
-                }
-
-                torfRT = true;
-                //update bulletchart if needed on this stats item
-                if(objI.save && objI.history.length>1){
-                    objI.chart={"ranges":[objI.stats.min,objI.stats.avg,objI.stats.max],"markers":[objI.stats.last],"measures":[objI.priority],"color":"#333"};
-                }
-            }
-
-            //limit reached, start trimming
-            if (intLength > $scope.report.columns[idxColumn].limit
-                && objI.position > $scope.report.columns[idxColumn].limit
-            ) {
-                propArray.splice(k--, 1);
-                intLength--;
-            }
-        });
-
-        //column priority, report priority used for column %
-        if (objItem.typ === 'item') {
-            $scope.report.columns[idxColumn].priority += 1;
-            $scope.report.priority += 1;
-        }
-
-        //get the analysis type, the col analysis SHOUL have a matching analysis property
-        if (objItem.typ === 'item'
-            && objItem.analysis
-            && $scope.report.columns[idxColumn].analysis
-        ) {
-            var strAnalysis = $scope.report.columns[idxColumn].analysis.toLowerCase();
-        }
-
-        if(torfRT === false) {
-            objItem.status= -5; //new item status count
-
-            propArray.unshift(objItem);
-
-            if (objItem.typ === 'item' && objItem.analysis && strAnalysis !== ''){
-                $scope.report.columns[idxColumn].score += objItem.analysis[strAnalysis];
-                $scope.addSlide(objItem);
-            }
-        } //add
-        $scope.sortColumns();
-        if($scope.dev===true && ($scope.intEvents % 1000) == 0){
-            endTime = window.performance.now();
-            console.log($scope.intEvents +' : '+ (endTime - startTime));
-        }
-    };
-
-        $scope.addItem_dev = function(objItem){
-        $scope.intEvents++;
-        if($scope.dev===true){var startTime = window.performance.now();}
-
-        //get the column
-        var idxColumn = getIndex($scope.report.columns, 'id', objItem.column);
-        var propArray;
-
-        try { propArray = $scope.report.columns[idxColumn].items;}
-        catch(e) { return; }
+        try { propArray = $scope.report.columns[idxColumn].items;}catch(e) { return; }
 
         //decide which collection/component within a column to work on
         if (objItem.typ !== 'item'){
@@ -276,13 +164,13 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
 
         //||||  COLUMN+ARRAY LOOP  ||||\\
         //this is a one time loop through a collection when touched, do everything possible in the 1 loop.
-        var objMatch = false; //set default priority, much of the system requires priority for realtime sorting
+        var objMatch = false; 
         _.forEach(propArray, function(objI,k) {
-            objI.k=k;
-            objI=$scope.procItem(objI,objMatch);
+            objI.k=k; //get the index
+            objI=$scope.procItem(objI,objMatch); //update all non-matched items
             if (objMatch === false && objI.text === objItem.text) {
                 objMatch=objI;
-                objItem=$scope.procItem(objItem,objMatch);
+                objItem=$scope.procItem(objItem,objMatch); //update the matched item
                 objI.status=objItem.status;
                 objI.priority=objItem.priority;
                 objMatch=true;
