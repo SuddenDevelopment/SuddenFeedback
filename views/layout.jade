@@ -54,10 +54,12 @@ html(ng-app="SuddenFeedbackApp")
                                 div(ng-class="::{'col-lg-9':t.entities.media[0] && column.show!='Slides'}")
                                     span(ng-bind-html="::t.text")
                                 //////||  Images  ||\\\\\
-                                div(ng-if="::column.show!='Slides' && t.entities.media" class="col-lg-3")
+                                div(ng-if="column.show!='Slides' && t.entities.media && (t.status==0 || !t.status)" class="col-lg-3")
                                     img(ng-repeat="i in t.entities.media" ng-src="{{::i.media_url}}")
                                 div(ng-if="column.show=='Slides' && t.entities.media" class="col-lg-12 text-center")
                                    img(ng-repeat="i in t.entities.media" ng-src="{{::i.media_url}}") 
+                            div(ng-if="column.show!='Slides' && t.entities.media && t.status && t.status!==0" class="row text-center" )
+                                img(class="featured_media" ng-repeat="i in t.entities.media" ng-src="{{::i.media_url}}")
                             div.row
                                 div(class="col-lg-4 text-left")
                                     a(ng-repeat="url in t.entities.urls" href="{{::url.expanded_url}}")
