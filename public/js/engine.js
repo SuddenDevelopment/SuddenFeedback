@@ -25,7 +25,7 @@ app.factory('FUIAPI', function($resource) {
 //_____________________________\\
 //----====|| SETTINGS ||====----\\
 app.controller('FUI', function($scope, $modal, FUIAPI) {
-    $scope.dev=true;
+    $scope.dev=false;
     $scope.play = true;
     $scope.intEvents=0;
     $scope.widths = [

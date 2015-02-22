@@ -51,7 +51,7 @@ html(ng-app="SuddenFeedbackApp")
                         div(class='widget-container isotope-item boxed-velvet' ng-animate=" 'animate' " ng-repeat="(i,t) in column.items | orderBy:column.sort:true track by t.text" ng-class="{'new':t.status<0,'updated':t.status>0}" bs-modal="imodal" data-template="itemModal.html")
                             div(ng-if="::t.title!=undefined" class="col-lg-12 item-title"){{t.title}}
                             div.row
-                                div(ng-class="::{'col-lg-9':t.entities.media[0] && column.show!='Slides'}")
+                                div(ng-class="{'col-lg-9':t.entities.media[0] && column.show!='Slides' && (t.status===0 || !t.status), 'col-lg-12': (t.status && t.status!==0)}")
                                     span(ng-bind-html="::t.text")
                                 //////||  Images  ||\\\\\
                                 div(ng-if="column.show!='Slides' && t.entities.media && (t.status===0 || !t.status)" class="col-lg-3")
