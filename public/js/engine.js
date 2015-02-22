@@ -280,8 +280,8 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     }
     $scope.addCol = function(objCol) {
         objCol = typeof objCol !== 'undefined' ? objCol : {}; //set default input
-        var intColId=0
-        if($scope.report.columns.length){intColId=$scope.report.columns.length;}
+        var intColId=1
+        if($scope.report.columns.length){intColId=$scope.report.columns.length+1;}
         var objDefaults={
              label: 'new'
             ,limit: 100
@@ -289,7 +289,6 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             ,show:'ColumnTitle'
             ,analysis:'Sentiment'
             ,width: 1
-            ,show:true
             ,items: []
             ,stats: []
             ,priority: 1
@@ -336,8 +335,9 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             Highlight all terms given
             */
         //Copy ther terms for tracking by default
-        $scope.report.terms[1]=$scope.report.terms[0];
-        $scope.report.terms[1].fn='Track';
+        if(!$scope.report.terms[1]){$scope.report.terms.push({name:'Highlight',fn:'Track',terms:[]});}
+        $scope.report.terms[1].terms=$scope.report.terms[0].terms;
+        
 
         //add the columns per term
         $scope.report.columns=[];
@@ -350,6 +350,8 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
                 ,components:[{typ:'Stats',height:'25',items:[]}]
             });
         });
+        $scope.updateReport();
+        console.log($scope.report.terms);
     }
 
     //menu options, initial setup, either loaded from a previous setup, or defaults
@@ -360,7 +362,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
                 $scope.report = response.report;
 
                 if (!$scope.report.priority) {
-                    $scope.report.priority = 0;
+                    $scope.report.priority = 1;
 
                     _.forEach($scope.report.columns, function(objC) {
                         $scope.report.priority += objC.priority;
@@ -412,6 +414,21 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
                     FUIAPI.post({ a: 'playStream' }, function () {
                         $scope.play = true;
                     });
+                }
+            );
+        });
+    };
+
+    $scope.updateReport = function() {
+        $scope.play = false; 
+         //make sure the stream is stopped
+        FUIAPI.post({ a: 'pauseStream' }, function() {
+            //save the new values
+            FUIAPI.post({ a: 'updateReport', q: $scope.report },
+                function(response) {
+                    $scope.report=response; //Sends to the server to normalize, this may be overkill.
+                    //start the report
+                    FUIAPI.post({ a: 'playStream' }, function () { $scope.play = true; });
                 }
             );
         });
@@ -469,19 +486,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         $scope.pause();
         $scope.report = { _id: "blank", name: "default" };
         $scope.report.terms = [{ name: "Default", fn: "Find", terms: [] }];
-        $scope.report.columns = [{
-            "id" : 1,
-            "label" : "New",
-            "width" : 2,
-            "priority" : 1,
-            "sort" : "priority",
-            "analysis" : "none",
-            "show" : "ColumnTitle",
-            "source" : "twitter",
-            "limit" : 100,
-            "items" : [],
-            "stats" : []
-        }];
+        $scope.report.columns = [];
     };
        //________ END REPORT MANAGEMENT _________\\
       //##########################################\\

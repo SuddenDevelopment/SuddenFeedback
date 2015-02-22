@@ -29,7 +29,7 @@ Report.prototype.normalize = function(objReport) {
     }
 
     if (!objReport.priority || objReport.priority < objReport.columns.length) {
-        objReport.priority = objReport.columns.length;
+        objReport.priority = objReport.columns.length; //need report priority >= column priorities for Hbar
     }
 
     _.forEach(objReport.columns, function(objCol, i) {

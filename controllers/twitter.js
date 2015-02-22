@@ -389,7 +389,7 @@ TwitterController.prototype.connectStream = function(req, res, user) {
                     }
                 }
 
-                if (!objItem.column) {
+                if (!objItem.column && objItem.column !==0) {
 
                     intColIndex = report_item_util.getIndex(objReport.columns,'show','Orphans'); //special column to show items that dont have a home.
 

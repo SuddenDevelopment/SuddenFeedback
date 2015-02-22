@@ -208,6 +208,18 @@ FUIAPI.prototype.loadReport = function(req, res, next) {
     });
 };
 
+//update report
+FUIAPI.prototype.updateReport = function(req, res, next) {
+    var self = this;
+    var report = {};
+    var d = req.param('q', null); //console.log(d);
+
+    self.authorize(req);
+    report = reportHandler.normalize(d); //set the server side report
+    self.share.set(report, 'report', req.session.uuid);
+    res.send(report);
+};
+
 // DELETE report
 FUIAPI.prototype.delReport = function(req, res, next) {
     var self = this;
@@ -227,30 +239,6 @@ FUIAPI.prototype.saveReport = function(req, res, next) {
     var d = req.param('q', null);
 
     self.authorize(req);
-
-    //Move saved stats to historical stats, moved to client
-    /*
-    for(var iCol=0;iCol<d.columns.length;iCol++){
-        if(d.columns[iCol].components){
-            for(iCom=0;iCom<d.columns[iCol].components.length;iCom++){
-                console.log(iCom);
-                for(iItem=0;iItem<d.columns[iCol].components[iCom].items.length;iItem++){
-                    if(d.columns[iCol].components[iCom].items[iItem].save===true){
-                        console.log('I found the items to be saved');
-                        if(d.columns[iCol].components[iCom].items[iItem].history){ d.columns[iCol].components[iCom].items[iItem].history.push(d.columns[iCol].components[iCom].items[iItem].priority); }
-                        else{ d.columns[iCol].components[iCom].items[iItem].history=[d.columns[iCol].components[iCom].items[iItem].priority]; } //1st item in history
-                        //@TODO : If an optimization is needed, doing all stats in one loop would be moe efficient
-                        d.columns[iCol].components[iCom].items[iItem].stats={min:0,max:0,avg:0}
-                        d.columns[iCol].components[iCom].items[iItem].stats.min=_.min(d.columns[iCol].components[iCom].items[iItem].history);
-                        d.columns[iCol].components[iCom].items[iItem].stats.max=_.max(d.columns[iCol].components[iCom].items[iItem].history);
-                        d.columns[iCol].components[iCom].items[iItem].stats.avg=_.max(d.columns[iCol].components[iCom].items[iItem].history)/d.columns[iCol].components[iCom].items[iItem].history.length;
-                        d.columns[iCol].components[iCom].items[iItem].priority=0; //reset the counter
-                    }
-                }
-            }
-        }
-    }
-    */
 
     self.drivers.mongo.collections['reports'].update({ _id: d._id }
         , { columns: d.columns, terms: d.terms, name: d.name, colSort: d.colSort, titles: d.titles, created_at:d.created_at, updated_at:d.updated_at, colCount:d.colCount}
