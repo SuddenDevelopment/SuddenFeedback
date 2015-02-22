@@ -123,6 +123,11 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         {v: 'user'}
     ];
 
+    $scope.dataOpts = [
+        {k:'off',v:false },
+        {k:'on',v:'tags'}
+    ];
+
     $scope.autoSaves=[
         {k:'off',v:0},
         {k:'15 minutes',v:900000},
@@ -288,7 +293,8 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             ,sort: 'priority'
             ,show:'ColumnTitle'
             ,analysis:'Sentiment'
-            ,width: 1
+            ,score: 0
+            ,width: 2
             ,items: []
             ,stats: []
             ,priority: 1
@@ -323,7 +329,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
      //___________________________________\\
     //----====|| REPORT MANAGEMENT ||====----\\
     
-    $scope.newLayout=function(){
+    $scope.newReport=function(){
         //If 1-2 terms, presentation mode
         //IF 3 or more terms normal mode
           /*Choose Terms
@@ -337,21 +343,24 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         //Copy ther terms for tracking by default
         if(!$scope.report.terms[1]){$scope.report.terms.push({name:'Highlight',fn:'Track',terms:[]});}
         $scope.report.terms[1].terms=$scope.report.terms[0].terms;
-        
-
         //add the columns per term
-        $scope.report.columns=[];
         var intTerms = $scope.report.terms[0].terms.length;
-        var intWidth=2; if(intTerms == 3){ intWidth=4; }
         _.forEach($scope.report.terms[0].terms,function(objTerm,i){
-            $scope.addCol({
-                 label:objTerm.text
-                ,width:intWidth
-                ,components:[{typ:'Stats',height:'25',items:[]}]
-            });
+            if(!$scope.report.columns[i]){
+                $scope.addCol({
+                    label:objTerm.text
+                    ,components:[{typ:'Stats',height:'25',items:[]}]
+                });
+            }
         });
+        if(intTerms < 3){ $scope.report.follow='tags'; } //if only a couple terms are given allow the system to create new columns
         $scope.updateReport();
-        console.log($scope.report.terms);
+        //console.log($scope.report.terms);
+    }
+    //adjust column widtsh automatically, especially helpful when columns are being auto added
+    $scope.refit = function(){
+        var intColumns = $scope.report.columns.length;
+        var intWidth=2; if(intColumns == 3){ intWidth=4; }
     }
 
     //menu options, initial setup, either loaded from a previous setup, or defaults
@@ -426,7 +435,9 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             //save the new values
             FUIAPI.post({ a: 'updateReport', q: $scope.report },
                 function(response) {
-                    $scope.report=response; //Sends to the server to normalize, this may be overkill.
+                    //$scope.report=response; //Sends to the server to normalize, this may be overkill.
+                    $scope.layout();
+                    $scope.refit();
                     //start the report
                     FUIAPI.post({ a: 'playStream' }, function () { $scope.play = true; });
                 }
@@ -484,9 +495,8 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
 
     $scope.addReport = function() {
         $scope.pause();
-        $scope.report = { _id: "blank", name: "default" };
+        $scope.report = { _id: "blank", name: "default",follow:false,columns:[],priority:1 };
         $scope.report.terms = [{ name: "Default", fn: "Find", terms: [] }];
-        $scope.report.columns = [];
     };
        //________ END REPORT MANAGEMENT _________\\
       //##########################################\\
@@ -546,6 +556,10 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     // Stream the data feed, I think ??
     $scope.feed = function() {
         var socket = io.connect('http://localhost:3001/' + $scope.session_uuid); //connect to the websocket
+        socket.on('newColumn', function (objCol){
+            $scope.addCol(objCol);
+            $scope.refit();
+        });
         socket.on('newItems', function (arrItems) {
             if ($scope.play) {
                 _.forEach(arrItems, function(objItem) { $scope.addItem(objItem); });

@@ -15,10 +15,11 @@
             <div style="height:300px;width:100%;">
                 <input ng-model="report.terms[0].name"></input>
                 Term Set Type= {{::report.terms[0].fn}}
-                <tags-input ng-model="report.terms[0].terms" on-tag-added="newLayout()" on-tag-removed="newLayout()"></tags-input>
+                <tags-input ng-model="report.terms[0].terms" on-tag-added="newReport()" on-tag-removed="newReport()"></tags-input>
                 <hr/>
             </div>
           </div>
+          Adjust to the data: <select ng-model="report.follow" ng-options="arr.v as arr.k for arr in dataOpts"></select></li>
       </div>
       <div class="modal-footer">
         <span class="btn btn-red"><button type="button" class="gradient" ng-click="saveReport()">Save</button></span>
