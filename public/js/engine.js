@@ -25,7 +25,7 @@ app.factory('FUIAPI', function($resource) {
 //_____________________________\\
 //----====|| SETTINGS ||====----\\
 app.controller('FUI', function($scope, $modal, FUIAPI) {
-    $scope.dev=false;
+    $scope.dev=true;
     $scope.play = true;
     $scope.intEvents=0;
     $scope.widths = [
@@ -191,6 +191,28 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         $scope.updateColumn(objItem,idxColumn,objMatch);//column priority, report priority used for column %
         $scope.sortColumns();
         $scope.report.priority++;
+        //decide to follow some data
+        if($scope.report.follow==='tags' && ($scope.intEvents % 1000) == 0 && $scope.report.columns[0].components[0].items && $scope.report.columns.length < 6){
+            //lets just look att he 1st column stats for now
+            if($scope.dev===true){ console.log('Need MOAR Columns!'); }
+            var objNew={priority:0}; 
+            _.forEach($scope.report.columns[0].components[0].items,function(objStat){
+                //get the highest tag that isn't already tracked
+                var tracked=false;
+                _.forEach($scope.report.terms[0].terms,function(objTerm){
+                    if(objTerm.text.toLowerCase().replace('-',' ') == objStat.text.toLowerCase()){tracked=true;}
+                });
+                if(objStat.typ=='Tag' && objStat.priority > objNew.priority && tracked===false){ 
+                    objNew=objStat; 
+                   if($scope.dev===true){ console.log(objNew); }
+                }
+            });
+            if(objNew.priority > 0){$scope.report.terms[0].terms.push(objNew);
+                $scope.addCol({ label:objNew.text ,components:[{typ:'Stats',height:'25',items:[]}] });
+                $scope.refit();
+                $scope.updateReport();
+            }
+        }
         //performance measurement
         if($scope.dev===true && ($scope.intEvents % 1000) == 0){
             endTime = window.performance.now();
@@ -347,20 +369,20 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         var intTerms = $scope.report.terms[0].terms.length;
         _.forEach($scope.report.terms[0].terms,function(objTerm,i){
             if(!$scope.report.columns[i]){
-                $scope.addCol({
-                    label:objTerm.text
-                    ,components:[{typ:'Stats',height:'25',items:[]}]
-                });
+                $scope.addCol({ label:objTerm.text ,components:[{typ:'Stats',height:'25',items:[]}] });
             }
         });
         if(intTerms < 3){ $scope.report.follow='tags'; } //if only a couple terms are given allow the system to create new columns
+        $scope.refit();
         $scope.updateReport();
+
         //console.log($scope.report.terms);
     }
     //adjust column widtsh automatically, especially helpful when columns are being auto added
     $scope.refit = function(){
         var intColumns = $scope.report.columns.length;
-        var intWidth=2; if(intColumns == 3){ intWidth=4; }
+        var intWidth=2; if(intColumns == 3){ intWidth=4; } if(intColumns == 4){ intWidth=3; }
+        _.forEach($scope.report.columns,function(objCol,k){ objCol.width=intWidth; });
     }
 
     //menu options, initial setup, either loaded from a previous setup, or defaults
@@ -559,6 +581,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         socket.on('newColumn', function (objCol){
             $scope.addCol(objCol);
             $scope.refit();
+            $scope.updateReport();
         });
         socket.on('newItems', function (arrItems) {
             if ($scope.play) {
