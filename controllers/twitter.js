@@ -35,7 +35,7 @@ var stats = require('../modules/stats');
 var env_config = app_config.env_config[app_config.env];
 var localization = locales[app_config.lang];
 var debug = env_config.debug;
-var host_ip = ip_util.getIpAddress();
+var host_ip = process.env.HOST || ip_util.getIpAddress();
 var port = process.env.PORT || env_config.ports.app;
 //________END Helpers_________\\
 //#############################\\
