@@ -186,7 +186,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             }
             if(objI[$scope.report.columns[idxColumn].sort] < intMin || intMin===false){intMin=objI[$scope.report.columns[idxColumn].sort]; objMin=objI;} //keep track of the last item
         });
-        if(objMatch===false){ propArray.unshift($scope.procItem(objItem,objMatch)); } //add the new item
+        if(objMatch===false && typeof propArray === 'object'){ propArray.unshift($scope.procItem(objItem,objMatch)); } //add the new item
         if(objMatch===false && intLength > intLimit){ propArray.splice(objMin.k+1,1); } //remove an item, keeping in mind an item was added to the beginning of the array
         $scope.updateColumn(objItem,idxColumn,objMatch);//column priority, report priority used for column %
         $scope.sortColumns();
