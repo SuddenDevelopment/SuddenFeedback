@@ -159,7 +159,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
 
         //decide which collection/component within a column to work on
         if (objItem.typ !== 'item'){
-            if($scope.report.columns[idxColumn].components.length > 0){
+            if(typeof $scope.report.columns[idxColumn].components === 'object' && $scope.report.columns[idxColumn].components.length > 0){
                 _.forEach($scope.report.columns[idxColumn].components, function(objComp, i) {
                     if (objComp.typ === 'Stats'|| objComp.typ === objItem.typ)
                     { propArray = $scope.report.columns[idxColumn].components[i].items; }
@@ -337,7 +337,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         _.forEach($scope.report.columns, function(objCol, i) {
             var intItemContainerHeight = 100;
 
-            if (objCol.components.length > 0) {
+            if (typeof objCol.components === 'object' && objCol.components.length > 0) {
                 _.forEach(objCol.components, function(objComp) {
                     intItemContainerHeight -= objComp.height;
                 });
