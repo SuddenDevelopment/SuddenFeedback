@@ -405,7 +405,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
                 $scope.session_uuid = response.session_uuid;
 
                 // We have to wait for the session uuid to be set before starting the feed
-                $scope.feed();
+                $scope.feed(response.appCfg);
             }
         );
     };
@@ -576,8 +576,8 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
     };
 
     // Stream the data feed, I think ??
-    $scope.feed = function() {
-        var socket = io.connect('http://localhost:3001/' + $scope.session_uuid); //connect to the websocket
+    $scope.feed = function(cfg) {
+        var socket = io.connect('http://'+cfg.hostname+':'+cfg.sioPort+'/' + $scope.session_uuid); //connect to the websocket
         socket.on('newColumn', function (objCol){
             $scope.addCol(objCol);
             $scope.refit();
