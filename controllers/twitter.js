@@ -35,8 +35,6 @@ var stats = require('../modules/stats');
 var env_config = app_config.env_config[app_config.env];
 var localization = locales[app_config.lang];
 var debug = env_config.debug;
-var host_ip = process.env.HOST || ip_util.getIpAddress();
-var port = process.env.PORT || env_config.ports.app;
 //________END Helpers_________\\
 //#############################\\
 
@@ -44,6 +42,7 @@ var port = process.env.PORT || env_config.ports.app;
 //__________________________________\\
 //----====|| Instance Vars ||====----\\
 var io = socket_io.listen(env_config.ports.socket, { log: false });
+console.log('socket.io listening on '+env_config.ports.socket);
 var torfSentiment = false;
 var strNeedle = null;
 //________END Instance Vars_________\\
@@ -119,7 +118,7 @@ TwitterController.prototype.init = function(program, app, share, drivers) {
             self.credentials.api_key,
             self.credentials.api_secret,
             env_config.auth.version,
-            protocol + "://" + host_ip + ":"+ port + '/auth/twitter/callback',
+            protocol + "://" + env_config.hostname + ":"+ env_config.ports.app + '/auth/twitter/callback',
             env_config.auth.mac_type
         );
     });

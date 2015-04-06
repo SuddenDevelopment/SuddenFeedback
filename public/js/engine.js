@@ -1,6 +1,18 @@
+var DEV = true;
+var SESSION_UUID = null;
+var intEvents = 0;
 
 //shim function to get the index by a key/value for when the index reported by angular doesnt match
-function getIndex(arr, key, value) {for (i = 0; i < arr.length; i += 1) {if (arr[i][key] === value) {delete window.arr; return i;}}}
+function getIndex(arr, key, value) {
+    var i, arrLength = arr.length;
+    for (i = 0; i < arrLength; i += 1) {
+        if (arr[i][key] === value) {
+            delete window.arr;
+            return i;
+        }
+    }
+}
+
 function fnSortArr(arrItems, strProp) { return arrItems.sort(function(a,b){return a[strProp]-b[strProp]}); }
 function fnRSortArr(arrItems, strProp) { return arrItems.sort(function(a,b){return b[strProp]-a[strProp]}); }
 
@@ -36,7 +48,6 @@ app.factory('FeedService',['$http',function($http){
 app.controller('FUI', function($scope, $modal, FUIAPI, FeedService) {
     $scope.dev=true;
     $scope.play = true;
-    $scope.intEvents=0;
     $scope.widths = [
         {k: 'skinny', v: 1},
         {k: '1/6 width', v: 2},
@@ -161,19 +172,19 @@ app.controller('FUI', function($scope, $modal, FUIAPI, FeedService) {
      //___________________________________\\
     //----====|| ITEM MANAGEMENT ||====----\\
     $scope.addItem = function(objItem){
-        $scope.intEvents++;
-        if($scope.dev===true){var startTime = window.performance.now();}
+        intEvents++;
+        if(DEV===true){var startTime = window.performance.now();}
 
         //get the column
         var idxColumn = getIndex($scope.report.columns, 'id', objItem.column);
         var intLimit = $scope.report.columns[idxColumn].limit;
-        var propArray; var intMin;var objMin; intMin=false; 
+        var propArray; var intMin;var objMin; intMin=false;
 
         try { propArray = $scope.report.columns[idxColumn].items;}catch(e) { return; }
 
         //decide which collection/component within a column to work on
         if (objItem.typ !== 'item'){
-            if($scope.report.columns[idxColumn].components.length > 0){
+            if(typeof $scope.report.columns[idxColumn].components === 'object' && $scope.report.columns[idxColumn].components.length > 0){
                 _.forEach($scope.report.columns[idxColumn].components, function(objComp, i) {
                     if (objComp.typ === 'Stats'|| objComp.typ === objItem.typ)
                     { propArray = $scope.report.columns[idxColumn].components[i].items; }
@@ -184,7 +195,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI, FeedService) {
 
         //||||  COLUMN+ARRAY LOOP  ||||\\
         //this is a one time loop through a collection when touched, do everything possible in the 1 loop.
-        var objMatch = false; 
+        var objMatch = false;
         _.forEach(propArray, function(objI,k) {
             objI.k=k; //get the index
             objI=$scope.procItem(objI,objMatch); //update all non-matched items
@@ -200,25 +211,25 @@ app.controller('FUI', function($scope, $modal, FUIAPI, FeedService) {
             }
             if(objI[$scope.report.columns[idxColumn].sort] < intMin || intMin===false){intMin=objI[$scope.report.columns[idxColumn].sort]; objMin=objI;} //keep track of the last item
         });
-        if(objMatch===false){ propArray.unshift($scope.procItem(objItem,objMatch)); } //add the new item
+        if(objMatch===false && typeof propArray === 'object'){ propArray.unshift($scope.procItem(objItem,objMatch)); } //add the new item
         if(objMatch===false && intLength > intLimit){ propArray.splice(objMin.k+1,1); } //remove an item, keeping in mind an item was added to the beginning of the array
         $scope.updateColumn(objItem,idxColumn,objMatch);//column priority, report priority used for column %
         $scope.sortColumns();
         $scope.report.priority++;
         //decide to follow some data
-        if($scope.report.follow==='tags' && ($scope.intEvents % 1000) == 0 && $scope.report.columns[0].components[0].items && $scope.report.columns.length < 6){
+        if($scope.report.follow==='tags' && (intEvents % 1000) == 0 && $scope.report.columns[0].components[0].items && $scope.report.columns.length < 6){
             //lets just look att he 1st column stats for now
-            if($scope.dev===true){ console.log('Need MOAR Columns!'); }
-            var objNew={priority:0}; 
+            if(DEV===true){ console.log('Need MOAR Columns!'); }
+            var objNew={priority:0};
             _.forEach($scope.report.columns[0].components[0].items,function(objStat){
                 //get the highest tag that isn't already tracked
                 var tracked=false;
                 _.forEach($scope.report.terms[0].terms,function(objTerm){
                     if(objTerm.text.toLowerCase().replace('-',' ') == objStat.text.toLowerCase()){tracked=true;}
                 });
-                if(objStat.typ=='Tag' && objStat.priority > objNew.priority && tracked===false){ 
-                    objNew=objStat; 
-                   if($scope.dev===true){ console.log(objNew); }
+                if(objStat.typ=='Tag' && objStat.priority > objNew.priority && tracked===false){
+                    objNew=objStat;
+                   if(DEV===true){ console.log(objNew); }
                 }
             });
             if(objNew.priority > 0){$scope.report.terms[0].terms.push(objNew);
@@ -228,9 +239,9 @@ app.controller('FUI', function($scope, $modal, FUIAPI, FeedService) {
             }
         }
         //performance measurement
-        if($scope.dev===true && ($scope.intEvents % 1000) == 0){
+        if(DEV===true && (intEvents % 1000) == 0){
             endTime = window.performance.now();
-            console.log($scope.intEvents+' : '+(endTime-startTime)+' : '+intLength);
+            console.log(intEvents+' : '+(endTime-startTime)+' : '+intLength);
         }
     };
 
@@ -351,7 +362,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI, FeedService) {
         _.forEach($scope.report.columns, function(objCol, i) {
             var intItemContainerHeight = 100;
 
-            if (objCol.components.length > 0) {
+            if (typeof objCol.components === 'object' && objCol.components.length > 0) {
                 _.forEach(objCol.components, function(objComp) {
                     intItemContainerHeight -= objComp.height;
                 });
@@ -364,7 +375,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI, FeedService) {
       //##########################################\\
      //___________________________________\\
     //----====|| REPORT MANAGEMENT ||====----\\
-    
+
     $scope.newReport=function(){
         //If 1-2 terms, presentation mode
         //IF 3 or more terms normal mode
@@ -372,7 +383,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI, FeedService) {
           Foreach Term
             Create a column with column title==term
             Include items by column title
-            Set all column widths to 2 if more than 4, if 4 widht=3, if 3width=4, if 2 or less mode= presentation 
+            Set all column widths to 2 if more than 4, if 4 widht=3, if 3width=4, if 2 or less mode= presentation
             Stats component for each column
             Highlight all terms given
             */
@@ -416,10 +427,10 @@ app.controller('FUI', function($scope, $modal, FUIAPI, FeedService) {
 
                 $scope.layout(); //calculate the panel sizes based on column components
 
-                $scope.session_uuid = response.session_uuid;
+                SESSION_UUID = response.session_uuid;
 
                 // We have to wait for the session uuid to be set before starting the feed
-                $scope.feed();
+                $scope.feed(response.appCfg);
             }
         );
     };
@@ -476,7 +487,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI, FeedService) {
     }
 
     $scope.updateReport = function() {
-        $scope.play = false; 
+        $scope.play = false;
          //make sure the stream is stopped
         FUIAPI.post({ a: 'pauseStream' }, function() {
             //save the new values
@@ -601,8 +612,8 @@ app.controller('FUI', function($scope, $modal, FUIAPI, FeedService) {
     };
 
     // Stream the data feed, I think ??
-    $scope.feed = function() {
-        var socket = io.connect('http://localhost:3001/' + $scope.session_uuid); //connect to the websocket
+    $scope.feed = function(cfg) {
+        var socket = io.connect('http://'+cfg.hostname+':'+cfg.sioPort+'/' + SESSION_UUID); //connect to the websocket
         socket.on('newColumn', function (objCol){
             $scope.addCol(objCol);
             $scope.refit();

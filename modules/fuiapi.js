@@ -45,11 +45,15 @@ FUIAPI.prototype.init = function(req, res, next) {
     //get the report settings, if multiple grab the users most recent
     var objReport = self.share.get('report', req.session.uuid);
     var user = self.share.get('user', req.session.uuid);
-
+    var appCfg = {
+                    hostname:env_config.hostname,
+                    sioPort:env_config.ports.socket
+                 };
     if (objReport) {
         res.send({
             report: objReport,
-            session_uuid: req.session.uuid
+            session_uuid: req.session.uuid,
+            appCfg:appCfg
         });
     } else {
         //console.log('load a default report');
@@ -60,7 +64,8 @@ FUIAPI.prototype.init = function(req, res, next) {
                 self.share.set(objReport, 'report', req.session.uuid);
                 res.send({
                     report: objReport,
-                    session_uuid: req.session.uuid
+                    session_uuid: req.session.uuid,
+                    appCfg:appCfg
                 });
                 return;
             }
@@ -71,7 +76,8 @@ FUIAPI.prototype.init = function(req, res, next) {
             self.share.set(objReport, 'report', req.session.uuid);
             res.send({
                 report: objReport,
-                session_uuid: req.session.uuid
+                session_uuid: req.session.uuid,
+                appCfg:appCfg
             });
         }
 
