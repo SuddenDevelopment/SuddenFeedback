@@ -23,6 +23,14 @@
               <div class="col-lg-6"><input class="inputtext input_middle required gradient" ng-model="column.label" /></div>
             </div>
             <div class="row modal-menu-row">
+              <div class="col-lg-2">Sources: </div>
+              <div class="col-lg-6"><select ng-model="column.source" ng-options="arr.v as arr.v for arr in sources"></select></div>
+            </div>
+            <div ng-if="column.source=='RSS'" class="row modal-menu-row">
+              <div class="col-lg-2">Source URL: </div>
+              <div class="col-lg-6"><input class="inputtext input_middle required gradient" ng-model="column.url" ng-change="loadRSS()" /></div>
+            </div>
+            <div class="row modal-menu-row">
               <div class="col-lg-2">Show: </div>
               <div class="col-lg-6"><select ng-model="column.show" ng-options="arr.v as arr.v for arr in shows"></select></div>
             </div>

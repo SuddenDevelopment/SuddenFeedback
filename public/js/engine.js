@@ -22,9 +22,18 @@ app.factory('FUIAPI', function($resource) {
     });
 });
 
+//for rss feeds load from google feed api https://developers.google.com/feed/v1/reference  http://jsfiddle.net/mahbub/b8Wcz/
+//test rss feed:  http://www.instructables.com/ex/y/process/rss.xml
+app.factory('FeedService',['$http',function($http){
+    return {
+        parseFeed : function(url){
+            return $http.jsonp('//ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=50&callback=JSON_CALLBACK&q=' + encodeURIComponent(url));
+        }
+    }
+}]);
 //_____________________________\\
 //----====|| SETTINGS ||====----\\
-app.controller('FUI', function($scope, $modal, FUIAPI) {
+app.controller('FUI', function($scope, $modal, FUIAPI, FeedService) {
     $scope.dev=true;
     $scope.play = true;
     $scope.intEvents=0;
@@ -80,6 +89,11 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         {v: 'AnalysisScore'},
         {v: 'Orphans'},
         {v: 'Slides'}
+    ];
+
+   $scope.sources = [
+        {v: 'twitter'},
+        {v: 'RSS'}
     ];
 
     $scope.analysis = [
@@ -450,6 +464,17 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         });
     };
 
+    //load the RSS feeds
+    $scope.LoadRSS = function(){
+        console.log('find RSS feeds');
+        _.forEach($scope.report.columns,function(objCol,i){
+            if(objCol.source=='RSS' && objCol.url){
+                console.log($scope.getRSS(objCol.url));
+
+            }
+        });
+    }
+
     $scope.updateReport = function() {
         $scope.play = false; 
          //make sure the stream is stopped
@@ -532,7 +557,7 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
         $scope.report.terms.push(newSet);
         //FUIAPI.query({}, function(response) {});
     };
-        $scope.saveSet = function() {
+    $scope.saveSet = function() {
         FUIAPI.post({ a: 'saveTerms', q: $scope.report.terms }, function(response) {
             console.log(response,'response');
         });
@@ -591,6 +616,11 @@ app.controller('FUI', function($scope, $modal, FUIAPI) {
             }
         });
     };
+
+    $scope.getRSS = function(url){
+        console.log(url);
+        FeedService.parseFeed(url).then(function(res){ return res.data.responseData.feed.entries; });
+    }
        //________ END FEED MANAGEMENT _________\\
       //#########################################\\
     // Let's get this party started
