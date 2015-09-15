@@ -1,0 +1,63 @@
+{
+    "version": "0.0.3",
+    "lang": "en-us",
+    "view_engine": "jade",
+    "env": "DEV",
+    "env_config": {
+        "DEV": {
+            "auth": {
+                "config_path": "./config/auth.json",
+                "default": "anthony",
+                "type": "oauth",
+                "version": "1.0",
+                "mac_type": "HMAC-SHA1",
+                "request_token_url": "https://api.twitter.com/oauth/request_token",
+                "access_token_url": "https://api.twitter.com/oauth/access_token",
+                "url_prefix": "https://twitter.com/oauth/authenticate?oauth_token="
+            },
+            "debug": true,
+            "default_report_id": "Celebrity",
+            "logs_disabled": false,
+            "throw_exceptions": true,
+            "data_providers": {
+                "twitter": {
+                    "enabled": true,
+                    "stats_enabled": false,
+                    "callback":""
+                },
+                "logs": { "enabled": true },
+                "events": { "enabled": true },
+                "users": { "enabled": true }
+            },
+            "drivers": {
+                "mongo": {
+                    "enabled": true,
+                    "conn_url": "mongodb://127.0.0.1:27017/suddenfeedback"
+                }
+            },
+            "default_data_provider": "twitter",
+            "default_driver": "mongo",
+            "log_levels": ["info", "debug", "error"],
+            "log_output_types": ["file", "console"],
+            "paths": {
+                "logs": "/var/log/suddenfeedback/",
+                "seeders": "./seeders/",
+                "views": "./views"
+            },
+            "hostname":"localhost",
+            "ports": {
+                "app": 3000,
+                "socket": 3001
+            },
+            "protocol": "http",
+            "salts": {
+                "cookie": "this is just SALT in a wound",
+                "session": "this is just SALT in a wound"
+            },
+            "seeders": {
+                "reports": "default_report.json",
+                "terms": "default_terms.json"
+            }
+        }
+    }
+}
