@@ -1,7 +1,7 @@
 SuddenFeedback
 ==============
 
-![Alt text](http://suddendevelopment.com/assets/images/screenshot1.png "Screenshot")
+(http://suddendevelopment.com/assets/images/screenshot1.png)
 
 Requirements
 ============
