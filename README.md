@@ -1,7 +1,7 @@
 SuddenFeedback
 ==============
 
-(http://suddendevelopment.com/assets/images/screenshot1.png)
+!(http://suddendevelopment.com/assets/images/screenshot1.png)
 
 Requirements
 ============
