@@ -1,6 +1,8 @@
 SuddenFeedback
 ==============
 
+![Alt text](http://suddendevelopment.com/assets/images/screenshot1.png "Screenshot")
+
 Requirements
 ============
 1. Node
